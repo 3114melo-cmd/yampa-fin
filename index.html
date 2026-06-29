@@ -83,7 +83,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 .btn.pri:hover{background:#1d4ed8}
 .btn.grn{background:var(--grn);color:#fff;border-color:var(--grn)}
 .sync-ok{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:3px 9px}
-.ct{flex:1;overflow-y:auto;padding:18px 20px;scrollbar-width:thin}
+.ct{flex:1;overflow:auto;padding:14px 16px;scrollbar-width:thin}
 
 /* CARDS/KPIS */
 .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
@@ -733,97 +733,104 @@ function renderDashboard() {
 // CONCILIAÇÃO
 // ═══════════════════════════════════════
 function renderConciliacao() {
-  let filtered = TX.filter(t => {
+  const conc = TX.filter(t=>t.status==='conciliado').length;
+  const pend = TX.filter(t=>t.status==='pendente').length;
+  const ig   = TX.filter(t=>t.status==='ignorado').length;
+
+  const entradas = TX.filter(t=>t.type==='CREDIT');
+  const saidas   = TX.filter(t=>t.type==='DEBIT');
+
+  const filtrar = (lista) => lista.filter(t=>{
     const matchF = filterStatus==='todos' || t.status===filterStatus;
     const matchS = !searchQ || t.desc.toLowerCase().includes(searchQ.toLowerCase()) || (t.cli||'').toLowerCase().includes(searchQ.toLowerCase());
     return matchF && matchS;
   });
 
-  const conc = TX.filter(t=>t.status==='conciliado').length;
-  const pend = TX.filter(t=>t.status==='pendente').length;
-  const ig = TX.filter(t=>t.status==='ignorado').length;
-  const entFilt = filtered.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
-  const saiFilt = filtered.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+Math.abs(t.amt),0);
+  const entF = filtrar(entradas);
+  const saiF = filtrar(saidas);
+  const totalE = entradas.reduce((s,t)=>s+t.amt,0);
+  const totalS = saidas.reduce((s,t)=>s+Math.abs(t.amt),0);
+  const pendE = entradas.filter(t=>t.status==='pendente').length;
+  const pendS = saidas.filter(t=>t.status==='pendente').length;
+  const concE = entradas.filter(t=>t.status==='conciliado').length;
+  const concS = saidas.filter(t=>t.status==='conciliado').length;
+
+  const kpis = [
+    ['Saldo Sicredi','R$ 596,23','n'],
+    ['Total Entradas',fmtBRL(totalE),'g'],
+    ['Total Saídas',fmtBRL(totalS),'r'],
+    ['Conciliados',conc+'/'+TX.length,'n'],
+    ['Pendentes',pend,'y'],
+    ['Progresso',Math.round(conc/TX.length*100)+'%','n'],
+  ];
 
   return `
-  <div class="conc-wrap">
-    <div class="conc-head">
-      <div class="conc-title">Lançamentos Sicredi — Jun/2026</div>
-      <div class="conc-filters">
-        <button class="fchip ${filterStatus==='todos'?'on':''}" onclick="setFilter('todos')">Todos (${TX.length})</button>
-        <button class="fchip ${filterStatus==='pendente'?'on':''}" onclick="setFilter('pendente')" style="${filterStatus==='pendente'?'':'border-color:var(--yel);color:var(--yel)'}">⏳ Pendentes (${pend})</button>
-        <button class="fchip ${filterStatus==='conciliado'?'on':''}" onclick="setFilter('conciliado')" style="${filterStatus==='conciliado'?'':'border-color:var(--grn);color:var(--grn)'}">✓ Conciliados (${conc})</button>
-        <button class="fchip ${filterStatus==='ignorado'?'on':''}" onclick="setFilter('ignorado')">Ignorados (${ig})</button>
+  <div style="display:flex;flex-direction:column;gap:10px;height:calc(100vh - 90px)">
+
+    <!-- KPIs + FILTROS -->
+    <div style="background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);box-shadow:var(--sh1);flex-shrink:0">
+      <div style="display:grid;grid-template-columns:repeat(6,1fr)">
+        ${kpis.map(([l,v,c],i)=>`<div style="padding:10px 14px;${i<5?'border-right:1px solid var(--bor)':''}">
+          <div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;font-weight:600;margin-bottom:3px">${l}</div>
+          <div style="font-size:16px;font-weight:700;color:${c==='g'?'var(--grn)':c==='r'?'var(--red)':c==='y'?'var(--yel)':'var(--txt)'}">${v}</div>
+        </div>`).join('')}
       </div>
-      <input class="search-in" placeholder="Buscar descrição ou cliente..." value="${searchQ}" oninput="searchQ=this.value;render()">
-      <button class="btn grn" onclick="conciliarTodos()">✓ Conciliar todos pendentes</button>
+      <div style="display:flex;align-items:center;gap:7px;padding:8px 12px;border-top:1px solid var(--bor);flex-wrap:wrap">
+        <div style="display:flex;gap:4px">
+          <button class="fchip ${filterStatus==='todos'?'on':''}" onclick="setFilter('todos')">Todos</button>
+          <button class="fchip ${filterStatus==='pendente'?'on':''}" onclick="setFilter('pendente')" style="${filterStatus!=='pendente'?'border-color:var(--yel);color:var(--yel)':''}">⏳ Pendentes</button>
+          <button class="fchip ${filterStatus==='conciliado'?'on':''}" onclick="setFilter('conciliado')" style="${filterStatus!=='conciliado'?'border-color:var(--grn);color:var(--grn)':''}">✓ Conciliados</button>
+          <button class="fchip ${filterStatus==='ignorado'?'on':''}" onclick="setFilter('ignorado')">Ignorados</button>
+        </div>
+        <input class="search-in" placeholder="Buscar descrição ou cliente..." value="${searchQ}" oninput="searchQ=this.value;render()" style="flex:1;min-width:180px">
+        <button class="btn grn" onclick="conciliarTodos()">✓ Conciliar todos</button>
+        <button class="btn pri" onclick="openModal()">+ Lançamento</button>
+      </div>
     </div>
-    <div class="conc-stats">
-      <span class="cstat g">↑ Entradas: ${fmtBRL(entFilt)}</span>
-      <span class="cstat r">↓ Saídas: ${fmtBRL(saiFilt)}</span>
-      <span class="cstat n">${filtered.length} registro(s)</span>
-      <span class="cstat" style="color:var(--acc);margin-left:auto">${Math.round(conc/TX.length*100)}% conciliado</span>
-    </div>
-    <div class="tx-list">
-      ${filtered.length===0?'<div class="empty">Nenhum lançamento encontrado</div>':
-        filtered.map(t=>renderTxItem(t)).join('')}
+
+    <!-- COLUNAS ENTRADAS | SAÍDAS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-height:0">
+
+      <!-- ENTRADAS -->
+      <div style="display:flex;flex-direction:column;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh1)">
+        <div style="padding:10px 14px;border-bottom:1px solid var(--bor);background:var(--gbg);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+          <div>
+            <span style="font-size:13px;font-weight:700;color:var(--grn)">↑ Entradas</span>
+            <span style="font-size:11px;color:var(--tx3);margin-left:6px">${entF.length} registros</span>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:15px;font-weight:700;color:var(--grn)">${fmtBRL(totalE)}</div>
+            <div style="font-size:10px;color:var(--tx3)">${concE} conciliadas · ${pendE} pendentes</div>
+          </div>
+        </div>
+        <div style="flex:1;overflow-y:auto">
+          ${entF.length===0?'<div class="empty">Nenhuma entrada encontrada</div>':
+            entF.map(t=>renderTxItem(t)).join('')}
+        </div>
+      </div>
+
+      <!-- SAÍDAS -->
+      <div style="display:flex;flex-direction:column;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh1)">
+        <div style="padding:10px 14px;border-bottom:1px solid var(--bor);background:var(--rbg);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+          <div>
+            <span style="font-size:13px;font-weight:700;color:var(--red)">↓ Saídas</span>
+            <span style="font-size:11px;color:var(--tx3);margin-left:6px">${saiF.length} registros</span>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:15px;font-weight:700;color:var(--red)">${fmtBRL(totalS)}</div>
+            <div style="font-size:10px;color:var(--tx3)">${concS} conciliadas · ${pendS} pendentes</div>
+          </div>
+        </div>
+        <div style="flex:1;overflow-y:auto">
+          ${saiF.length===0?'<div class="empty">Nenhuma saída encontrada</div>':
+            saiF.map(t=>renderTxItem(t)).join('')}
+        </div>
+      </div>
+
     </div>
   </div>`;
 }
 
-function renderTxItem(t) {
-  const isExp = expandedTx === t.id;
-  const ed = EDITED[t.id]||{};
-  const catInfo = t.catInfo;
-  const isSemCat = t.cat === 'OUT';
-
-  return `<div class="tx-item${isExp?' expanded':''}" id="txi-${t.id}">
-    <div class="tx-row" onclick="toggleTx('${t.id}')">
-      <div class="tx-check ${t.status==='conciliado'?'ok':t.status==='ignorado'?'':'pend'}" onclick="event.stopPropagation();toggleConc('${t.id}')">
-        ${t.status==='conciliado'?'✓':t.status==='ignorado'?'—':''}
-      </div>
-      <div class="tx-status-dot" style="background:${t.status==='conciliado'?'var(--grn)':t.status==='ignorado'?'var(--tx3)':'var(--yel)'}"></div>
-      <div class="tx-info">
-        <div class="tx-desc">${t.desc}${isSemCat?'<span style="font-size:10px;background:#fee2e2;color:#dc2626;padding:1px 5px;border-radius:4px;margin-left:6px;font-weight:600">⚠ sem categoria</span>':''}</div>
-        <div class="tx-meta">
-          <span>${fmtData(t.date)}</span>
-          ${t.cli?`<span>👤 ${t.cli}</span>`:''}
-          ${t.obs?`<span>📝 ${t.obs}</span>`:''}
-          ${t.editado?`<span style="color:var(--acc)">✏ editado</span>`:''}
-        </div>
-      </div>
-      <span class="tx-cat" style="background:${catInfo.cor}22;color:${catInfo.cor}">${catInfo.code} — ${catInfo.nome}</span>
-      <div class="tx-amt ${t.type==='CREDIT'?'g':'r'}">${t.type==='CREDIT'?'+':'−'}${fmtBRL(t.amt)}</div>
-      <span class="tx-expand-icon">▼</span>
-    </div>
-    ${isExp?`<div class="tx-edit">
-      <div class="edit-grid">
-        <div class="eg"><label>Descrição</label><input type="text" value="${t.desc}" onchange="editTx('${t.id}','desc',this.value)"></div>
-        <div class="eg"><label>Cliente / Fornecedor</label><input type="text" value="${t.cli||''}" placeholder="Nome ou CNPJ" onchange="editTx('${t.id}','cli',this.value)"></div>
-        <div class="eg"><label>Observação</label><input type="text" value="${t.obs||''}" placeholder="Nota interna" onchange="editTx('${t.id}','obs',this.value)"></div>
-      </div>
-      <div class="edit-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
-        <div class="eg"><label>Plano de Conta (Categoria)</label>
-          <select onchange="editTx('${t.id}','cat',this.value)">${getCatOptions(t.cat)}</select>
-        </div>
-        <div class="eg"><label>Meio de Pagamento</label>
-          <select onchange="editTx('${t.id}','meio',this.value)">
-            ${['PIX','Boleto','Débito Automático','TED','Cartão','Dinheiro','Outro'].map(m=>`<option ${(ed.meio||'PIX')===m?'selected':''}>${m}</option>`).join('')}
-          </select>
-        </div>
-      </div>
-      <div class="edit-actions">
-        ${t.status!=='conciliado'?
-          `<button class="btn-conc ok" onclick="conciliar('${t.id}')">✓ Conciliar</button>`:
-          `<button class="btn-conc undo" onclick="desconciliar('${t.id}')">↩ Desfazer</button>`}
-        ${t.status!=='ignorado'?
-          `<button class="btn-conc skip" onclick="ignorar('${t.id}')">✕ Ignorar</button>`:''}
-        <span class="status-tag ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend'}">${t.status}</span>
-        <span style="font-size:11px;color:var(--tx3);margin-left:auto">${fmtData(t.date)} · Sicredi · ${t.type==='CREDIT'?'Entrada':'Saída'}</span>
-      </div>
-    </div>`:''}
-  </div>`;
-}
 
 // ═══════════════════════════════════════
 // JOURNAL
