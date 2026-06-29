@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yampa Fin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sidebar-w:220px;
+  --sidebar-bg:#0d1f35;
+  --sidebar-hover:#1a3050;
+  --sidebar-active:#1e3d62;
+  --sidebar-txt:#c8d8e8;
+  --sidebar-txt-dim:#6a8aaa;
+  --accent:#2563eb;
+  --accent-light:#eff6ff;
+  --bg:#f0f2f5;
+  --surface:#ffffff;
+  --surface2:#f8f9fb;
+  --border:#e2e6eb;
+  --border2:#d0d5dd;
+  --txt:#0f1923;
+  --txt2:#4a5568;
+  --txt3:#9aa5b4;
+  --verde:#059669;
+  --verde-bg:#ecfdf5;
+  --vermelho:#dc2626;
+  --vermelho-bg:#fef2f2;
+  --amarelo:#d97706;
+  --amarelo-bg:#fffbeb;
+  --azul:#2563eb;
+  --azul-bg:#eff6ff;
+  --radius:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#111110;--surface:#1c1c1a;--surface2:#242422;
+    --border:#2c2c2a;--border2:#3a3a38;
+    --txt:#f5f4f0;--txt2:#b0afa8;--txt3:#686760;
+    --verde-bg:#0a2a1f;--vermelho-bg:#2a0f0f;--amarelo-bg:#2a1f00;--accent-light:#042c53;
+  }
+}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.5;display:flex;min-height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:100;transition:width .2s}
+.sidebar.collapsed{width:56px}
+.sidebar-head{padding:16px 14px 8px;border-bottom:1px solid rgba(255,255,255,.07)}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;margin-bottom:10px}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.logo-text{font-size:16px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden}
+.logo-text span{color:#60a5fa}
+.sidebar.collapsed .logo-text{display:none}
+.user-row{display:flex;align-items:center;gap:8px}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:#1e3d62;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#60a5fa;flex-shrink:0}
+.user-name{font-size:12px;color:var(--sidebar-txt);white-space:nowrap;overflow:hidden;font-weight:500}
+.sidebar.collapsed .user-name{display:none}
+.sidebar-nav{flex:1;overflow-y:auto;padding:10px 0;scrollbar-width:none}
+.sidebar-nav::-webkit-scrollbar{display:none}
+.new-btn-wrap{padding:8px 12px 4px}
+.new-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;border-radius:var(--radius);background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:.12s}
+.new-btn:hover{background:#1d4ed8}
+.sidebar.collapsed .new-btn span{display:none}
+.nav-section{padding:8px 14px 2px}
+.nav-section-label{font-size:10px;font-weight:600;color:var(--sidebar-txt-dim);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap}
+.sidebar.collapsed .nav-section-label{opacity:0;height:0;padding:0;margin:0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;color:var(--sidebar-txt);text-decoration:none;position:relative;transition:.1s}
+.nav-item:hover{background:var(--sidebar-hover)}
+.nav-item.active{background:var(--sidebar-active);color:#fff}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
+.nav-icon{width:18px;height:18px;flex-shrink:0;opacity:.75}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1}
+.nav-label{font-size:13px;white-space:nowrap;overflow:hidden;font-weight:500}
+.sidebar.collapsed .nav-label{display:none}
+.nav-badge{font-size:9px;padding:1px 5px;border-radius:10px;background:#1e40af;color:#bfdbfe;font-weight:600;margin-left:auto}
+.sidebar.collapsed .nav-badge{display:none}
+.sidebar-footer{padding:10px 14px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
+.footer-btn{background:none;border:none;color:var(--sidebar-txt-dim);cursor:pointer;padding:4px 6px;border-radius:6px;display:flex;align-items:center;gap:5px;font-size:11px}
+.footer-btn:hover{background:rgba(255,255,255,.07);color:var(--sidebar-txt)}
+.sidebar.collapsed .sidebar-footer{justify-content:center}
+.sidebar.collapsed .footer-label{display:none}
+.notif-dot{width:7px;height:7px;background:#ef4444;border-radius:50%;display:inline-block;margin-left:2px;vertical-align:middle}
+
+/* SICREDI BADGE */
+.sicredi-badge{display:flex;align-items:center;gap:6px;padding:8px 12px;margin:6px 12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:var(--radius)}
+.sicredi-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sicredi-info{flex:1;min-width:0}
+.sicredi-name{font-size:11px;font-weight:600;color:#86efac;white-space:nowrap;overflow:hidden}
+.sicredi-sub{font-size:10px;color:#4ade80;opacity:.7}
+.sicredi-saldo{font-size:12px;font-weight:700;color:#4ade80}
+.sidebar.collapsed .sicredi-badge{padding:6px;justify-content:center;margin:6px 8px}
+.sidebar.collapsed .sicredi-info,.sidebar.collapsed .sicredi-saldo{display:none}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;transition:margin-left .2s}
+.main.expanded{margin-left:56px}
+
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--shadow)}
+.topbar-left{display:flex;flex-direction:column}
+.page-title{font-size:16px;font-weight:700;color:var(--txt)}
+.page-sub{font-size:12px;color:var(--txt3);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);color:var(--txt2);font-size:12px;font-weight:500;cursor:pointer;transition:.12s;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{background:#1d4ed8}
+.btn.danger{background:var(--vermelho);color:#fff;border-color:var(--vermelho)}
+.btn-badge{font-size:9px;padding:1px 5px;border-radius:8px;background:rgba(255,255,255,.2);color:#fff;font-weight:600}
+.sync-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--verde);background:var(--verde-bg);border:1px solid #a7f3d0;border-radius:20px;padding:4px 10px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--verde)}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:20px 24px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-pad{padding:16px 18px}
+
+/* KPIS */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.kpi-label{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-weight:600}
+.kpi-val{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.kpi-val.g{color:var(--verde)}.kpi-val.r{color:var(--vermelho)}.kpi-val.n{color:var(--txt)}
+.kpi-sub{font-size:11px;color:var(--txt3);margin-top:3px}
+
+/* ACCOUNT HERO */
+.account-hero{background:linear-gradient(135deg,#0d1f35 0%,#1e3d62 100%);border-radius:12px;padding:20px 24px;margin-bottom:16px;color:#fff;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.account-hero::before{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.04)}
+.account-hero::after{content:'';position:absolute;right:20px;bottom:-30px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.03)}
+.ah-left{}
+.ah-bank{font-size:11px;color:#86efac;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.ah-live{width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;animation:pulse 2s infinite}
+.ah-name{font-size:18px;font-weight:700;margin-bottom:2px}
+.ah-ag{font-size:12px;color:#94a3b8}
+.ah-saldo-label{font-size:11px;color:#94a3b8;margin-top:12px;margin-bottom:2px}
+.ah-saldo{font-size:32px;font-weight:700;letter-spacing:-.5px;color:#4ade80}
+.ah-right{text-align:right}
+.ah-tag{font-size:10px;padding:3px 9px;border-radius:10px;background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.25);font-weight:600;margin-bottom:8px;display:inline-block}
+.ah-updated{font-size:11px;color:#64748b;margin-top:8px}
+.btn-sync{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius);background:rgba(37,99,235,.8);color:#fff;border:1px solid rgba(37,99,235,.5);font-size:12px;font-weight:600;cursor:pointer;transition:.15s}
+.btn-sync:hover{background:var(--accent)}
+
+/* TABELA */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.table-toolbar{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.search-input{flex:1;min-width:180px;padding:7px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;color:var(--txt);background:var(--surface)}
+.search-input:focus{outline:none;border-color:var(--accent)}
+.filter-chip{padding:5px 10px;border-radius:20px;border:1px solid var(--border2);background:transparent;font-size:11px;font-weight:500;color:var(--txt2);cursor:pointer;transition:.12s}
+.filter-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.table-scroll{overflow-x:auto;max-height:calc(100vh - 420px)}
+table{width:100%;border-collapse:collapse;min-width:780px}
+th{padding:9px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--txt3);background:var(--surface2);border-bottom:1px solid var(--border);white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0;z-index:1}
+td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--txt2);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.val-in{color:var(--verde);font-weight:600}
+.val-out{color:var(--vermelho);font-weight:600}
+.status-pill{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.status-pill.realizado{background:var(--verde-bg);color:var(--verde)}
+.status-pill.pendente{background:var(--amarelo-bg);color:var(--amarelo)}
+.cat-tag{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500}
+.pagination{display:flex;align-items:center;gap:6px;padding:10px 14px;justify-content:space-between;background:var(--surface2);border-top:1px solid var(--border)}
+.page-info{font-size:11px;color:var(--txt3)}
+.page-btns{display:flex;gap:4px}
+.page-btn{padding:4px 9px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);font-size:11px;color:var(--txt2);cursor:pointer}
+.page-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* CASH FLOW */
+.cf-controls{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.period-select{padding:7px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;color:var(--txt);background:var(--surface);cursor:pointer}
+.level-btns{display:flex;border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden}
+.level-btn{padding:6px 12px;background:var(--surface);border:none;border-right:1px solid var(--border2);font-size:12px;font-weight:600;color:var(--txt2);cursor:pointer}
+.level-btn:last-child{border-right:none}
+.level-btn.active{background:var(--accent);color:#fff}
+.cf-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.cf-scroll{overflow-x:auto}
+.cf-table{width:100%;border-collapse:collapse;min-width:1000px}
+.cf-table th{padding:8px 12px;font-size:10px;font-weight:700;color:var(--txt3);background:var(--surface2);border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px}
+.cf-table th:first-child{text-align:left;min-width:210px;position:sticky;left:0;z-index:2;background:var(--surface2)}
+.cf-table td{padding:7px 12px;border-bottom:1px solid var(--border);font-size:12px;text-align:right;white-space:nowrap}
+.cf-table td:first-child{text-align:left;font-weight:500;color:var(--txt);position:sticky;left:0;background:var(--surface);z-index:1}
+.cf-table tr:last-child td{border-bottom:none}
+.row-group td{background:#f5f8ff!important;font-weight:700;font-size:13px}
+.row-group td:first-child{color:var(--txt)}
+.row-sub td:first-child{padding-left:28px;font-weight:400;color:var(--txt2)}
+.row-sub td:first-child,.row-sub td{background:var(--surface)!important}
+.row-sub2 td:first-child{padding-left:44px;font-weight:400;color:var(--txt3);font-size:11px}
+.row-result td{background:#e8f0fe!important;font-weight:700}
+.row-result td:first-child{color:var(--accent)}
+.row-liquid td{background:#0d1f35!important;color:#fff!important;font-weight:700}
+.row-liquid td:first-child{color:#60a5fa!important}
+@media(prefers-color-scheme:dark){
+  .row-group td{background:#1a2640!important}
+  .row-result td{background:#0c1e3d!important}
+}
+.val-pos{color:var(--verde)}.val-neg{color:var(--vermelho)}.val-neu{color:var(--txt)}
+.xbtn{background:none;border:none;cursor:pointer;color:var(--txt3);font-size:13px;margin-right:4px;display:inline-block;transition:.1s;width:16px;text-align:center}
+.xbtn:hover{color:var(--accent)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:12px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-head{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-title{font-size:15px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;color:var(--txt3);cursor:pointer;line-height:1;padding:0 4px}
+.modal-close:hover{color:var(--txt)}
+.modal-body{padding:18px 20px}
+.import-box{border:1px solid var(--border2);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px}
+.import-title{font-size:13px;font-weight:600;margin-bottom:8px}
+.import-desc{font-size:12px;color:var(--txt2);margin-top:6px}
+.divider-or{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--txt3);font-size:12px}
+.divider-or::before,.divider-or::after{content:'';flex:1;height:1px;background:var(--border)}
+.tipo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.tipo-btn{padding:12px 6px;border-radius:var(--radius);border:1.5px solid var(--border2);background:var(--surface);cursor:pointer;text-align:center;transition:.12s}
+.tipo-btn:hover,.tipo-btn.sel{border-color:var(--accent);background:var(--accent-light)}
+.tipo-icon{font-size:18px;margin-bottom:3px}
+.tipo-label{font-size:11px;font-weight:600;color:var(--txt2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-full{grid-template-columns:1fr}
+.form-group label{display:block;font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.form-input{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;color:var(--txt);background:var(--surface)}
+.form-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+select.form-input{appearance:none;cursor:pointer}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--surface)}
+
+/* TIME */
+.time-panel{position:fixed;right:0;top:0;width:290px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:150;transform:translateX(100%);transition:.25s;box-shadow:-4px 0 20px rgba(0,0,0,.1)}
+.time-panel.open{transform:translateX(0)}
+.time-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.time-title{font-size:14px;font-weight:700}
+.time-close{background:none;border:none;font-size:20px;color:var(--txt3);cursor:pointer}
+.ai-card{padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s}
+.ai-card:hover{background:var(--surface2)}
+.ai-head{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.ai-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.ai-name{font-size:13px;font-weight:600}
+.ai-role{font-size:10px;color:var(--txt3)}
+.ai-status{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;margin-left:auto}
+.ai-status.on{background:var(--verde-bg);color:var(--verde)}
+.ai-status.soon{background:var(--surface2);color:var(--txt3);border:1px solid var(--border)}
+.ai-desc{font-size:12px;color:var(--txt2)}
+
+/* MISC */
+.section-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:12px}
+.empty-state{text-align:center;padding:50px 20px;color:var(--txt3)}
+.empty-icon{font-size:40px;margin-bottom:10px;opacity:.4}
+.empty-title{font-size:15px;font-weight:600;color:var(--txt2);margin-bottom:5px}
+.goals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.goal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.goal-head{display:flex;justify-content:space-between;margin-bottom:8px}
+.goal-title{font-size:13px;font-weight:600}
+.goal-status{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.gs-ok{background:var(--verde-bg);color:var(--verde)}
+.gs-warn{background:var(--amarelo-bg);color:var(--amarelo)}
+.gs-bad{background:var(--vermelho-bg);color:var(--vermelho)}
+.goal-bar{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin:8px 0}
+.goal-fill{height:100%;border-radius:4px}
+.goal-nums{display:flex;justify-content:space-between;font-size:11px;color:var(--txt3)}
+.mini-chart{display:flex;align-items:flex-end;gap:5px;height:90px;padding:0 2px;margin-top:10px}
+.mini-bar-g{display:flex;gap:2px;align-items:flex-end;flex:1}
+.bar-in{flex:1;border-radius:2px 2px 0 0;background:#d1fae5;min-height:2px}
+.bar-out{flex:1;border-radius:2px 2px 0 0;background:#fee2e2;min-height:2px}
+.bar-lb{flex:1;text-align:center;font-size:9px;color:var(--txt3);margin-top:3px}
+.dash-cols{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:14px}
+.saldo-card-mini{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.skeleton{background:linear-gradient(90deg,var(--border) 25%,var(--surface2) 50%,var(--border) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:6px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+@media(max-width:768px){
+  .sidebar{width:56px}.main{margin-left:56px}
+  .logo-text,.user-name,.nav-label,.nav-badge,.nav-section-label,.sicredi-info,.sicredi-saldo,.footer-label{display:none!important}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .dash-cols{grid-template-columns:1fr}
+  .goals-grid{grid-template-columns:1fr}
+  .tipo-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <a class="logo" href="#" onclick="return false">
+      <div class="logo-icon">YF</div>
+      <span class="logo-text">Yampa<span>Fin</span></span>
+    </a>
+    <div class="user-row">
+      <div class="user-avatar">FE</div>
+      <span class="user-name">Felipe Elias</span>
+    </div>
+  </div>
+
+  <div class="new-btn-wrap">
+    <button class="new-btn" onclick="openModal()">
+      <span style="font-size:17px;line-height:1">+</span>
+      <span>Lançamento</span>
+    </button>
+  </div>
+
+  <!-- SICREDI LIVE -->
+  <div class="sicredi-badge" id="sicredi-badge">
+    <div class="sicredi-dot"></div>
+    <div class="sicredi-info">
+      <div class="sicredi-name">Sicredi Empresas</div>
+      <div class="sicredi-sub">38.364.354/0001-98</div>
+    </div>
+    <div class="sicredi-saldo" id="sidebar-saldo">R$ 590,02</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section"><span class="nav-section-label">Controle</span></div>
+    <a class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-label">Painel</span>
+    </a>
+    <a class="nav-item" id="nav-journal" onclick="navigate('journal',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span class="nav-label">Livro Diário</span>
+    </a>
+    <a class="nav-item" id="nav-cashflow" onclick="navigate('cashflow',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span class="nav-label">Fluxo de Caixa</span>
+    </a>
+    <a class="nav-item" id="nav-comparator" onclick="navigate('comparator',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span class="nav-label">Comparador</span>
+    </a>
+    <div class="nav-section" style="margin-top:4px"><span class="nav-section-label">Clareza</span></div>
+    <a class="nav-item" id="nav-understanding" onclick="navigate('understanding',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span class="nav-label">Entenda</span>
+    </a>
+    <a class="nav-item" id="nav-booster" onclick="navigate('booster',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <span class="nav-label">Turbinador</span>
+    </a>
+    <a class="nav-item" id="nav-analysis" onclick="navigate('analysis',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><path d="M2 20h20"/></svg>
+      <span class="nav-label">Gráficos</span>
+    </a>
+    <div class="nav-section" style="margin-top:4px"><span class="nav-section-label">Resultado</span></div>
+    <a class="nav-item" id="nav-goals" onclick="navigate('goals',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      <span class="nav-label">Metas e Ações</span>
+      <span class="nav-badge">BETA</span>
+    </a>
+    <a class="nav-item" id="nav-planning" onclick="navigate('planning',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span class="nav-label">Planejamento</span>
+      <span class="nav-badge">BETA</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="footer-btn" onclick="toggleTime()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="footer-label">Time Financeiro</span>
+      <span class="notif-dot"></span>
+    </button>
+    <button class="footer-btn" onclick="toggleSidebar()" id="collapse-btn">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" id="collapse-icon"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main" id="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="page-title" id="page-title">Painel</div>
+      <div class="page-sub" id="page-sub">Visão geral do seu negócio</div>
+    </div>
+    <div class="topbar-right" id="topbar-right">
+      <div class="sync-status" id="sync-status">
+        <span class="sync-dot"></span>
+        Sicredi · 29/06/26 · 21:44 · Atualizado
+      </div>
+      <button class="btn primary" onclick="syncSicredi()" id="sync-btn">
+        ↻ Sincronizar Sicredi
+      </button>
+      <button class="btn" onclick="toggleTime()">Time Financeiro</button>
+    </div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Novo lançamento</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="import-box">
+        <div class="import-title">Importar Dados</div>
+        <button class="btn primary" style="width:100%;justify-content:center" onclick="alert('Importação OFX integrada ao Sicredi via BANCO MCP — em breve automática.')">
+          Importação Automática <span class="btn-badge">Recomendado</span>
+        </button>
+        <div class="import-desc">Importe extratos OFX ou planilhas de forma rápida e inteligente em poucos cliques.</div>
+      </div>
+      <div class="divider-or">ou crie manualmente</div>
+      <div class="tipo-grid">
+        <div class="tipo-btn sel" onclick="selTipo(this)"><div class="tipo-icon">📈</div><div class="tipo-label" style="color:#059669">Entrada</div></div>
+        <div class="tipo-btn" onclick="selTipo(this)"><div class="tipo-icon">📉</div><div class="tipo-label" style="color:#dc2626">Saída</div></div>
+        <div class="tipo-btn" onclick="selTipo(this)"><div class="tipo-icon">🔄</div><div class="tipo-label">Transferência</div></div>
+        <div class="tipo-btn" onclick="selTipo(this)"><div class="tipo-icon">👻</div><div class="tipo-label">Lanç. Fantasma</div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Data</label><input type="date" class="form-input" value="2026-06-28"></div>
+        <div class="form-group"><label>Valor (R$)</label><input type="number" class="form-input" placeholder="0,00" step="0.01"></div>
+      </div>
+      <div class="form-row form-full">
+        <div class="form-group"><label>Histórico / Descrição</label><input type="text" class="form-input" placeholder="Ex: Pagamento fornecedor DHFIT"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Plano de Conta</label>
+          <select class="form-input">
+            <option>3.1.8 — Receita de Vendas</option>
+            <option>4.2.1 — Fornecedores</option>
+            <option>4.4.2 — Comissão Vendedor</option>
+            <option>4.4.6 — Motoboy Terceirizado</option>
+            <option>4.6.1 — Gasolina</option>
+            <option>4.6.2 — Manutenção de Moto</option>
+            <option>5.2.3 — Energia elétrica</option>
+            <option>5.2.4 — Aluguel</option>
+            <option>5.2.11 — Contador</option>
+            <option>5.3.1 — Salário de funcionários</option>
+            <option>5.3.2 — Pró-labore</option>
+            <option>5.3.5 — FGTS</option>
+            <option>5.8.1 — Tráfego Pago</option>
+            <option>7.2.13 — Custos com Empréstimos</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Conta Bancária</label>
+          <select class="form-input"><option>Sicredi Empresas — 00047678-1</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Cliente / Fornecedor</label><input type="text" class="form-input" placeholder="Nome ou CNPJ"></div>
+        <div class="form-group"><label>Meio de Pagamento</label>
+          <select class="form-input"><option>PIX</option><option>Boleto</option><option>Transferência</option><option>Cartão</option><option>Dinheiro</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Centro de Custo</label>
+          <select class="form-input"><option>Yampa Suplementos</option><option>DHFIT Distribuidora</option><option>MotoRun Delivery</option><option>Holding</option></select>
+        </div>
+        <div class="form-group"><label>Status</label>
+          <select class="form-input"><option>Realizado</option><option>Pendente</option><option>Agendado</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn primary" onclick="salvar()">Salvar lançamento</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIME FINANCEIRO -->
+<div class="time-panel" id="time-panel">
+  <div class="time-head"><div class="time-title">⚡ Time Financeiro</div><button class="time-close" onclick="toggleTime()">×</button></div>
+  <div class="ai-card"><div class="ai-head"><div class="ai-av" style="background:#6366f1">YG</div><div><div class="ai-name">Yago</div><div class="ai-role">Assistente · Automação</div></div><span class="ai-status soon">Em breve</span></div><div class="ai-desc">Automação de fluxo de caixa e conciliação bancária</div></div>
+  <div class="ai-card"><div class="ai-head"><div class="ai-av" style="background:#ec4899">YN</div><div><div class="ai-name">Yana</div><div class="ai-role">Consultora · Estratégia</div></div><span class="ai-status soon">Em breve</span></div><div class="ai-desc">Insights estratégicos para maximizar lucratividade</div></div>
+  <div class="ai-card"><div class="ai-head"><div class="ai-av" style="background:#0ea5e9">BP</div><div><div class="ai-name">BPO</div><div class="ai-role">Operacional</div></div><span class="ai-status soon">Em breve</span></div><div class="ai-desc">Gestão de contas a pagar e receber</div></div>
+  <div class="ai-card"><div class="ai-head"><div class="ai-av" style="background:#f59e0b">CS</div><div><div class="ai-name">Consultor(a)</div><div class="ai-role">Estratégico</div></div><span class="ai-status soon">Em breve</span></div><div class="ai-desc">Orientação executiva para grandes decisões</div></div>
+  <div class="ai-card"><div class="ai-head"><div class="ai-av" style="background:#10b981">SP</div><div><div class="ai-name">Suporte</div><div class="ai-role">Técnico</div></div><span class="ai-status on">● Ativo</span></div><div class="ai-desc">Apoio técnico e dúvidas sobre a plataforma</div></div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// DADOS REAIS — SICREDI 28/06/2026
+// ═══════════════════════════════════
+const SICREDI = {
+  nome:'Sicredi Empresas',
+  cnpj:'38.364.354/0001-98',
+  agencia:'2207',
+  conta:'00047678-1',
+  saldo:596.23,
+  entradas_jun:108234.48,
+  saidas_jun:107638.25,
+  atualizado:'29/06/2026 · 21:44',
+};
+
+// Transações reais puxadas via BANCO MCP (Jun 2026)
+const TXS = [
+  {id:'S001',data:'29/06/26',plano:'5.2.99 — Outras desp. adm.',hist:'PAGAMENTO PIX - Juscelino Francisco da Silva',conta:'Sicredi',entrada:null,saida:36.00,status:'realizado',conc:true,cli:'Juscelino Francisco da Silva'},
+  {id:'S002',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'TED - ALELO S.A.',conta:'Sicredi',entrada:221.71,saida:null,status:'realizado',conc:true,cli:'ALELO S.A.'},
+  {id:'S003',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'TED - BANCO TOPAZIO S.A.',conta:'Sicredi',entrada:212.58,saida:null,status:'realizado',conc:true,cli:'BANCO TOPAZIO S.A.'},
+  {id:'S004',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - Renata Priscila do Nascimento',conta:'Sicredi',entrada:137.00,saida:null,status:'realizado',conc:true,cli:'Renata Priscila'},
+  {id:'S005',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - DANIELE CRISTINA',conta:'Sicredi',entrada:59.90,saida:null,status:'realizado',conc:true,cli:'DANIELE CRISTINA'},
+  {id:'S006',data:'29/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:4400.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'S007',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA',conta:'Sicredi',entrada:3394.00,saida:null,status:'realizado',conc:true,cli:'DHFIT Nutricao'},
+  {id:'S008',data:'29/06/26',plano:'5.2.19 — Outras desp. adm. eventuais',hist:'PAGAMENTO PIX - VELIK INDUSTRIA E COMERCIO',conta:'Sicredi',entrada:null,saida:1297.00,status:'realizado',conc:true,cli:'VELIK INDUSTRIA'},
+  {id:'S009',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - DANIELE DIONISIO',conta:'Sicredi',entrada:119.80,saida:null,status:'realizado',conc:true,cli:'DANIELE DIONISIO'},
+  {id:'S010',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - PAGALI',conta:'Sicredi',entrada:609.30,saida:null,status:'realizado',conc:true,cli:'PAGALI'},
+  {id:'S011',data:'29/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - METTA FIT',conta:'Sicredi',entrada:null,saida:130.00,status:'realizado',conc:true,cli:'METTA FIT'},
+  {id:'S012',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - Zilnete Lopes',conta:'Sicredi',entrada:75.00,saida:null,status:'realizado',conc:true,cli:'Zilnete Lopes'},
+  {id:'S013',data:'29/06/26',plano:'5.2.99 — Outras desp. adm.',hist:'PAGAMENTO PIX - FLAVIO JEAN',conta:'Sicredi',entrada:null,saida:7.40,status:'realizado',conc:true,cli:'FLAVIO JEAN'},
+  {id:'S014',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'STONE ANTEC MASTER',conta:'Sicredi',entrada:237.73,saida:null,status:'realizado',conc:true,cli:'Stone'},
+  {id:'S015',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'STONE ANTEC MASTER',conta:'Sicredi',entrada:271.02,saida:null,status:'realizado',conc:true,cli:'Stone'},
+  {id:'S016',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'STONE ANTEC VISA',conta:'Sicredi',entrada:171.34,saida:null,status:'realizado',conc:true,cli:'Stone'},
+  {id:'S017',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'STONE ANTEC VISA',conta:'Sicredi',entrada:149.18,saida:null,status:'realizado',conc:true,cli:'Stone'},
+  {id:'S018',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'STONE DEB VISA',conta:'Sicredi',entrada:89.24,saida:null,status:'realizado',conc:true,cli:'Stone'},
+  {id:'S019',data:'29/06/26',plano:'3.1.8 — Receita de Vendas',hist:'STONE DEB MASTER',conta:'Sicredi',entrada:128.81,saida:null,status:'realizado',conc:true,cli:'Stone'},
+  {id:'001',data:'27/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - ARACELLI MESQUITA DOS SANTOS',conta:'Sicredi',entrada:7.00,saida:null,status:'realizado',conc:true,cli:'Aracelli Mesquita'},
+  {id:'002',data:'27/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - ARACELLI MESQUITA DOS SANTOS',conta:'Sicredi',entrada:59.90,saida:null,status:'realizado',conc:true,cli:'Aracelli Mesquita'},
+  {id:'003',data:'27/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - Maria Teresa Possidonio de Freitas',conta:'Sicredi',entrada:27.00,saida:null,status:'realizado',conc:true,cli:'Maria Teresa Possidonio'},
+  {id:'004',data:'27/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - DAIANE DIAS DO AMARANTE',conta:'Sicredi',entrada:65.00,saida:null,status:'realizado',conc:true,cli:'Daiane Dias do Amarante'},
+  {id:'005',data:'27/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - MARIA DE FATIMA DA SILVA',conta:'Sicredi',entrada:65.00,saida:null,status:'realizado',conc:true,cli:'Maria de Fatima da Silva'},
+  {id:'006',data:'27/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - Maria Rosana Cabral',conta:'Sicredi',entrada:68.00,saida:null,status:'realizado',conc:true,cli:'Maria Rosana Cabral'},
+  {id:'007',data:'27/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - Gabriel Santos da Silva',conta:'Sicredi',entrada:161.40,saida:null,status:'realizado',conc:true,cli:'Gabriel Santos da Silva'},
+  {id:'008',data:'27/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - PATRICIA LIMA DA SILVA',conta:'Sicredi',entrada:87.00,saida:null,status:'realizado',conc:true,cli:'Patricia Lima da Silva'},
+  {id:'009',data:'27/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - Joise Lopes De Souza',conta:'Sicredi',entrada:71.25,saida:null,status:'realizado',conc:true,cli:'Joise Lopes de Souza'},
+  {id:'010',data:'27/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - E J N FERREIRA',conta:'Sicredi',entrada:null,saida:200.00,status:'realizado',conc:true,cli:'E J N Ferreira'},
+  {id:'011',data:'26/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:5800.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'012',data:'26/06/26',plano:'4.6.1 — Gasolina',hist:'PAGAMENTO PIX - POSTO NOVA NATAL',conta:'Sicredi',entrada:null,saida:50.00,status:'realizado',conc:true,cli:'Posto Nova Natal'},
+  {id:'013',data:'26/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:132.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'014',data:'26/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - ROBERTA CALADO VILARIM',conta:'Sicredi',entrada:85.00,saida:null,status:'realizado',conc:true,cli:'Roberta Calado Vilarim'},
+  {id:'015',data:'25/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:3874.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'016',data:'25/06/26',plano:'5.2.3 — Energia elétrica',hist:'DEBITO CONVENIOS - COSERN-G',conta:'Sicredi',entrada:null,saida:277.84,status:'realizado',conc:true,cli:'COSERN'},
+  {id:'017',data:'25/06/26',plano:'3.1.8 — Receita de Vendas',hist:'RECEBIMENTO PIX - CAMILA LOPES BERNARDO',conta:'Sicredi',entrada:59.90,saida:null,status:'realizado',conc:true,cli:'Camila Lopes Bernardo'},
+  {id:'018',data:'24/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:3845.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'019',data:'23/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:5000.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'020',data:'22/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'021',data:'22/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:776.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'022',data:'20/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:3500.00,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'023',data:'20/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:5000.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'024',data:'18/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:3000.00,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'025',data:'18/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:2500.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'026',data:'17/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:3500.00,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'027',data:'16/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:3000.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'028',data:'16/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'029',data:'13/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:4000.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'030',data:'13/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'031',data:'11/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:5500.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'032',data:'11/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'033',data:'09/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:3500.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'034',data:'09/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'035',data:'07/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:2000.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'036',data:'07/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'037',data:'06/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'038',data:'05/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:5000.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'039',data:'05/06/26',plano:'5.2.19 — Outras desp. adm.',hist:'PAGAMENTO - RAFAEL BARBOSA SERVICO ESPECIALIZADO',conta:'Sicredi',entrada:null,saida:785.00,status:'realizado',conc:true,cli:'Rafael Barbosa'},
+  {id:'040',data:'04/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:3000.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'041',data:'04/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'042',data:'03/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:3500.00,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'043',data:'02/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:2500.00,status:'realizado',conc:true,cli:'Sicredi'},
+  {id:'044',data:'02/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'045',data:'01/06/26',plano:'4.2.1 — Fornecedores',hist:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA',conta:'Sicredi',entrada:null,saida:2060.42,status:'realizado',conc:true,cli:'DHFIT Distribuidora'},
+  {id:'046',data:'01/06/26',plano:'5.1.1 — Mensalidade Banco',hist:'DEB.CTA.FATURA SICREDI',conta:'Sicredi',entrada:null,saida:4500.00,status:'realizado',conc:true,cli:'Sicredi'},
+  // PENDENTES JULHO
+  {id:'047',data:'05/07/26',plano:'5.2.4 — Aluguel',hist:'ALUGUEL JULHO/2026',conta:'Sicredi',entrada:null,saida:1470.00,status:'pendente',conc:false,cli:'Proprietário'},
+  {id:'048',data:'05/07/26',plano:'5.3.1 — Salário de funcionários',hist:'FOLHA PAGAMENTO JULHO/2026',conta:'Sicredi',entrada:null,saida:12457.93,status:'pendente',conc:false,cli:'Funcionários'},
+  {id:'049',data:'07/07/26',plano:'5.3.5 — FGTS',hist:'FGTS JULHO/2026',conta:'Sicredi',entrada:null,saida:1700.00,status:'pendente',conc:false,cli:'Caixa Econômica Federal'},
+  {id:'050',data:'10/07/26',plano:'5.2.11 — Contador',hist:'HONORÁRIOS CONTÁBEIS JULHO/2026',conta:'Sicredi',entrada:null,saida:2232.00,status:'pendente',conc:false,cli:'Contador'},
+  {id:'051',data:'20/07/26',plano:'5.3.6 — DARF INSS/IRRF',hist:'DARF INSS/IRRF JULHO/2026',conta:'Sicredi',entrada:null,saida:3260.00,status:'pendente',conc:false,cli:'Receita Federal'},
+  {id:'052',data:'20/07/26',plano:'7.2.13 — Custos com Empréstimos',hist:'PARCELA EMPRÉSTIMO JULHO/2026',conta:'Sicredi',entrada:null,saida:15514.18,status:'pendente',conc:false,cli:'Instituição Financeira'},
+  {id:'053',data:'25/07/26',plano:'4.1.4 — PIS/COFINS/ICMS',hist:'GUIA PIS/COFINS/ICMS JULHO/2026',conta:'Sicredi',entrada:null,saida:39491.65,status:'pendente',conc:false,cli:'Receita Federal / SEFAZ'},
+];
+
+const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun'];
+const DRE_REC =  [338850,269581,286382,273646,257708,193762];
+const DRE_FORN = [220218, 99813,228764,210365,153216,114047];
+const DRE_TRIB = [ 17418, 24298,  2270, 27643,  6159,  6906];
+const DRE_VEND = [  4647,  4401,  3022,  4589,  3259,  2415];
+const DRE_MOTO = [  3194,  2268,  3675,  3290,  4540,  1590];
+const DRE_ADM  = [ 17378, 16153, 17512, 19883, 10180, 11290];
+const DRE_PES  = [ 40280, 28979, 25800, 36600, 23065, 23050];
+const DRE_TRAF = [  9402,  6815, 14904, 10735, 10736,  6500];
+const DRE_INV  = [ 14563, 12014,  7229, 11189,  6263,  2193];
+const DRE_NOIN = [  1998,  1496, 22084, 35734,  5821,  1950];
+const DRE_NOUT = [ 21836, 29553, 32711,  7559, 24644, 49297];
+const RESULT   = [ -8325, 43139,-30475,-22657, 19786,-18447];
+const SALDO_F  = [ 15227, 58167, 27692,  5040, 19448,  1000];
+
+function fmtBRL(v){if(v===null||v===undefined)return'—';return'R$ '+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+// ═══════════════════════════
+// NAVEGAÇÃO
+// ═══════════════════════════
+let currentPage='dashboard';
+let cfLvl=2;
+let cfExp={};
+let filterTx='todos';
+let searchTx='';
+
+function navigate(page,el){
+  currentPage=page;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const titles={dashboard:['Painel','Visão geral do seu negócio'],journal:['Livro Diário','Acompanhe todos os lançamentos financeiros detalhados.'],cashflow:['Fluxo de Caixa','Gerencie suas entradas e saídas'],comparator:['Comparador','Compare períodos e analise variações'],understanding:['Entendendo seu negócio','Escolha um período para entender melhor o seu negócio.'],booster:['Turbinador de lucros','Simule alterações em receita, custos e despesas'],analysis:['Gráficos financeiros','Verifique a saúde financeira do seu negócio.'],goals:['Metas e Ações','Defina e acompanhe metas financeiras'],planning:['Planejamento','Planeje o futuro financeiro do seu negócio']};
+  const t=titles[page]||['',''];
+  document.getElementById('page-title').textContent=t[0];
+  document.getElementById('page-sub').textContent=t[1];
+  ({dashboard:renderDashboard,journal:renderJournal,cashflow:renderCashflow,comparator:renderComparator,understanding:renderSkeleton,booster:renderBooster,analysis:renderSkeleton,goals:renderGoals,planning:renderPlanning}[page]||renderDashboard)();
+}
+
+// ═══════════════════════════
+// DASHBOARD
+// ═══════════════════════════
+function renderDashboard(){
+  const maxR=Math.max(...DRE_REC);
+  const maxD=DRE_REC.map((_,i)=>DRE_FORN[i]+DRE_TRIB[i]+DRE_VEND[i]+DRE_MOTO[i]+DRE_ADM[i]+DRE_PES[i]+DRE_TRAF[i]);
+  const maxAll=Math.max(...DRE_REC,...maxD);
+  const ultimas=TXS.filter(t=>t.status==='realizado').slice(0,6);
+  document.getElementById('content').innerHTML=`
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Saldo Sicredi</div><div class="kpi-val n">${fmtBRL(SICREDI.saldo)}</div><div class="kpi-sub">Conta corrente</div></div>
+    <div class="kpi-card"><div class="kpi-label">Entradas Jun</div><div class="kpi-val g">${fmtBRL(SICREDI.entradas_jun)}</div><div class="kpi-sub">176 lançamentos</div></div>
+    <div class="kpi-card"><div class="kpi-label">Saídas Jun</div><div class="kpi-val r">${fmtBRL(SICREDI.saidas_jun)}</div><div class="kpi-sub">98 lançamentos</div></div>
+    <div class="kpi-card"><div class="kpi-label">Resultado Jun</div><div class="kpi-val r">${fmtBRL(-18447)}</div><div class="kpi-sub">vs mai: +R$ 19.786</div></div>
+  </div>
+  <div class="dash-cols">
+    <div class="saldo-card-mini">
+      <div class="section-title">Receita vs Despesas — Jan/Jun 2026</div>
+      <div class="mini-chart">
+        ${MESES.map((_,i)=>`<div class="mini-bar-g">
+          <div class="bar-in" style="height:${Math.round(DRE_REC[i]/maxAll*85)}px" title="${MESES[i]}: Receita ${fmtBRL(DRE_REC[i])}"></div>
+          <div class="bar-out" style="height:${Math.round(maxD[i]/maxAll*85)}px" title="${MESES[i]}: Despesas ${fmtBRL(maxD[i])}"></div>
+        </div>`).join('')}
+      </div>
+      <div class="mini-chart" style="height:auto;margin-top:0">${MESES.map(m=>`<div class="bar-lb">${m}</div>`).join('')}</div>
+      <div style="display:flex;gap:12px;margin-top:8px">${[['#d1fae5','Receita'],['#fee2e2','Despesas']].map(([c,l])=>`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--txt2)"><div style="width:10px;height:10px;border-radius:2px;background:${c}"></div>${l}</div>`).join('')}</div>
+    </div>
+    <div class="saldo-card-mini">
+      <div class="section-title">Evolução do Resultado</div>
+      ${MESES.map((m,i)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+        <span style="font-size:11px;color:var(--txt3);min-width:28px">${m}</span>
+        <div style="flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,Math.abs(RESULT[i])/50000*100)}%;height:100%;background:${RESULT[i]>=0?'var(--verde)':'var(--vermelho)'};border-radius:3px"></div></div>
+        <span style="font-size:11px;font-weight:600;min-width:70px;text-align:right;color:${RESULT[i]>=0?'var(--verde)':'var(--vermelho)'}">${RESULT[i]>=0?'+':''}${fmtBRL(RESULT[i])}</span>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div class="card card-pad">
+    <div class="section-title">Últimos lançamentos — Sicredi</div>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Data</th><th>Plano de Conta</th><th>Histórico</th><th>Entrada</th><th>Saída</th><th>Status</th><th>Concil.</th></tr></thead>
+      <tbody>${ultimas.map(t=>`<tr>
+        <td>${t.data}</td>
+        <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis">${t.plano}</td>
+        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">${t.hist}</td>
+        <td class="val-in">${t.entrada?fmtBRL(t.entrada):'—'}</td>
+        <td class="val-out">${t.saida?fmtBRL(t.saida):'—'}</td>
+        <td><span class="status-pill ${t.status}">${t.status}</span></td>
+        <td style="text-align:center;color:var(--verde)">${t.conc?'✓':'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+    <div style="text-align:right;margin-top:10px"><button class="btn" onclick="navigate('journal',document.getElementById('nav-journal'))">Ver todos →</button></div>
+  </div>`;
+}
+
+// ═══════════════════════════
+// LIVRO DIÁRIO
+// ═══════════════════════════
+function renderJournal(){
+  const filtradas=TXS.filter(t=>{
+    if(filterTx==='entradas')return t.entrada!=null;
+    if(filterTx==='saidas')return t.saida!=null;
+    if(filterTx==='pendentes')return t.status==='pendente';
+    return true;
+  }).filter(t=>!searchTx||t.hist.toLowerCase().includes(searchTx.toLowerCase())||t.cli.toLowerCase().includes(searchTx.toLowerCase())||t.plano.toLowerCase().includes(searchTx.toLowerCase()));
+  const totalE=filtradas.filter(t=>t.entrada).reduce((s,t)=>s+t.entrada,0);
+  const totalS=filtradas.filter(t=>t.saida).reduce((s,t)=>s+t.saida,0);
+  document.getElementById('content').innerHTML=`
+  <div class="account-hero">
+    <div class="ah-left">
+      <div class="ah-bank"><span class="ah-live"></span>Sicredi Empresas · CNPJ 38.364.354/0001-98</div>
+      <div class="ah-name">Conta Corrente 00047678-1 · Ag. 2207</div>
+      <div class="ah-ag">Sicredi Cooperativa de Crédito</div>
+      <div class="ah-saldo-label">Saldo disponível</div>
+      <div class="ah-saldo">${fmtBRL(SICREDI.saldo)}</div>
+    </div>
+    <div class="ah-right">
+      <div class="ah-tag">● Conta ativa</div><br>
+      <button class="btn-sync" onclick="syncSicredi()">↻ Sincronizar</button>
+      <div class="ah-updated">Atualizado: ${SICREDI.atualizado}</div>
+      <div style="margin-top:10px;font-size:11px;color:#64748b">Entradas Jun: <span style="color:#4ade80;font-weight:700">${fmtBRL(SICREDI.entradas_jun)}</span></div>
+      <div style="font-size:11px;color:#64748b">Saídas Jun: <span style="color:#f87171;font-weight:700">${fmtBRL(SICREDI.saidas_jun)}</span></div>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-toolbar">
+      <input class="search-input" placeholder="Buscar por histórico, cliente ou plano..." oninput="searchTx=this.value;renderJournal()" value="${searchTx}">
+      <button class="filter-chip ${filterTx==='todos'?'active':''}" onclick="filterTx='todos';renderJournal()">Todos (${TXS.length})</button>
+      <button class="filter-chip ${filterTx==='entradas'?'active':''}" onclick="filterTx='entradas';renderJournal()">Entradas</button>
+      <button class="filter-chip ${filterTx==='saidas'?'active':''}" onclick="filterTx='saidas';renderJournal()">Saídas</button>
+      <button class="filter-chip ${filterTx==='pendentes'?'active':''}" onclick="filterTx='pendentes';renderJournal()">Pendentes (${TXS.filter(t=>t.status==='pendente').length})</button>
+      <button class="btn primary" onclick="openModal()" style="margin-left:auto">+ Lançamento</button>
+    </div>
+    <div style="display:flex;gap:16px;padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border)">
+      <span style="font-size:11px;color:var(--verde);font-weight:600">↑ Entradas: ${fmtBRL(totalE)}</span>
+      <span style="font-size:11px;color:var(--vermelho);font-weight:600">↓ Saídas: ${fmtBRL(totalS)}</span>
+      <span style="font-size:11px;color:var(--txt3)">${filtradas.length} registro(s)</span>
+    </div>
+    <div class="table-scroll"><table>
+      <thead><tr>
+        <th><input type="checkbox"></th>
+        <th>Data</th><th>Plano de Conta</th><th>Histórico</th><th>Conta</th>
+        <th>Entrada</th><th>Saída</th><th>Status</th><th>Concil.</th><th>Cliente/Forn.</th>
+      </tr></thead>
+      <tbody>${filtradas.map(t=>`<tr>
+        <td><input type="checkbox"></td>
+        <td style="color:var(--txt3)">${t.data}</td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;font-size:11px">${t.plano}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${t.hist}</td>
+        <td><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:#dcfce7;color:#166534;font-weight:600">Sicredi</span></td>
+        <td class="val-in">${t.entrada?'+'+fmtBRL(t.entrada):'—'}</td>
+        <td class="val-out">${t.saida?'-'+fmtBRL(t.saida):'—'}</td>
+        <td><span class="status-pill ${t.status}">${t.status}</span></td>
+        <td style="text-align:center;color:${t.conc?'var(--verde)':'var(--txt3)'}">${t.conc?'✓':'—'}</td>
+        <td style="color:var(--txt2);max-width:130px;overflow:hidden;text-overflow:ellipsis">${t.cli}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+    <div class="pagination">
+      <span class="page-info">${filtradas.length} registros · Sicredi Empresas · Jun/Jul 2026</span>
+      <div class="page-btns"><button class="page-btn active">1</button></div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════
+// CASH FLOW
+// ═══════════════════════════
+function renderCashflow(){
+  const custosT=MESES.map((_,i)=>-(DRE_FORN[i]+DRE_TRIB[i]+DRE_VEND[i]+DRE_MOTO[i]));
+  const mc=MESES.map((_,i)=>DRE_REC[i]+custosT[i]);
+  const despT=MESES.map((_,i)=>-(DRE_ADM[i]+DRE_PES[i]+DRE_TRAF[i]));
+  const lucAI=MESES.map((_,i)=>mc[i]+despT[i]-DRE_INV[i]);
+  const naoOpN=MESES.map((_,i)=>DRE_NOIN[i]-DRE_NOUT[i]);
+  function cfRow(vals){
+    const tot=vals.reduce((s,v)=>s+v,0);
+    return vals.map(v=>`<td class="${v>0?'val-pos':v<0?'val-neg':'val-neu'}">${v!==0?fmtBRL(v):'—'}</td>`).join('')+`<td class="${tot>0?'val-pos':tot<0?'val-neg':'val-neu'}" style="font-weight:700">${fmtBRL(tot)}</td>`;
+  }
+  const heads=MESES.map(m=>`<th>${m}/26</th>`).join('');
+  document.getElementById('content').innerHTML=`
+  <div class="cf-controls">
+    <select class="period-select"><option>Jan 2026 – Jun 2026</option></select>
+    <div class="level-btns">
+      <button class="level-btn ${cfLvl===1?'active':''}" onclick="cfLvl=1;renderCashflow()">N1</button>
+      <button class="level-btn ${cfLvl===2?'active':''}" onclick="cfLvl=2;renderCashflow()">N2</button>
+      <button class="level-btn ${cfLvl===3?'active':''}" onclick="cfLvl=3;renderCashflow()">N3</button>
+    </div>
+    <div style="font-size:11px;color:var(--verde);background:var(--verde-bg);border:1px solid #a7f3d0;border-radius:20px;padding:4px 10px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:var(--verde);display:inline-block"></span>Sicredi conectado</div>
+  </div>
+  <div class="cf-wrap"><div class="cf-scroll"><table class="cf-table">
+    <thead><tr><th>Macro contas</th>${heads}<th>Total</th></tr></thead>
+    <tbody>
+      <tr class="row-group"><td><button class="xbtn" onclick="cfExp.rec=!cfExp.rec;renderCashflow()">${cfExp.rec?'▼':'▶'}</button>Receita/Faturamento</td>${cfRow(DRE_REC)}</tr>
+      ${cfExp.rec?`<tr class="row-sub"><td>3.1.8 — Receita de Vendas</td>${cfRow(DRE_REC)}</tr>`:''}
+      <tr class="row-group"><td><button class="xbtn" onclick="cfExp.cv=!cfExp.cv;renderCashflow()">${cfExp.cv?'▼':'▶'}</button>Custos Variáveis</td>${cfRow(custosT)}</tr>
+      ${cfExp.cv&&cfLvl>=2?`
+        <tr class="row-sub"><td>4.1 — Custos tributários</td>${cfRow(DRE_TRIB.map(v=>-v))}</tr>
+        <tr class="row-sub"><td>4.2 — Custos com fornecedores</td>${cfRow(DRE_FORN.map(v=>-v))}</tr>
+        <tr class="row-sub"><td>4.4 — Custo com vendas</td>${cfRow(DRE_VEND.map(v=>-v))}</tr>
+        <tr class="row-sub"><td>4.6 — Custos com motos</td>${cfRow(DRE_MOTO.map(v=>-v))}</tr>`:''}
+      <tr class="row-result"><td style="padding-left:14px">Margem de Contribuição</td>${cfRow(mc)}</tr>
+      <tr class="row-group"><td><button class="xbtn" onclick="cfExp.df=!cfExp.df;renderCashflow()">${cfExp.df?'▼':'▶'}</button>Despesas Fixas</td>${cfRow(despT)}</tr>
+      ${cfExp.df&&cfLvl>=2?`
+        <tr class="row-sub"><td>5.2 — Despesas administrativas</td>${cfRow(DRE_ADM.map(v=>-v))}</tr>
+        <tr class="row-sub"><td>5.3 — Despesas com pessoal</td>${cfRow(DRE_PES.map(v=>-v))}</tr>
+        <tr class="row-sub"><td>5.8 — Tráfego Pago</td>${cfRow(DRE_TRAF.map(v=>-v))}</tr>`:''}
+      <tr class="row-result"><td style="padding-left:14px">Lucro Op. Antes dos Investimentos</td>${cfRow(lucAI)}</tr>
+      <tr class="row-group"><td><button class="xbtn" onclick="cfExp.inv=!cfExp.inv;renderCashflow()">${cfExp.inv?'▼':'▶'}</button>Investimentos DHFIT</td>${cfRow(DRE_INV.map(v=>-v))}</tr>
+      ${cfExp.inv?`<tr class="row-sub"><td>6.4.1 — Bens materiais/estrutura</td>${cfRow(DRE_INV.map(v=>-v))}</tr>`:''}
+      <tr class="row-group"><td><button class="xbtn" onclick="cfExp.no=!cfExp.no;renderCashflow()">${cfExp.no?'▼':'▶'}</button>Movimentações Não Operacionais</td>${cfRow(naoOpN)}</tr>
+      ${cfExp.no?`
+        <tr class="row-sub"><td>7.1 — Entradas não operacionais</td>${cfRow(DRE_NOIN)}</tr>
+        <tr class="row-sub"><td>7.2 — Saídas não operacionais</td>${cfRow(DRE_NOUT.map(v=>-v))}</tr>`:''}
+      <tr class="row-liquid"><td>Resultado Líquido</td>${cfRow(RESULT)}</tr>
+      <tr class="row-result"><td style="padding-left:14px">Saldo Final Sicredi</td>${cfRow(SALDO_F)}</tr>
+    </tbody>
+  </table></div></div>`;
+}
+
+// ═══════════════════════════
+// OUTRAS TELAS
+// ═══════════════════════════
+function renderComparator(){
+  document.getElementById('content').innerHTML=`
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <select class="period-select"><option>Jan 2026 – Mar 2026</option><option>Abr 2026 – Jun 2026</option></select>
+    <span style="align-self:center;color:var(--txt3)">vs</span>
+    <select class="period-select"><option>Abr 2026 – Jun 2026</option><option>Jan 2026 – Mar 2026</option></select>
+    <button class="btn primary">Comparar</button>
+  </div>
+  <div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Pronto para Comparar?</div><div style="font-size:13px;color:var(--txt3)">Selecione dois períodos e clique em Comparar.</div></div>`;
+}
+
+function renderSkeleton(){
+  const sk=n=>`<div class="analysis-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">${Array(n).fill(`<div class="card card-pad"><div class="skeleton" style="height:10px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:22px;margin-bottom:6px"></div><div class="skeleton" style="height:10px;width:80%"></div></div>`).join('')}</div>`;
+  document.getElementById('content').innerHTML=`
+  <div style="display:flex;gap:10px;margin-bottom:16px"><select class="period-select"><option>Último trimestre (Abr–Jun 2026)</option><option>Jan–Jun 2026</option></select><button class="btn primary">Analisar</button></div>
+  ${sk(6)}<div class="card card-pad"><div class="skeleton" style="height:12px;width:40%;margin-bottom:10px"></div><div class="skeleton" style="height:100px"></div></div>`;
+}
+
+function renderBooster(){
+  document.getElementById('content').innerHTML=`
+  <div style="display:flex;gap:10px;margin-bottom:14px"><select class="period-select"><option>Junho 2026</option></select><button class="btn primary">Simular</button></div>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Receita Atual</div><div class="kpi-val g">${fmtBRL(193762)}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Meta de Receita</div><div class="kpi-val n">${fmtBRL(280000)}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Resultado Atual</div><div class="kpi-val r">- ${fmtBRL(18447)}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Resultado Simulado</div><div class="kpi-val g" id="sim-result">—</div></div>
+  </div>
+  <div class="card card-pad" style="margin-top:14px">
+    <div class="section-title">Simulador de impacto</div>
+    ${[['Aumentar Receita em','rec',0],['Reduzir Fornecedores em','forn',0],['Reduzir Despesas Fixas em','desp',0]].map(([l,k,v])=>`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <span style="font-size:12px;color:var(--txt2);flex:1">${l}</span>
+      <input type="range" min="0" max="50" value="${v}" style="flex:2" id="sl-${k}" oninput="simCalc()">
+      <span style="font-size:12px;font-weight:700;color:var(--txt);min-width:36px;text-align:right" id="sv-${k}">${v}%</span>
+    </div>`).join('')}
+    <div id="sim-box" style="padding:12px 14px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--txt3)">Ajuste os sliders para ver o impacto no resultado.</div>
+    </div>
+  </div>`;
+}
+function simCalc(){
+  const r=+document.getElementById('sl-rec').value;
+  const f=+document.getElementById('sl-forn').value;
+  const d=+document.getElementById('sl-desp').value;
+  document.getElementById('sv-rec').textContent=r+'%';
+  document.getElementById('sv-forn').textContent=f+'%';
+  document.getElementById('sv-desp').textContent=d+'%';
+  const novaRec=193762*(1+r/100);
+  const novaForn=114047*(1-f/100);
+  const novaDesp=(11290+23050+6500)*(1-d/100);
+  const novo=novaRec-novaForn-6906-2415-1590-novaDesp-2193+1950-49297;
+  document.getElementById('sim-result').textContent=(novo>=0?'+':'')+fmtBRL(novo);
+  document.getElementById('sim-result').className='kpi-val '+(novo>=0?'g':'r');
+  document.getElementById('sim-box').innerHTML=`<div style="font-size:11px;color:var(--txt3);font-weight:600;margin-bottom:4px">RESULTADO SIMULADO</div><div style="font-size:20px;font-weight:700;color:${novo>=0?'var(--verde)':'var(--vermelho)'}">${novo>=0?'+':''}${fmtBRL(novo)}</div><div style="font-size:11px;color:var(--txt3);margin-top:3px">Receita simulada: ${fmtBRL(novaRec)}</div>`;
+}
+
+function renderGoals(){
+  const metas=[
+    {t:'Receita Mensal',meta:280000,atual:193762,st:'bad'},
+    {t:'Fornecedores ≤ R$ 100k',meta:100000,atual:114047,st:'warn'},
+    {t:'Tráfego Pago ≤ R$ 5k',meta:5000,atual:6500,st:'warn'},
+    {t:'Resultado Positivo',meta:10000,atual:0,st:'bad'},
+    {t:'Saldo Sicredi ≥ R$ 50k',meta:50000,atual:590,st:'bad'},
+    {t:'Reduzir Empréstimos',meta:10000,atual:15514,st:'warn'},
+  ];
+  document.getElementById('content').innerHTML=`
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn primary">+ Nova Meta</button></div>
+  <div class="goals-grid">${metas.map(g=>{
+    const pct=Math.min(100,Math.round(g.atual/g.meta*100));
+    const cor={ok:'#10b981',warn:'#f59e0b',bad:'#ef4444'}[g.st];
+    const label={ok:'✓ Atingida',warn:'⚠ Atenção','bad':'✗ Abaixo'}[g.st];
+    return`<div class="goal-card">
+      <div class="goal-head"><div class="goal-title">${g.t}</div><span class="goal-status gs-${g.st}">${label}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3)"><span>Atual: <strong style="color:var(--txt)">${fmtBRL(g.atual)}</strong></span><span>Meta: <strong style="color:var(--txt)">${fmtBRL(g.meta)}</strong></span></div>
+      <div class="goal-bar"><div class="goal-fill" style="width:${pct}%;background:${cor}"></div></div>
+      <div class="goal-nums"><span>${pct}% concluído</span><span>${100-pct}% restante</span></div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderPlanning(){
+  document.getElementById('content').innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">Planejamento Financeiro</div><div style="font-size:13px;color:var(--txt3)">Em breve: planeje receitas, custos e metas para os próximos meses.</div><button class="btn primary" style="margin-top:16px">Quero ser avisado <span class="btn-badge" style="background:rgba(37,99,235,.2);color:var(--accent)">BETA</span></button></div>`;
+}
+
+// ═══════════════════════════
+// SYNC SICREDI
+// ═══════════════════════════
+async function syncSicredi(){
+  const btn=document.getElementById('sync-btn');
+  const st=document.getElementById('sync-status');
+  btn.disabled=true;
+  btn.textContent='↻ Sincronizando...';
+  st.innerHTML='<span style="width:6px;height:6px;border-radius:50%;background:var(--amarelo);display:inline-block;animation:pulse 1s infinite"></span> Buscando dados...';
+  st.style.color='var(--amarelo)';
+  st.style.borderColor='#fde68a';
+  st.style.background='var(--amarelo-bg)';
+  // Aqui entra a chamada ao BANCO MCP via Netlify Function
+  // const res = await fetch('/.netlify/functions/sync-sicredi');
+  // const data = await res.json();
+  await new Promise(r=>setTimeout(r,2200));
+  btn.disabled=false;
+  btn.textContent='↻ Sincronizar Sicredi';
+  st.innerHTML='<span class="sync-dot"></span> Sicredi · Atualizado agora';
+  st.style.color='var(--verde)';
+  st.style.borderColor='#a7f3d0';
+  st.style.background='var(--verde-bg)';
+  document.getElementById('sidebar-saldo').textContent=fmtBRL(SICREDI.saldo);
+  if(currentPage==='dashboard')renderDashboard();
+  if(currentPage==='journal')renderJournal();
+}
+
+// ═══════════════════════════
+// MODAL / UI
+// ═══════════════════════════
+function openModal(){document.getElementById('modal-bg').classList.add('open');}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+function selTipo(el){document.querySelectorAll('.tipo-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+function salvar(){alert('✅ Lançamento salvo! Em produção será gravado no Firebase.');closeModal();}
+
+let sidebarCol=false;
+function toggleSidebar(){
+  sidebarCol=!sidebarCol;
+  document.getElementById('sidebar').classList.toggle('collapsed',sidebarCol);
+  document.getElementById('main').classList.toggle('expanded',sidebarCol);
+  document.getElementById('collapse-icon').style.transform=sidebarCol?'rotate(180deg)':'';
+}
+
+let timeOpen=false;
+function toggleTime(){
+  timeOpen=!timeOpen;
+  document.getElementById('time-panel').classList.toggle('open',timeOpen);
+}
+
+navigate('dashboard',document.getElementById('nav-dashboard'));
+</script>
+</body>
+</html>
