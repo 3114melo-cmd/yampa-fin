@@ -1070,16 +1070,8 @@ function txItem(t){
         </div>
       </div>
       <div class="edit-btns">
-        ${t.status==='previsto'?
-          `<button class="eb ok" onclick="conc('${t.id}')">✓ Confirmar Pagamento</button>
-           <button class="eb skip" onclick="ign('${t.id}')">✕ Cancelar</button>`:
-          t.status!=='conciliado'?
-            `<button class="eb ok" onclick="conc('${t.id}')">✓ Conciliar</button>
-             ${t.status!=='ignorado'?`<button class="eb skip" onclick="ign('${t.id}')">✕ Ignorar</button>`:''}`:
-            `<button class="eb undo" onclick="desconc('${t.id}')">↩ Desfazer</button>`
-        }
-        <span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':t.status==='previsto'?'prev':'pend'}" style="margin-left:4px">${t.status}</span>
-        <span style="font-size:10px;color:var(--tx3);margin-left:auto">04/07/2026 · Sicredi · ${t.type==='CREDIT'?'Entrada':'Saída'}</span>
+        ${btnAcao(t)}
+        <span style="font-size:10px;color:var(--tx3);margin-left:auto">Sicredi · ${fmtD(t.date)} · ${t.type==='CREDIT'?'Entrada':'Saída'}</span>
       </div>
     </div>`:''}
   </div>`;
@@ -1216,51 +1208,196 @@ function mudarDia(delta){
 // CASH FLOW
 // ════════════════════════════════
 function renderCF(){
-  const M=['Jan','Fev','Mar','Abr','Mai','Jun','Jul*'];
-  const REC=[338850,269581,286382,273646,257708,193762,26594];
-  const FORN=[220218,99813,228764,210365,153216,114047,15041];
-  const TRIB=[17418,24298,2270,27643,6159,6906,0];
-  const VEND=[4647,4401,3022,4589,3259,2415,0];
-  const MOTO=[3194,2268,3675,3290,4540,1590,0];
-  const ADM=[17378,16153,17512,19883,10180,11290,0];
-  const PES=[40280,28979,25800,36600,23065,23050,0];
-  const TRAF=[9402,6815,14904,10735,10736,6500,0];
-  const INV=[14563,12014,7229,11189,6263,2193,0];
-  const NOIN=[1998,1496,22084,35734,5821,1950,0];
-  const NOUT=[21836,29553,32711,7559,24644,49297,13996];
-  const RES=[-8325,43139,-30475,-22657,19786,-18447,-2443];
-  const SF=[15227,58167,27692,5040,19448,1000,432];
-  const cv=M.map((_,i)=>-(FORN[i]+TRIB[i]+VEND[i]+MOTO[i]));
-  const mc=M.map((_,i)=>REC[i]+cv[i]);
-  const df=M.map((_,i)=>-(ADM[i]+PES[i]+TRAF[i]));
-  const lai=M.map((_,i)=>mc[i]+df[i]-INV[i]);
-  const no=M.map((_,i)=>NOIN[i]-NOUT[i]);
-  function row(vals){const tot=vals.reduce((s,v)=>s+v,0);return vals.map(v=>`<td class="${v>0?'vp':v<0?'vn':''}">${v?fmtR(v):'—'}</td>`).join('')+`<td class="${tot>0?'vp':tot<0?'vn':''}" style="font-weight:700">${fmtR(tot)}</td>`;}
-  return `<div class="card" style="overflow:auto">
-    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px">
-      <span style="font-size:13px;font-weight:700">Fluxo de Caixa — Jan/Jul 2026</span>
-      <span style="font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:2px 9px">● Sicredi</span>
+  // ════════════════════════════════════════════════════
+  // FLUXO DINÂMICO — lê TX (real + previstos) + DRE histórico
+  // ════════════════════════════════════════════════════
+
+  // Histórico Jan-Jun (DRE Yampa PDF)
+  const HIST = {
+    Jan:{rec:338850,forn:220218,trib:17418,vend:4647,moto:3194,adm:17378,pes:40280,traf:9402,inv:14563,noin:1998,nout:21836,res:-8325,sf:15227},
+    Fev:{rec:269581,forn:99813, trib:24298,vend:4401,moto:2268,adm:16153,pes:28979,traf:6815, inv:12014,noin:1496, nout:29553,res:43139, sf:58167},
+    Mar:{rec:286382,forn:228764,trib:2270, vend:3022,moto:3675,adm:17512,pes:25800,traf:14904,inv:7229, noin:22084,nout:32711,res:-30475,sf:27692},
+    Abr:{rec:273646,forn:210365,trib:27643,vend:4589,moto:3290,adm:19883,pes:36600,traf:10735,inv:11189,noin:35734,nout:7559, res:-22657,sf:5040},
+    Mai:{rec:257708,forn:153216,trib:6159, vend:3259,moto:4540,adm:10180,pes:23065,traf:10736,inv:6263, noin:5821, nout:24644,res:19786, sf:19448},
+    Jun:{rec:193762,forn:114047,trib:6906, vend:2415,moto:1590,adm:11290,pes:23050,traf:6500, inv:2193, noin:1950, nout:49297,res:-18447,sf:1000},
+  };
+
+  // ─── Calcular Jul em diante a partir das TXs ───
+  function somarTxPorMes(mesISO, catCodes, tipo){
+    return TX.filter(t=>{
+      const m = t.date.substring(0,7); // "2026-07"
+      const tipoOk = !tipo || t.type===tipo;
+      const catOk = !catCodes || catCodes.includes(t.cat);
+      const statusOk = t.status!=='ignorado';
+      return m===mesISO && tipoOk && catOk && statusOk;
+    }).reduce((s,t)=>s+t.amt,0);
+  }
+
+  // Meses futuros a calcular
+  const MESES_FUTUROS = ['2026-07','2026-08','2026-09'];
+  const LABELS = ['Jan','Fev','Mar','Abr','Mai','Jun',...MESES_FUTUROS.map(m=>{
+    const [y,mo] = m.split('-');
+    return ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][+mo]+'*';
+  })];
+
+  // Construir arrays dinamicamente
+  const KEYS = ['Jan','Fev','Mar','Abr','Mai','Jun'];
+
+  // Calcular cada mês futuro
+  const futData = MESES_FUTUROS.map(m=>({
+    mes: m,
+    rec:   somarTxPorMes(m, null, 'CREDIT'),
+    forn:  Math.abs(somarTxPorMes(m, ['4.2.1','4.2.4'], 'DEBIT')),
+    trib:  Math.abs(somarTxPorMes(m, ['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'], 'DEBIT')),
+    vend:  Math.abs(somarTxPorMes(m, ['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'], 'DEBIT')),
+    moto:  Math.abs(somarTxPorMes(m, ['4.6.1','4.6.2','4.6.3'], 'DEBIT')),
+    adm:   Math.abs(somarTxPorMes(m, ['5.1.1','5.1.99','5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'], 'DEBIT')),
+    pes:   Math.abs(somarTxPorMes(m, ['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'], 'DEBIT')),
+    traf:  Math.abs(somarTxPorMes(m, ['5.8.1','5.8.2'], 'DEBIT')),
+    inv:   Math.abs(somarTxPorMes(m, ['6.4.1','6.4.2'], 'DEBIT')),
+    noin:  somarTxPorMes(m, ['7.1.4','7.1.6','7.1.7','7.1.99'], 'CREDIT'),
+    nout:  Math.abs(somarTxPorMes(m, ['7.2.1','7.2.13','7.2.99'], 'DEBIT')),
+  }));
+
+  // Montar arrays finais (hist + futuro)
+  const meses = [...KEYS, ...MESES_FUTUROS.map(m=>{
+    const mo = +m.split('-')[1];
+    return ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mo]+'*';
+  })];
+  const N = meses.length;
+
+  function arr(key){ return [...KEYS.map(k=>HIST[k][key]||0), ...futData.map(d=>d[key]||0)]; }
+
+  const REC  = arr('rec');
+  const FORN = arr('forn');
+  const TRIB = arr('trib');
+  const VEND = arr('vend');
+  const MOTO = arr('moto');
+  const ADM  = arr('adm');
+  const PES  = arr('pes');
+  const TRAF = arr('traf');
+  const INV  = arr('inv');
+  const NOIN = arr('noin');
+  const NOUT = arr('nout');
+
+  const cv   = meses.map((_,i)=>-(FORN[i]+TRIB[i]+VEND[i]+MOTO[i]));
+  const mc   = meses.map((_,i)=>REC[i]+cv[i]);
+  const df   = meses.map((_,i)=>-(ADM[i]+PES[i]+TRAF[i]));
+  const lai  = meses.map((_,i)=>mc[i]+df[i]-INV[i]);
+  const no   = meses.map((_,i)=>NOIN[i]-NOUT[i]);
+  const RES  = meses.map((_,i)=>lai[i]-INV[i]+no[i]);
+
+  // Saldo acumulado
+  const SF = [HIST.Jan.sf];
+  for(let i=1;i<N;i++) SF.push(SF[i-1]+(RES[i]||0));
+  SF[5] = HIST.Jun.sf; // fix junho real
+
+  // Total fornecedores próximos meses
+  const fornFut = futData.reduce((s,d)=>s+d.forn,0);
+  const fornTotal = FORN.reduce((s,v)=>s+v,0);
+
+  function row(vals, isFut){
+    const tot = vals.reduce((s,v)=>s+v,0);
+    return vals.map((v,i)=>{
+      const fut = i >= KEYS.length;
+      const s = fut ? `style="color:${v>0?'#059669':v<0?'#dc2626':'#9aa5b4'};font-style:italic"` : (v>0?'class="vp"':v<0?'class="vn"':'');
+      return `<td ${s}>${v!==0?fmtR(v):'—'}</td>`;
+    }).join('') + `<td style="font-weight:700;${tot>0?'color:var(--grn)':tot<0?'color:var(--red)':''}">${tot!==0?fmtR(tot):'—'}</td>`;
+  }
+
+  const heads = meses.map((m,i)=>`<th style="text-align:right;white-space:nowrap;${i>=KEYS.length?'color:#0369a1;font-style:italic':''}">${m}/26</th>`).join('');
+
+  return `<div style="display:flex;flex-direction:column;gap:10px">
+
+    <!-- ALERTA FORNECEDORES -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      <div class="kpi" style="border-left:3px solid var(--red)">
+        <div class="kl">Fornecedores Jul-Set</div>
+        <div class="kv r">${fmtR(fornFut)}</div>
+        <div class="ks">previstos próximos meses</div>
+      </div>
+      <div class="kpi" style="border-left:3px solid #0369a1">
+        <div class="kl">BRG NF 260.129</div>
+        <div class="kv" style="color:#0369a1">${fmtR(8356.64*12+8356.59)}</div>
+        <div class="ks">13 parcelas Jul–Set</div>
+      </div>
+      <div class="kpi" style="border-left:3px solid var(--grn)">
+        <div class="kl">Total Fornecedores Ano</div>
+        <div class="kv r">${fmtR(fornTotal)}</div>
+        <div class="ks">Jan–Set acumulado</div>
+      </div>
+      <div class="kpi" style="border-left:3px solid var(--yel)">
+        <div class="kl">Saldo Sicredi Atual</div>
+        <div class="kv n">R$ 432,06</div>
+        <div class="ks">vs R$ ${fmtR(fornFut)} previstos</div>
+      </div>
     </div>
-    <div style="overflow-x:auto"><table class="cft">
-      <thead><tr><th>Macro contas</th>${M.map(m=>`<th>${m}/26</th>`).join('')}<th>Total</th></tr></thead>
-      <tbody>
-        <tr class="rg"><td><button class="xb" onclick="cfExp.r=!cfExp.r;render()">${cfExp.r?'▼':'▶'}</button>Receita/Faturamento</td>${row(REC)}</tr>
-        ${cfExp.r?`<tr class="rs"><td>3.1.8 — Receita de Vendas</td>${row(REC)}</tr>`:''}
-        <tr class="rg"><td><button class="xb" onclick="cfExp.c=!cfExp.c;render()">${cfExp.c?'▼':'▶'}</button>Custos Variáveis</td>${row(cv)}</tr>
-        ${cfExp.c?`<tr class="rs"><td>4.1 — Custos Tributários</td>${row(TRIB.map(v=>-v))}</tr><tr class="rs"><td>4.2 — Fornecedores</td>${row(FORN.map(v=>-v))}</tr><tr class="rs"><td>4.4 — Custo com Vendas</td>${row(VEND.map(v=>-v))}</tr><tr class="rs"><td>4.6 — Custos com Motos</td>${row(MOTO.map(v=>-v))}</tr>`:''}
-        <tr class="rr"><td>Margem de Contribuição</td>${row(mc)}</tr>
-        <tr class="rg"><td><button class="xb" onclick="cfExp.d=!cfExp.d;render()">${cfExp.d?'▼':'▶'}</button>Despesas Fixas</td>${row(df)}</tr>
-        ${cfExp.d?`<tr class="rs"><td>5.2 — Desp. Administrativas</td>${row(ADM.map(v=>-v))}</tr><tr class="rs"><td>5.3 — Desp. com Pessoal</td>${row(PES.map(v=>-v))}</tr><tr class="rs"><td>5.8 — Tráfego Pago</td>${row(TRAF.map(v=>-v))}</tr>`:''}
-        <tr class="rr"><td>Lucro Op. Antes Investimentos</td>${row(lai)}</tr>
-        <tr class="rg"><td><button class="xb" onclick="cfExp.i=!cfExp.i;render()">${cfExp.i?'▼':'▶'}</button>Investimentos DHFIT</td>${row(INV.map(v=>-v))}</tr>
-        <tr class="rg"><td><button class="xb" onclick="cfExp.n=!cfExp.n;render()">${cfExp.n?'▼':'▶'}</button>Movimentações Não Operacionais</td>${row(no)}</tr>
-        ${cfExp.n?`<tr class="rs"><td>7.1 — Entradas não operacionais</td>${row(NOIN)}</tr><tr class="rs"><td>7.2 — Saídas não operacionais</td>${row(NOUT.map(v=>-v))}</tr>`:''}
-        <tr class="rl"><td>Resultado Líquido</td>${row(RES)}</tr>
-        <tr class="rr"><td>Saldo Final Sicredi</td>${row(SF)}</tr>
-      </tbody>
-    </table></div>
+
+    <!-- LEGENDA -->
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:var(--r);font-size:12px;color:#0369a1">
+      <span>📅</span>
+      <span><strong>Colunas em itálico azul</strong> = dados provisionados (lançamentos futuros já cadastrados no sistema)</span>
+      <span style="margin-left:auto;font-size:10px">Atualiza automaticamente ao adicionar lançamentos</span>
+    </div>
+
+    <div class="card" style="overflow:hidden">
+      <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px">
+        <span style="font-size:13px;font-weight:700">Fluxo de Caixa — Jan/Set 2026</span>
+        <span style="font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:2px 9px">● Sicredi</span>
+        <span style="font-size:11px;color:#0369a1;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:20px;padding:2px 9px">📅 Provisionado</span>
+        <div class="level-btns" style="margin-left:auto">
+          <button class="level-btn ${cfExp.lvl===1?'active':''}" onclick="cfExp.lvl=1;render()">N1</button>
+          <button class="level-btn ${cfExp.lvl!==1?'active':''}" onclick="cfExp.lvl=2;render()">N2</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto"><table class="cft">
+        <thead><tr>
+          <th style="text-align:left;min-width:220px;position:sticky;left:0;background:var(--sur2)">Macro contas</th>
+          ${heads}
+          <th style="text-align:right">Total</th>
+        </tr></thead>
+        <tbody>
+          <!-- RECEITA -->
+          <tr class="rg"><td><button class="xb" onclick="cfExp.r=!cfExp.r;render()">${cfExp.r?'▼':'▶'}</button>Receita/Faturamento</td>${row(REC)}</tr>
+          ${cfExp.r&&cfExp.lvl!==1?`<tr class="rs"><td>3.1.8 — Receita de Vendas</td>${row(REC)}</tr>`:''}
+
+          <!-- CUSTOS VARIÁVEIS -->
+          <tr class="rg"><td><button class="xb" onclick="cfExp.c=!cfExp.c;render()">${cfExp.c?'▼':'▶'}</button>Custos Variáveis</td>${row(cv)}</tr>
+          ${cfExp.c&&cfExp.lvl!==1?`
+            <tr class="rs"><td>4.1 — Custos Tributários</td>${row(TRIB.map(v=>-v))}</tr>
+            <tr class="rs" style="background:#fff5f5"><td style="padding-left:26px;font-weight:700;color:var(--red)">4.2 — Fornecedores</td>${row(FORN.map(v=>-v))}</tr>
+            <tr class="rs"><td>4.4 — Custo com Vendas</td>${row(VEND.map(v=>-v))}</tr>
+            <tr class="rs"><td>4.6 — Custos com Motos</td>${row(MOTO.map(v=>-v))}</tr>`:''}
+
+          <tr class="rr"><td>Margem de Contribuição</td>${row(mc)}</tr>
+
+          <!-- DESPESAS FIXAS -->
+          <tr class="rg"><td><button class="xb" onclick="cfExp.d=!cfExp.d;render()">${cfExp.d?'▼':'▶'}</button>Despesas Fixas</td>${row(df)}</tr>
+          ${cfExp.d&&cfExp.lvl!==1?`
+            <tr class="rs"><td>5.1+5.2 — Desp. Administrativas</td>${row(ADM.map(v=>-v))}</tr>
+            <tr class="rs"><td>5.3 — Desp. com Pessoal</td>${row(PES.map(v=>-v))}</tr>
+            <tr class="rs"><td>5.8 — Tráfego Pago</td>${row(TRAF.map(v=>-v))}</tr>`:''}
+
+          <tr class="rr"><td>Lucro Op. Antes Investimentos</td>${row(lai)}</tr>
+
+          <!-- INVESTIMENTOS -->
+          <tr class="rg"><td><button class="xb" onclick="cfExp.i=!cfExp.i;render()">${cfExp.i?'▼':'▶'}</button>Investimentos DHFIT</td>${row(INV.map(v=>-v))}</tr>
+
+          <!-- NÃO OPERACIONAL -->
+          <tr class="rg"><td><button class="xb" onclick="cfExp.n=!cfExp.n;render()">${cfExp.n?'▼':'▶'}</button>Movimentações Não Operacionais</td>${row(no)}</tr>
+          ${cfExp.n&&cfExp.lvl!==1?`
+            <tr class="rs"><td>7.1 — Entradas não operacionais</td>${row(NOIN)}</tr>
+            <tr class="rs"><td>7.2 — Saídas não operacionais</td>${row(NOUT.map(v=>-v))}</tr>`:''}
+
+          <!-- RESULTADO -->
+          <tr class="rl"><td>Resultado Líquido</td>${row(RES)}</tr>
+          <tr class="rr"><td>Saldo Final Sicredi</td>${row(SF)}</tr>
+        </tbody>
+      </table></div>
+    </div>
   </div>`;
 }
+
 
 // ════════════════════════════════
 // METAS
