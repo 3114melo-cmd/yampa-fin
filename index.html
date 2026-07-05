@@ -1091,6 +1091,36 @@ function renderConc(){
   </div>`;
 }
 
+function renderTransfPanel(t){
+  const contas = ['Sicredi Matriz','Sicredi Distribuidora','Nubank','Itaú','Mercado Pago','Caixa (Dinheiro)'];
+  const btnContas = contas.map(c=>{
+    const sel = t._contaTransf===c;
+    return '<button class="conta-btn'+(sel?' sel':'')+'" onclick="setContaTransf(''+t.id+'',''+c+'')">'+c+'</button>';
+  }).join('');
+  const sentido = t.type==='CREDIT'?'origem (saída)':'destino (entrada)';
+  let resumo = '';
+  if(t._contaTransf){
+    const de = t.type==='CREDIT'?t._contaTransf:(t.conta||'Sicredi');
+    const para = t.type==='CREDIT'?(t.conta||'Sicredi'):t._contaTransf;
+    resumo = '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--sur);border-radius:6px;border:1px solid var(--bor);margin-bottom:10px;font-size:12px">'
+      +'<span style="color:var(--tx3)">De:</span><strong>'+de+'</strong>'
+      +'<span style="color:var(--tx3);margin:0 4px">→</span><strong>'+para+'</strong>'
+      +'<span style="margin-left:auto;font-weight:700;color:#0369a1">'+fmtR(t.amt)+'</span></div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<button class="eb ok" style="background:#0369a1" onclick="confirmarTransf(''+t.id+'')">✓ Confirmar Transferência</button>'
+      +'<button class="eb skip" onclick="cancelarTransf(''+t.id+'')">✕ Cancelar</button>'
+      +'</div>';
+  } else {
+    resumo = '<div style="font-size:11px;color:var(--tx3)">↑ Selecione a conta acima para continuar</div>';
+  }
+  return '<div class="transf-panel">'
+    +'<div class="transf-title">🔄 Transferência entre Contas</div>'
+    +'<div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Selecione a conta de <strong>'+sentido+'</strong>:</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+btnContas+'</div>'
+    +resumo
+    +'</div>';
+}
+
 function btnAcao(t){
   if(t.status==='previsto') return `<button class="eb ok" onclick="conc('${t.id}')">✓ Confirmar Pagamento</button><button class="eb skip" onclick="ign('${t.id}')">✕ Cancelar Previsão</button>`;
   if(t.status==='transferencia') return `<span style="font-size:11px;color:#0369a1;font-weight:600">🔄 Transferência entre contas</span><button class="eb undo" style="margin-left:8px" onclick="desconc('${t.id}')">↩ Desfazer</button>`;
@@ -1143,31 +1173,7 @@ function txItem(t){
         ${btnAcao(t)}
         <span style="font-size:10px;color:var(--tx3);margin-left:auto">Sicredi · ${fmtD(t.date)} · ${t.type==='CREDIT'?'Entrada':'Saída'}</span>
       </div>
-      ${t._showTransf?`
-      <div class="transf-panel">
-        <div class="transf-title">🔄 Marcar como Transferência entre Contas</div>
-        <div style="font-size:12px;color:var(--tx2);margin-bottom:10px">
-          Selecione a conta de <strong>${t.type==='CREDIT'?'origem (saída)':'destino (entrada)'}</strong> desta transferência:
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-          ${['Sicredi Matriz','Sicredi Distribuidora','Nubank','Itaú','Mercado Pago','Caixa (Dinheiro)'].map(c=>
-            `<button class="conta-btn${t._contaTransf===c?' sel':''}" onclick="setContaTransf('${t.id}','${c}')">${c}</button>`
-          ).join('')}
-        </div>
-        ${t._contaTransf?`
-        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--sur);border-radius:6px;border:1px solid var(--bor);margin-bottom:10px;font-size:12px">
-          <span style="color:var(--tx3)">${t.type==='CREDIT'?'Saiu de':'Entrou em'}:</span>
-          <strong>${t._contaTransf}</strong>
-          <span style="color:var(--tx3);margin:0 4px">→</span>
-          <strong>${t.conta||'Sicredi'}</strong>
-          <span style="margin-left:auto;font-weight:700;color:#0369a1">${fmtR(t.amt)}</span>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="eb ok" style="background:#0369a1" onclick="confirmarTransf('${t.id}')">✓ Confirmar Transferência</button>
-          <button class="eb skip" onclick="cancelarTransf('${t.id}')">✕ Cancelar</button>
-        </div>`:`
-        <div style="font-size:11px;color:var(--tx3)">↑ Selecione a conta acima para continuar</div>`}
-      </div>`:''}
+      ${t._showTransf?renderTransfPanel(t):''}
     </div>`:''}
   </div>`;
 }
