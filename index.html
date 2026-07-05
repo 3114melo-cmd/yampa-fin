@@ -690,7 +690,9 @@ const RAW = [
 let TX = [];
 let EDITED = {};
 let openId = null;
-let filtro = 'todos';
+let filtro = 'pendente';
+let filtrosStatus = [];
+let mostrarFiltroStatus = false;
 let busca = '';
 let tipoModal = 'entrada';
 let cfExp = {};
@@ -1093,26 +1095,32 @@ function renderConc(){
 
 function renderTransfPanel(t){
   const contas = ['Sicredi Matriz','Sicredi Distribuidora','Nubank','Itaú','Mercado Pago','Caixa (Dinheiro)'];
-  const btnContas = contas.map(c=>{
-    const sel = t._contaTransf===c;
-    return '<button class="conta-btn'+(sel?' sel':'')+'" onclick="setContaTransf(''+t.id+'',''+c+'')">'+c+'</button>';
-  }).join('');
+  const id = t.id;
   const sentido = t.type==='CREDIT'?'origem (saída)':'destino (entrada)';
+
+  let btnContas = '';
+  contas.forEach(function(c){
+    const sel = t._contaTransf===c;
+    btnContas += '<button class="conta-btn'+(sel?' sel':'')+'" onclick="setContaTransf(this)" data-id="'+id+'" data-conta="'+c+'">'+c+'</button>';
+  });
+
   let resumo = '';
   if(t._contaTransf){
     const de = t.type==='CREDIT'?t._contaTransf:(t.conta||'Sicredi');
     const para = t.type==='CREDIT'?(t.conta||'Sicredi'):t._contaTransf;
     resumo = '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--sur);border-radius:6px;border:1px solid var(--bor);margin-bottom:10px;font-size:12px">'
-      +'<span style="color:var(--tx3)">De:</span><strong>'+de+'</strong>'
-      +'<span style="color:var(--tx3);margin:0 4px">→</span><strong>'+para+'</strong>'
-      +'<span style="margin-left:auto;font-weight:700;color:#0369a1">'+fmtR(t.amt)+'</span></div>'
+      +'<span style="color:var(--tx3)">De:</span> <strong>'+de+'</strong>'
+      +' <span style="color:var(--tx3);margin:0 4px">→</span> <strong>'+para+'</strong>'
+      +' <span style="margin-left:auto;font-weight:700;color:#0369a1">'+fmtR(t.amt)+'</span>'
+      +'</div>'
       +'<div style="display:flex;gap:8px">'
-      +'<button class="eb ok" style="background:#0369a1" onclick="confirmarTransf(''+t.id+'')">✓ Confirmar Transferência</button>'
-      +'<button class="eb skip" onclick="cancelarTransf(''+t.id+'')">✕ Cancelar</button>'
+      +'<button class="eb ok" style="background:#0369a1" onclick="confirmarTransf(this)" data-id="'+id+'">✓ Confirmar Transferência</button>'
+      +'<button class="eb skip" onclick="cancelarTransf(this)" data-id="'+id+'">✕ Cancelar</button>'
       +'</div>';
   } else {
     resumo = '<div style="font-size:11px;color:var(--tx3)">↑ Selecione a conta acima para continuar</div>';
   }
+
   return '<div class="transf-panel">'
     +'<div class="transf-title">🔄 Transferência entre Contas</div>'
     +'<div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Selecione a conta de <strong>'+sentido+'</strong>:</div>'
@@ -1132,62 +1140,100 @@ function btnAcao(t){
 
 function txItem(t){
   const isOpen = openId===t.id;
-  const ed = EDITED[t.id]||{};
   const semCat = t.cat==='OUT';
   const ckClass = t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':(t.status==='previsto'||t.status==='transferencia')?'ig':'pend';
   const ckLabel = t.status==='conciliado'?'✓':t.status==='ignorado'?'—':t.status==='previsto'?'📅':t.status==='transferencia'?'🔄':'';
-  return `<div class="tx${isOpen?' open':''}" id="txi-${t.id}">
-    <div class="tx-row" onclick="toggleOpen('${t.id}')">
-      <div class="tx-ck ${ckClass}" onclick="event.stopPropagation();ckClick('${t.id}')">${ckLabel}</div>
-      <div class="tx-dot" style="background:${t.status==='conciliado'?'var(--grn)':t.status==='ignorado'?'var(--tx3)':'var(--yel)'}"></div>
-      <div class="tx-body">
-        <div class="tx-desc">${t.desc}${semCat?'<span class="no-cat">⚠ classificar</span>':''}</div>
-        <div class="tx-meta">
-          <span>${t.hora}</span>
-          ${t.cli?`<span>· ${t.cli}</span>`:''}
-          ${t.obs?`<span>· 📝 ${t.obs}</span>`:''}
-          ${t.editado?`<span style="color:var(--sacc)">· editado</span>`:''}
-        </div>
-      </div>
-      <span class="tx-cat" style="background:${t.catInfo.cor}22;color:${t.catInfo.cor}">${t.catInfo.code}</span>
-      <div class="tx-amt ${t.type==='CREDIT'?'g':'r'}">${t.type==='CREDIT'?'+':'−'}${fmtR(t.amt)}</div>
-      <span class="tx-arr">▼</span>
-    </div>
-    ${isOpen?`<div class="tx-edit">
-      <div class="edit-row edit-3">
-        <div class="eg"><label>Descrição</label><input type="text" value="${t.desc.replace(/"/g,'&quot;')}" onchange="upd('${t.id}','desc',this.value)"></div>
-        <div class="eg"><label>Cliente / Fornecedor</label><input type="text" value="${(t.cli||'').replace(/"/g,'&quot;')}" placeholder="Nome ou CNPJ" onchange="upd('${t.id}','cli',this.value)"></div>
-        <div class="eg"><label>Observação</label><input type="text" value="${(t.obs||'').replace(/"/g,'&quot;')}" placeholder="Nota interna" onchange="upd('${t.id}','obs',this.value)"></div>
-      </div>
-      <div class="edit-row edit-2">
-        <div class="eg"><label>Plano de Conta (Categoria)</label>
-          <select onchange="upd('${t.id}','cat',this.value)">${catOpts(t.cat)}</select>
-        </div>
-        <div class="eg"><label>Meio de Pagamento</label>
-          <select onchange="upd('${t.id}','meio',this.value)">
-            ${['PIX','Boleto','TED','Cartão','Débito Automático','Dinheiro','Outro'].map(m=>`<option${(t.meio||'PIX')===m?' selected':''}>${m}</option>`).join('')}
-          </select>
-        </div>
-      </div>
-      <div class="edit-btns">
-        ${btnAcao(t)}
-        <span style="font-size:10px;color:var(--tx3);margin-left:auto">Sicredi · ${fmtD(t.date)} · ${t.type==='CREDIT'?'Entrada':'Saída'}</span>
-      </div>
-      ${t._showTransf?renderTransfPanel(t):''}
-    </div>`:''}
-  </div>`;
+  const dotColor = t.status==='conciliado'?'var(--grn)':t.status==='transferencia'?'#0369a1':t.status==='ignorado'?'var(--tx3)':t.status==='previsto'?'#0369a1':'var(--yel)';
+  const amtClass = t.type==='CREDIT'?'g':'r';
+  const amtSign = t.type==='CREDIT'?'+':'−';
+
+  // Meta da linha do TX
+  const metaSpans = (t.cli?'<span>· '+t.cli+'</span>':'')
+    + (t.obs?'<span>· 📝 '+t.obs+'</span>':'')
+    + (t.editado?'<span style="color:var(--sacc)">· editado</span>':'')
+    + (t.status==='transferencia'&&t._contaTransf?'<span style="color:#0369a1">· de '+t._contaTransf+'</span>':'');
+
+  const pillStyle = t.status==='conciliado'?'background:var(--gbg);color:var(--grn)'
+    :t.status==='previsto'||t.status==='transferencia'?'background:#e0f2fe;color:#0369a1'
+    :t.status==='ignorado'?'background:var(--sur2);color:var(--tx3)'
+    :'background:var(--ybg);color:var(--yel)';
+  const pillLabel = t.status==='transferencia'?'🔄 transferência':t.status;
+
+  // Selects de categoria e meio
+  const catSelect = '<select data-id="'+t.id+'" data-field="cat" onchange="updEl(this)">'+catOpts(t.cat)+'</select>';
+  const meioOpts = ['PIX','Boleto','TED','Cartão','Débito Automático','Dinheiro','Outro']
+    .map(m=>'<option'+(( t.meio||'PIX')===m?' selected':'')+'>'+m+'</option>').join('');
+  const meioSelect = '<select data-id="'+t.id+'" data-field="meio" onchange="updEl(this)">'+meioOpts+'</select>';
+
+  // Painel de edição
+  const editPanel = isOpen ? (
+    '<div class="tx-edit">'
+    +'<div class="edit-row edit-3">'
+    +'<div class="eg"><label>Descrição</label><input type="text" data-id="'+t.id+'" data-field="desc" value="'+t.desc.replace(/"/g,'&quot;')+'" onchange="updEl(this)"></div>'
+    +'<div class="eg"><label>Cliente / Fornecedor</label><input type="text" data-id="'+t.id+'" data-field="cli" value="'+(t.cli||'').replace(/"/g,'&quot;')+'" placeholder="Nome ou CNPJ" onchange="updEl(this)"></div>'
+    +'<div class="eg"><label>Observação</label><input type="text" data-id="'+t.id+'" data-field="obs" value="'+(t.obs||'').replace(/"/g,'&quot;')+'" placeholder="Nota interna" onchange="updEl(this)"></div>'
+    +'</div>'
+    +'<div class="edit-row edit-2">'
+    +'<div class="eg"><label>Plano de Conta (Categoria)</label>'+catSelect+'</div>'
+    +'<div class="eg"><label>Meio de Pagamento</label>'+meioSelect+'</div>'
+    +'</div>'
+    +'<div class="edit-btns">'
+    +btnAcao(t)
+    +'<span style="font-size:10px;color:var(--tx3);margin-left:auto">Sicredi · '+fmtD(t.date)+' · '+(t.type==='CREDIT'?'Entrada':'Saída')+'</span>'
+    +'</div>'
+    +(t._showTransf?renderTransfPanel(t):'')
+    +'</div>'
+  ) : '';
+
+  return '<div class="tx'+(isOpen?' open':'')+'" id="txi-'+t.id+'">'
+    +'<div class="tx-row" onclick="toggleOpen(this)" data-id="'+t.id+'">'
+    +'<div class="tx-ck '+ckClass+'" data-id="'+t.id+'" onclick="event.stopPropagation();ckClick(this)">'+ckLabel+'</div>'
+    +'<div class="tx-dot" style="background:'+dotColor+'"></div>'
+    +'<div class="tx-body">'
+    +'<div class="tx-desc">'+t.desc+(semCat?'<span class="no-cat">⚠ classificar</span>':'')+'</div>'
+    +'<div class="tx-meta"><span>'+t.hora+'</span>'+metaSpans+'</div>'
+    +'</div>'
+    +'<span class="tx-cat" style="background:'+t.catInfo.cor+'22;color:'+t.catInfo.cor+'">'+t.catInfo.code+'</span>'
+    +'<div class="tx-amt '+amtClass+'">'+amtSign+fmtR(t.amt)+'</div>'
+    +'<span class="tx-arr">▼</span>'
+    +'</div>'
+    +editPanel
+    +'</div>';
 }
 
 // ════════════════════════════════
 // AÇÕES
 // ════════════════════════════════
-function toggleOpen(id){ openId = openId===id?null:id; render(); }
+// toggleOpen moved to data-attribute version above
 
-function ckClick(id){
+// ckClick moved to data-attribute version above
+
+function concEl(el){ conc(el.dataset.id); }
+function desconcEl(el){ desconc(el.dataset.id); }
+function ignEl(el){ ign(el.dataset.id); }
+
+function updEl(el){
+  upd(el.dataset.id, el.dataset.field, el.value);
+}
+
+function toggleOpen(el){
+  const id = el.dataset ? el.dataset.id : el;
+  openId = openId===id?null:id; render();
+}
+
+function ckClick(el){
+  const id = el.dataset ? el.dataset.id : el;
   const t=TX.find(x=>x.id===id);
   if(!t) return;
-  if(t.status==='conciliado') desconc(id);
-  else conc(id);
+  if(t.status==='conciliado') desconc(id); else conc(id);
+}
+
+function abrirTransf(el){
+  const id = el.dataset ? el.dataset.id : el;
+  TX.forEach(t=>{ if(t.id!==id) t._showTransf=false; });
+  const t = TX.find(x=>x.id===id);
+  if(t){ t._showTransf=!t._showTransf; t._contaTransf=null; }
+  render();
 }
 
 function upd(id, field, value){
@@ -2270,20 +2316,18 @@ function renderForn(){
 // ════════════════════════════════
 // TRANSFERÊNCIAS ENTRE CONTAS
 // ════════════════════════════════
-function abrirTransf(id){
-  TX.forEach(t=>{ if(t.id!==id) t._showTransf=false; });
-  const t = TX.find(x=>x.id===id);
-  if(t){ t._showTransf=!t._showTransf; t._contaTransf=null; }
-  render();
-}
+// abrirTransf moved to data-attribute version above
 
-function setContaTransf(id, conta){
+function setContaTransf(btn){
+  const id = btn.dataset.id;
+  const conta = btn.dataset.conta;
   const t = TX.find(x=>x.id===id);
   if(t){ t._contaTransf=conta; }
   render();
 }
 
-function confirmarTransf(id){
+function confirmarTransf(btn){
+  const id = btn.dataset.id;
   const t = TX.find(x=>x.id===id);
   if(!t||!t._contaTransf){ toast('Selecione a conta de origem/destino!','warn'); return; }
   t.status='transferencia';
@@ -2297,7 +2341,8 @@ function confirmarTransf(id){
   render();
 }
 
-function cancelarTransf(id){
+function cancelarTransf(btn){
+  const id = btn.dataset.id;
   const t = TX.find(x=>x.id===id);
   if(t){ t._showTransf=false; t._contaTransf=null; }
   render();
