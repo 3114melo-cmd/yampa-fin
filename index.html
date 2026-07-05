@@ -654,7 +654,7 @@ buildTX();
 // NAV
 // ════════════════════════════════
 function go(p, el){
-  PAGE=p; openId=null; filtro='todos'; busca='';
+  PAGE=p; openId=null; filtro=p==='conc'?'pendente':'todos'; busca='';
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
   if(el) el.classList.add('act');
   const T={dash:['Painel','Visão geral · Sicredi · 01-04/07/2026'],conc:['Conciliação','Revise e confirme cada lançamento do dia'],jour:['Livro Diário','Todos os lançamentos de hoje'],cf:['Fluxo de Caixa','Jan–Jun 2026'],metas:['Metas e Ações','Acompanhe seus objetivos']};
@@ -1076,10 +1076,9 @@ function conc(id){
   if(t.cat==='OUT'){ toast('⚠ Defina a categoria antes de conciliar!','warn'); return; }
   t.status='conciliado';
   saveEd(id,{status:'conciliado'});
-  toast('✓ Conciliado!','ok');
-  // avança para próximo pendente
-  const prox=TX.filter(x=>x.status==='pendente'&&x.type===t.type);
-  openId=prox.length?prox[0].id:null;
+  openId=null; // fecha o painel — item some da lista (filtro=pendente)
+  const pend=TX.filter(x=>x.status==='pendente').length;
+  toast(`✓ Conciliado! ${pend} pendente${pend!==1?'s':''} restante${pend!==1?'s':''}`,'ok');
   render();
 }
 
@@ -1098,7 +1097,8 @@ function ign(id){
   t.status='ignorado';
   openId=null;
   saveEd(id,{status:'ignorado'});
-  toast('Ignorado');
+  const pend=TX.filter(x=>x.status==='pendente').length;
+  toast(`Ignorado · ${pend} pendente${pend!==1?'s':''} restante${pend!==1?'s':''}`);
   render();
 }
 
