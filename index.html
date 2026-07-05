@@ -178,6 +178,7 @@ tr:hover td{background:var(--sur2)}
 .pill.ok{background:var(--gbg);color:var(--grn)}
 .pill.pend{background:var(--ybg);color:var(--yel)}
 .pill.ig{background:var(--sur2);color:var(--tx3)}
+.pill.prev{background:#e0f2fe;color:#0369a1}
 
 /* CF */
 .cft{min-width:800px}
@@ -600,6 +601,21 @@ const RAW = [
   {id:'19a1219b',date:'2026-07-01',hora:'15:30',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:2100.00,type:'DEBIT'},
   {id:'3093da09',date:'2026-07-01',hora:'17:57',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:4735.00,type:'DEBIT'},
   {id:'6e264491',date:'2026-07-01',hora:'14:40',desc:'PAGAMENTO PIX - BANCO SANTANDER BRASIL S.A.',amt:750.00,type:'DEBIT'},
+  // ── BOLETOS BRG SUPLEMENTOS NF 260.129 (Previsão Jul-Set/2026) ──
+  {id:'brg01',date:'2026-07-25',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 01/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg02',date:'2026-07-30',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 02/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg03',date:'2026-08-04',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 03/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg04',date:'2026-08-09',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 04/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg05',date:'2026-08-14',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 05/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg06',date:'2026-08-19',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 06/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg07',date:'2026-08-24',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 07/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg08',date:'2026-08-29',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 08/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg09',date:'2026-09-03',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 09/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg10',date:'2026-09-08',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 10/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg11',date:'2026-09-13',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 11/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg12',date:'2026-09-18',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 12/13',amt:8356.64,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+  {id:'brg13',date:'2026-09-23',hora:'09:00',desc:'BOLETO NF 260.129 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 13/13',amt:8356.59,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
+
 ];
 
 // Estado
@@ -625,16 +641,18 @@ function saveEd(id, data){
 function buildTX(){
   TX = RAW.map(r=>{
     const ed = EDITED[r.id]||{};
-    const c = ed.cat || autocat(r.desc, r.type);
+    const c = ed.cat || r.cat || autocat(r.desc, r.type);
+    // Lançamentos previstos (boletos futuros) começam como 'previsto'
+    const statusDefault = r.previsto ? 'previsto' : 'pendente';
     return {
       ...r,
       cat: c,
       catInfo: cat(c),
       desc: ed.desc || r.desc,
-      cli: ed.cli || '',
-      obs: ed.obs || '',
-      meio: ed.meio || 'PIX',
-      status: ed.status || 'pendente',
+      cli: ed.cli || r.cli || '',
+      obs: ed.obs || r.obs || '',
+      meio: ed.meio || (r.previsto?'Boleto':'PIX'),
+      status: ed.status || statusDefault,
       editado: !!EDITED[r.id],
     };
   });
@@ -698,7 +716,9 @@ function renderDash(){
 
   // Contas a receber pendentes hoje
   const aReceberHoje = TX.filter(t=>t.type==='CREDIT'&&t.status==='pendente'&&t.date===hoje).reduce((s,t)=>s+t.amt,0);
-  const aPagarHoje = TX.filter(t=>t.type==='DEBIT'&&t.status==='pendente'&&t.date===hoje).reduce((s,t)=>s+t.amt,0);
+  const aPagarHoje = TX.filter(t=>t.type==='DEBIT'&&(t.status==='pendente'||t.status==='previsto')&&t.date===hoje).reduce((s,t)=>s+t.amt,0);
+  // Próximos vencimentos BRG (previstos)
+  const proxVenc = TX.filter(t=>t.status==='previsto'&&t.date>hoje).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
 
   const saldoAtual = 432.06;
   const saldoPrevisto = saldoAtual - aPagarHoje + aReceberHoje;
@@ -706,6 +726,8 @@ function renderDash(){
   // Totais conciliação
   const conc = TX.filter(t=>t.status==='conciliado').length;
   const pend = TX.filter(t=>t.status==='pendente').length;
+  const prev = TX.filter(t=>t.status==='previsto').length;
+  const totalPrev = TX.filter(t=>t.status==='previsto').reduce((s,t)=>s+t.amt,0);
   const totalE = TX.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
   const totalS = TX.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
 
@@ -927,7 +949,11 @@ function renderConc(){
   const ents=TX.filter(t=>t.type==='CREDIT');
   const sais=TX.filter(t=>t.type==='DEBIT');
   const fil=list=>list.filter(t=>{
-    const mf=filtro==='todos'||t.status===filtro;
+    // 'pendente' default não mostra previstos — eles ficam em aba própria
+    let mf;
+    if(filtro==='pendente') mf = t.status==='pendente';
+    else if(filtro==='previsto') mf = t.status==='previsto';
+    else mf = filtro==='todos' || t.status===filtro;
     const ms=!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase());
     return mf&&ms;
   });
@@ -945,6 +971,7 @@ function renderConc(){
       <div class="kpi"><div class="kl">Entradas hoje</div><div class="kv g">${fmtR(tE)}</div><div class="ks">${ents.length} lançamentos</div></div>
       <div class="kpi"><div class="kl">Saídas hoje</div><div class="kv r">${fmtR(tS)}</div><div class="ks">${sais.length} lançamentos</div></div>
       <div class="kpi"><div class="kl">Pendentes</div><div class="kv y">${pend}</div><div class="ks">${conc} conciliados</div></div>
+      <div class="kpi"><div class="kl">Previstos</div><div class="kv" style="color:#0369a1">${prev}</div><div class="ks" style="color:#0369a1">− ${fmtR(totalPrev)}</div></div>
       <div class="kpi"><div class="kl">Progresso</div><div class="kv n">${pct}%</div>
         <div style="height:4px;background:var(--bor);border-radius:2px;margin-top:5px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${pct===100?'var(--grn)':'var(--sacc)'};border-radius:2px"></div></div>
       </div>
@@ -1001,8 +1028,8 @@ function txItem(t){
   const isOpen = openId===t.id;
   const ed = EDITED[t.id]||{};
   const semCat = t.cat==='OUT';
-  const ckClass = t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend';
-  const ckLabel = t.status==='conciliado'?'✓':t.status==='ignorado'?'—':'';
+  const ckClass = t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':t.status==='previsto'?'ig':'pend';
+  const ckLabel = t.status==='conciliado'?'✓':t.status==='ignorado'?'—':t.status==='previsto'?'📅':'';
   return `<div class="tx${isOpen?' open':''}" id="txi-${t.id}">
     <div class="tx-row" onclick="toggleOpen('${t.id}')">
       <div class="tx-ck ${ckClass}" onclick="event.stopPropagation();ckClick('${t.id}')">${ckLabel}</div>
@@ -1037,9 +1064,15 @@ function txItem(t){
         </div>
       </div>
       <div class="edit-btns">
-        ${t.status!=='conciliado'?`<button class="eb ok" onclick="conc('${t.id}')">✓ Conciliar</button>`:`<button class="eb undo" onclick="desconc('${t.id}')">↩ Desfazer</button>`}
-        ${t.status!=='ignorado'?`<button class="eb skip" onclick="ign('${t.id}')">✕ Ignorar</button>`:''}
-        <span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend'}" style="margin-left:4px">${t.status}</span>
+        ${t.status==='previsto'?
+          `<button class="eb ok" onclick="conc('${t.id}')">✓ Confirmar Pagamento</button>
+           <button class="eb skip" onclick="ign('${t.id}')">✕ Cancelar</button>`:
+          t.status!=='conciliado'?
+            `<button class="eb ok" onclick="conc('${t.id}')">✓ Conciliar</button>
+             ${t.status!=='ignorado'?`<button class="eb skip" onclick="ign('${t.id}')">✕ Ignorar</button>`:''}`:
+            `<button class="eb undo" onclick="desconc('${t.id}')">↩ Desfazer</button>`
+        }
+        <span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':t.status==='previsto'?'prev':'pend'}" style="margin-left:4px">${t.status}</span>
         <span style="font-size:10px;color:var(--tx3);margin-left:auto">04/07/2026 · Sicredi · ${t.type==='CREDIT'?'Entrada':'Saída'}</span>
       </div>
     </div>`:''}
@@ -1304,6 +1337,23 @@ let cadEditando = null;
 
 // Carregar cadastros do localStorage
 try{ CADASTROS = JSON.parse(localStorage.getItem('yf_cad')||'{}'); }catch(e){}
+
+// PRÉ-CADASTRO: BRG Suplementos
+if(!CADASTROS['brg_suplementos']){
+  CADASTROS['brg_suplementos'] = {
+    id:'brg_suplementos',
+    tipo:'fornecedor',
+    nome:'BRG Suplementos Nutricionais Ltda',
+    cnpj:'',
+    email:'',
+    tel:'',
+    obs:'NF 260.129 · Total R$ 108.636,27 · 13 parcelas',
+    criado:'2026-07-04',
+    ultima_tx:'2026-09-23',
+    total_pago:0,
+  };
+  try{ localStorage.setItem('yf_cad', JSON.stringify(CADASTROS)); }catch(e){}
+}
 
 // Auto-criar fornecedores das transações
 function autoPopularCadastros(){
