@@ -227,7 +227,7 @@ tr:hover td{background:var(--sur2)}
   </div>
   <div class="sc-live">
     <div class="sc-dot"></div>
-    <span class="sc-txt">Sicredi · 04/07/2026</span>
+    <span class="sc-txt">Sicredi · 01-04/07/2026</span>
     <span class="sc-saldo" id="sb-saldo">R$ 432,06</span>
   </div>
   <nav class="snav">
@@ -248,6 +248,11 @@ tr:hover td{background:var(--sur2)}
     <button class="ni" id="ni-cf" onclick="go('cf',this)">
       <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <span>Fluxo de Caixa</span>
+    </button>
+    <div class="ng" style="margin-top:6px">Cadastros</div>
+    <button class="ni" id="ni-cad" onclick="go('cad',this)">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Clientes / Fornecedores</span>
     </button>
     <div class="ng" style="margin-top:6px">Resultado</div>
     <button class="ni" id="ni-metas" onclick="go('metas',this)">
@@ -273,7 +278,7 @@ tr:hover td{background:var(--sur2)}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Sicredi · 04/07 · 20:04
+        Sicredi · 04/07 · 21:30
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" onclick="toggleTime()">Time</button>
@@ -333,49 +338,113 @@ tr:hover td{background:var(--sur2)}
 // CATEGORIAS YAMPA
 // ════════════════════════════════
 const CATS = [
-  {code:'3.1.8',nome:'Receita de Vendas',cor:'#059669'},
-  {code:'4.1.4',nome:'PIS/COFINS/ICMS',cor:'#e34948'},
-  {code:'4.2.1',nome:'Fornecedores',cor:'#d03b3b'},
-  {code:'4.2.4',nome:'Juros por atraso',cor:'#d03b3b'},
-  {code:'4.3.1',nome:'Sacolas DH',cor:'#eb6834'},
-  {code:'4.4.1',nome:'Taxas maquininha',cor:'#eb6834'},
-  {code:'4.4.2',nome:'Comissão Vendedor',cor:'#eb6834'},
-  {code:'4.4.3',nome:'Taxa de Pix',cor:'#eb6834'},
-  {code:'4.4.4',nome:'Frete',cor:'#eb6834'},
-  {code:'4.4.6',nome:'Motoboy Terceirizado',cor:'#eb6834'},
-  {code:'4.6.1',nome:'Gasolina',cor:'#eda100'},
-  {code:'4.6.2',nome:'Manutenção de Moto',cor:'#eda100'},
-  {code:'4.6.3',nome:'Manutenção Moto Elétrica',cor:'#eda100'},
-  {code:'5.1.1',nome:'Mensalidade Banco',cor:'#888780'},
-  {code:'5.2.1',nome:'Internet da loja',cor:'#4a3aa7'},
-  {code:'5.2.3',nome:'Energia elétrica',cor:'#4a3aa7'},
-  {code:'5.2.4',nome:'Aluguel',cor:'#4a3aa7'},
-  {code:'5.2.11',nome:'Contador',cor:'#4a3aa7'},
-  {code:'5.2.17',nome:'CAERN – Água',cor:'#4a3aa7'},
-  {code:'5.2.19',nome:'Outras desp. adm. eventuais',cor:'#4a3aa7'},
-  {code:'5.2.99',nome:'Outras desp. adm. fixas',cor:'#4a3aa7'},
-  {code:'5.3.1',nome:'Salário de funcionários',cor:'#e87ba4'},
-  {code:'5.3.2',nome:'Pró-labore',cor:'#e87ba4'},
-  {code:'5.3.4',nome:'Rescisão',cor:'#e87ba4'},
-  {code:'5.3.5',nome:'FGTS',cor:'#e87ba4'},
-  {code:'5.3.6',nome:'DARF INSS/IRRF',cor:'#e87ba4'},
-  {code:'5.3.7',nome:'13º e Férias',cor:'#e87ba4'},
-  {code:'5.3.12',nome:'Horas Extras',cor:'#e87ba4'},
-  {code:'5.3.13',nome:'Alimentação',cor:'#e87ba4'},
-  {code:'5.5.3',nome:'IPVA/Licenciamento',cor:'#eda100'},
-  {code:'5.5.5',nome:'Multas (Motoboys)',cor:'#eda100'},
-  {code:'5.8.1',nome:'Tráfego Pago',cor:'#2a78d6'},
-  {code:'6.4.1',nome:'Bens materiais/estrutura',cor:'#1baf7a'},
-  {code:'7.1.6',nome:'Entrada de Empréstimos',cor:'#888780'},
-  {code:'7.2.13',nome:'Custos com Empréstimos',cor:'#888780'},
-  {code:'7.2.99',nome:'Outras saídas não operacionais',cor:'#888780'},
-  {code:'OUT',nome:'⚠ A classificar',cor:'#dc2626'},
+  // ── 3 RECEITA/FATURAMENTO ──
+  {code:'3',    nome:'Receita/Faturamento',         grupo:'Receitas',                    nivel:1, cor:'#059669'},
+  {code:'3.1',  nome:'Receitas de Vendas',           grupo:'Receitas',                    nivel:2, cor:'#059669'},
+  {code:'3.1.8',nome:'Receita de Vendas',            grupo:'Receitas',                    nivel:3, cor:'#059669'},
+  {code:'3.3',  nome:'Recebimento de juros',         grupo:'Receitas',                    nivel:2, cor:'#10b981'},
+
+  // ── 4 CUSTOS VARIÁVEIS ──
+  {code:'4',    nome:'Custos Variáveis',             grupo:'Custos Variáveis',            nivel:1, cor:'#dc2626'},
+  {code:'4.1',  nome:'Custos tributários ou financeiros', grupo:'Custos Tributários',    nivel:2, cor:'#e34948'},
+  {code:'4.1.1',nome:'IMPOSTO RECEITA FEDERAL',      grupo:'Custos Tributários',          nivel:3, cor:'#e34948'},
+  {code:'4.1.4',nome:'PIS / COFINS / ICMS',          grupo:'Custos Tributários',          nivel:3, cor:'#e34948'},
+  {code:'4.1.5',nome:'Outros custos tributários',    grupo:'Custos Tributários',          nivel:3, cor:'#e34948'},
+  {code:'4.1.6',nome:'IMPOSTO SIMPLES COOPERATIVA',  grupo:'Custos Tributários',          nivel:3, cor:'#e34948'},
+  {code:'4.1.99',nome:'Outros custos financeiros',   grupo:'Custos Tributários',          nivel:3, cor:'#e34948'},
+  {code:'4.2',  nome:'Custos com fornecedores',      grupo:'Custos com Fornecedores',     nivel:2, cor:'#d03b3b'},
+  {code:'4.2.1',nome:'Fornecedores',                 grupo:'Custos com Fornecedores',     nivel:3, cor:'#d03b3b'},
+  {code:'4.2.4',nome:'Juros por atraso',             grupo:'Custos com Fornecedores',     nivel:3, cor:'#d03b3b'},
+  {code:'4.3',  nome:'Custos com embalagens',        grupo:'Custo com Embalagens',        nivel:2, cor:'#eb6834'},
+  {code:'4.3.1',nome:'Custo com Sacolas DH',         grupo:'Custo com Embalagens',        nivel:3, cor:'#eb6834'},
+  {code:'4.4',  nome:'Custo com vendas',             grupo:'Custo com Vendas',            nivel:2, cor:'#f97316'},
+  {code:'4.4.1',nome:'Taxas de maquininha',          grupo:'Custo com Vendas',            nivel:3, cor:'#f97316'},
+  {code:'4.4.2',nome:'Comissão Vendedor',            grupo:'Custo com Vendas',            nivel:3, cor:'#f97316'},
+  {code:'4.4.3',nome:'Taxa de Pix',                  grupo:'Custo com Vendas',            nivel:3, cor:'#f97316'},
+  {code:'4.4.4',nome:'FRETE',                        grupo:'Custo com Vendas',            nivel:3, cor:'#f97316'},
+  {code:'4.4.5',nome:'TAXA DE BOLETO',               grupo:'Custo com Vendas',            nivel:3, cor:'#f97316'},
+  {code:'4.4.6',nome:'Motoboy Terceirizado',         grupo:'Custo com Vendas',            nivel:3, cor:'#f97316'},
+  {code:'4.4.7',nome:'Outros custos com venda',      grupo:'Custo com Vendas',            nivel:3, cor:'#f97316'},
+  {code:'4.6',  nome:'Custos Com Motos',             grupo:'Custos com Motos',            nivel:2, cor:'#eda100'},
+  {code:'4.6.1',nome:'Gasolina',                     grupo:'Custos com Motos',            nivel:3, cor:'#eda100'},
+  {code:'4.6.2',nome:'Manutenção de Moto',           grupo:'Custos com Motos',            nivel:3, cor:'#eda100'},
+  {code:'4.6.3',nome:'Manutenção Moto Elétrica',     grupo:'Custos com Motos',            nivel:3, cor:'#eda100'},
+  {code:'4.7',  nome:'Outros custos variáveis',      grupo:'Outros Custos Variáveis',     nivel:2, cor:'#d97706'},
+
+  // ── 5 DESPESAS FIXAS ──
+  {code:'5',    nome:'Despesas Fixas',               grupo:'Despesas Fixas',              nivel:1, cor:'#7c3aed'},
+  {code:'5.1',  nome:'Despesas financeiras',         grupo:'Despesas Financeiras',        nivel:2, cor:'#888780'},
+  {code:'5.1.1',nome:'Mensalidade Banco',            grupo:'Despesas Financeiras',        nivel:3, cor:'#888780'},
+  {code:'5.1.99',nome:'Outros custos c/ desp. financeiras', grupo:'Despesas Financeiras', nivel:3, cor:'#888780'},
+  {code:'5.2',  nome:'Despesas administrativas',     grupo:'Despesas Administrativas',    nivel:2, cor:'#4a3aa7'},
+  {code:'5.2.1',nome:'Internet da loja',             grupo:'Despesas Administrativas',    nivel:3, cor:'#4a3aa7'},
+  {code:'5.2.2',nome:'Recarga celular',              grupo:'Despesas Administrativas',    nivel:3, cor:'#4a3aa7'},
+  {code:'5.2.3',nome:'Energia elétrica',             grupo:'Despesas Administrativas',    nivel:3, cor:'#4a3aa7'},
+  {code:'5.2.4',nome:'Aluguel',                      grupo:'Despesas Administrativas',    nivel:3, cor:'#4a3aa7'},
+  {code:'5.2.11',nome:'Contador',                    grupo:'Despesas Administrativas',    nivel:3, cor:'#4a3aa7'},
+  {code:'5.2.17',nome:'CAERN – Água',                grupo:'Despesas Administrativas',    nivel:3, cor:'#4a3aa7'},
+  {code:'5.2.19',nome:'Outras desp. adm. eventuais', grupo:'Despesas Administrativas',    nivel:3, cor:'#4a3aa7'},
+  {code:'5.2.99',nome:'Outras desp. adm. fixas',     grupo:'Despesas Administrativas',    nivel:3, cor:'#4a3aa7'},
+  {code:'5.3',  nome:'Despesas com pessoal',         grupo:'Despesas com Pessoal',        nivel:2, cor:'#e87ba4'},
+  {code:'5.3.1',nome:'Salário de funcionários',      grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.3.2',nome:'Pró-labore',                   grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.3.4',nome:'Rescisão',                     grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.3.5',nome:'FGTS',                         grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.3.6',nome:'Darf INSS e IRRF',             grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.3.7',nome:'13º e Férias',                 grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.3.11',nome:'Confraternizações / Festas',  grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.3.12',nome:'Horas Extras',                grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.3.13',nome:'Alimentação',                 grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.3.99',nome:'Outras desp. com pessoal',    grupo:'Despesas com Pessoal',        nivel:3, cor:'#e87ba4'},
+  {code:'5.5',  nome:'Despesas com veículos',        grupo:'Despesas com Veículos',       nivel:2, cor:'#eda100'},
+  {code:'5.5.3',nome:'IPVA / Licenciamento / Despachante', grupo:'Despesas com Veículos', nivel:3, cor:'#eda100'},
+  {code:'5.5.4',nome:'Multas (Loja)',                grupo:'Despesas com Veículos',       nivel:3, cor:'#eda100'},
+  {code:'5.5.5',nome:'Multas (Motoboys)',            grupo:'Despesas com Veículos',       nivel:3, cor:'#eda100'},
+  {code:'5.5.99',nome:'Outras desp. com veículos',   grupo:'Despesas com Veículos',       nivel:3, cor:'#eda100'},
+  {code:'5.8',  nome:'Outros tipos de despesas',     grupo:'Outros Tipos de Despesas',    nivel:2, cor:'#2a78d6'},
+  {code:'5.8.1',nome:'Tráfego Pago',                 grupo:'Outros Tipos de Despesas',    nivel:3, cor:'#2a78d6'},
+  {code:'5.8.2',nome:'Outros tipos de despesas',     grupo:'Outros Tipos de Despesas',    nivel:3, cor:'#2a78d6'},
+
+  // ── 6 INVESTIMENTOS ──
+  {code:'6',    nome:'Investimentos',                grupo:'Investimentos',               nivel:1, cor:'#1baf7a'},
+  {code:'6.4',  nome:'Investimentos na DHFIT',       grupo:'Investimentos',               nivel:2, cor:'#1baf7a'},
+  {code:'6.4.1',nome:'Bens materiais ou estrutura',  grupo:'Investimentos',               nivel:3, cor:'#1baf7a'},
+  {code:'6.4.2',nome:'Outros investimentos',         grupo:'Investimentos',               nivel:3, cor:'#1baf7a'},
+
+  // ── 7 MOVIMENTAÇÕES NÃO OPERACIONAIS ──
+  {code:'7',    nome:'Movimentações Não Operacionais', grupo:'Não Operacional',           nivel:1, cor:'#888780'},
+  {code:'7.1',  nome:'Entradas não operacionais',    grupo:'Não Operacional',             nivel:2, cor:'#888780'},
+  {code:'7.1.4',nome:'Recebimento de juros selic',   grupo:'Não Operacional',             nivel:3, cor:'#888780'},
+  {code:'7.1.6',nome:'ENTRADA DE Empréstimos',       grupo:'Não Operacional',             nivel:3, cor:'#888780'},
+  {code:'7.1.7',nome:'STRONG',                       grupo:'Não Operacional',             nivel:3, cor:'#888780'},
+  {code:'7.1.99',nome:'Outras entradas não operacionais', grupo:'Não Operacional',        nivel:3, cor:'#888780'},
+  {code:'7.2',  nome:'Saídas não operacionais',      grupo:'Não Operacional',             nivel:2, cor:'#888780'},
+  {code:'7.2.1',nome:'EMPRESTIMO SACADO DO CARTÃO',  grupo:'Não Operacional',             nivel:3, cor:'#888780'},
+  {code:'7.2.13',nome:'Custos com Empréstimos',      grupo:'Não Operacional',             nivel:3, cor:'#888780'},
+  {code:'7.2.99',nome:'Outras saídas não operacionais', grupo:'Não Operacional',          nivel:3, cor:'#888780'},
+
+  // ── 13 ACERTO DO CAIXA ──
+  {code:'13',   nome:'Acerto do Caixa',              grupo:'Acerto do Caixa',             nivel:1, cor:'#b4b2a9'},
+  {code:'13.99',nome:'Saldo inicial padrão Yampa',   grupo:'Acerto do Caixa',             nivel:2, cor:'#b4b2a9'},
+  {code:'99.98',nome:'Acerto de caixa',              grupo:'Acerto do Caixa',             nivel:2, cor:'#b4b2a9'},
+
+  // ── SEM CATEGORIA ──
+  {code:'OUT',  nome:'⚠ A classificar',              grupo:'Sem categoria',               nivel:3, cor:'#dc2626'},
 ];
+
 
 function cat(code){ return CATS.find(c=>c.code===code)||CATS[CATS.length-1]; }
 
 function catOpts(sel=''){
-  return CATS.map(c=>`<option value="${c.code}"${c.code===sel?' selected':''}>${c.code} — ${c.nome}</option>`).join('');
+  // Agrupar por grupo e mostrar hierarquia
+  const groups = {};
+  CATS.filter(c=>c.nivel===3||c.code==='OUT').forEach(c=>{
+    if(!groups[c.grupo]) groups[c.grupo]=[];
+    groups[c.grupo].push(c);
+  });
+  return Object.entries(groups).map(([g,cats])=>
+    `<optgroup label="${g}">${cats.map(c=>`<option value="${c.code}"${c.code===sel?' selected':''}>${c.code} — ${c.nome}</option>`).join('')}</optgroup>`
+  ).join('');
 }
 
 // ════════════════════════════════
@@ -411,6 +480,7 @@ function autocat(desc, tipo){
 // DADOS — SOMENTE HOJE 04/07/2026
 // ════════════════════════════════
 const RAW = [
+  // ── 04/07/2026 ──
   {id:'09a0d606',date:'2026-07-04',hora:'20:04',desc:'RECEBIMENTO PIX - Jefferson Nascimento da Costa',amt:97.00,type:'CREDIT'},
   {id:'1c086000',date:'2026-07-04',hora:'17:57',desc:'RECEBIMENTO PIX - Laricia Paulina Silva da Mota',amt:20.00,type:'CREDIT'},
   {id:'ba6a262f',date:'2026-07-04',hora:'15:49',desc:'RECEBIMENTO PIX - Dhfit Nutricao Esportiva',amt:15.00,type:'CREDIT'},
@@ -423,6 +493,113 @@ const RAW = [
   {id:'504708b6',date:'2026-07-04',hora:'00:03',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA',amt:1700.34,type:'CREDIT'},
   {id:'e35566ee',date:'2026-07-04',hora:'01:24',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:3694.00,type:'DEBIT'},
   {id:'8c31407e',date:'2026-07-04',hora:'00:17',desc:'PAGAMENTO PIX - WENDELL ALEXANDRE FIRMINO DA SILVA',amt:144.00,type:'DEBIT'},
+  // ── 03/07/2026 ──
+  {id:'657747b7',date:'2026-07-03',hora:'21:00',desc:'RECEBIMENTO PIX - ALYSON BARBALHO DA FONSECA',amt:26.00,type:'CREDIT'},
+  {id:'07801f8c',date:'2026-07-03',hora:'20:52',desc:'RECEBIMENTO PIX - Luis Felipe Lima do Nascimento',amt:10.00,type:'CREDIT'},
+  {id:'eceb81c8',date:'2026-07-03',hora:'20:30',desc:'RECEBIMENTO PIX - Suzana Suerda Pinheiro De Oliveira',amt:20.00,type:'CREDIT'},
+  {id:'7e833670',date:'2026-07-03',hora:'20:26',desc:'RECEBIMENTO PIX - Jose Vinicius de Oliveira Bezerra',amt:59.90,type:'CREDIT'},
+  {id:'30b29961',date:'2026-07-03',hora:'20:13',desc:'RECEBIMENTO PIX - Josilane Cristina da Silva',amt:119.90,type:'CREDIT'},
+  {id:'8cf48589',date:'2026-07-03',hora:'19:57',desc:'RECEBIMENTO PIX - JEFERSON AUGUSTO ARAUJO DE BRITO',amt:9.90,type:'CREDIT'},
+  {id:'d928de3c',date:'2026-07-03',hora:'19:48',desc:'RECEBIMENTO PIX - Cassia Evelim De Lima',amt:25.00,type:'CREDIT'},
+  {id:'3bc372e8',date:'2026-07-03',hora:'19:36',desc:'RECEBIMENTO PIX - WALDEMIRO LEOPOLDINO CAVALCANTI NETO',amt:79.80,type:'CREDIT'},
+  {id:'bfd2bf2f',date:'2026-07-03',hora:'19:28',desc:'RECEBIMENTO PIX - CRISTIANE CARLA GOMES DA SILVA',amt:146.00,type:'CREDIT'},
+  {id:'b1d58ead',date:'2026-07-03',hora:'19:16',desc:'RECEBIMENTO PIX - SIDNEY LOPES DE FREITAS',amt:242.90,type:'CREDIT'},
+  {id:'80f2a9b1',date:'2026-07-03',hora:'18:31',desc:'RECEBIMENTO PIX - PAGALI INSTITUICAO DE PAGAMENTO',amt:197.06,type:'CREDIT'},
+  {id:'e8253327',date:'2026-07-03',hora:'17:23',desc:'RECEBIMENTO PIX - RITA DE CASSIA DA SILVA BEZERRA',amt:115.00,type:'CREDIT'},
+  {id:'86afc455',date:'2026-07-03',hora:'16:58',desc:'RECEBIMENTO PIX - Jose Vinicius de Oliveira Bezerra',amt:34.90,type:'CREDIT'},
+  {id:'925fe36e',date:'2026-07-03',hora:'16:42',desc:'RECEBIMENTO PIX - EDINALVA MARQUES DE LIMA',amt:49.90,type:'CREDIT'},
+  {id:'79104ec6',date:'2026-07-03',hora:'16:41',desc:'RECEBIMENTO PIX - Isabella Priscila da Silva Bezerra',amt:20.00,type:'CREDIT'},
+  {id:'2bd6e7e2',date:'2026-07-03',hora:'16:17',desc:'RECEBIMENTO PIX - LUIZA HELENA DOS SANTOS',amt:57.25,type:'CREDIT'},
+  {id:'2f3785b9',date:'2026-07-03',hora:'15:03',desc:'TED - PAGAR.ME PAGAMENTOS S.A.',amt:541.23,type:'CREDIT'},
+  {id:'dde8699c',date:'2026-07-03',hora:'15:03',desc:'RECEBIMENTO PIX - PAGALI INSTITUICAO DE PAGAMENTO',amt:362.36,type:'CREDIT'},
+  {id:'11b6c535',date:'2026-07-03',hora:'14:06',desc:'RECEBIMENTO PIX - ICARO V NASCIMENTO',amt:151.50,type:'CREDIT'},
+  {id:'da2e1809',date:'2026-07-03',hora:'13:11',desc:'RECEBIMENTO PIX - Edna Clementino Silva',amt:351.60,type:'CREDIT'},
+  {id:'f28d5d48',date:'2026-07-03',hora:'11:10',desc:'STONE ANTEC MASTER',amt:38.31,type:'CREDIT'},
+  {id:'aec4477e',date:'2026-07-03',hora:'11:10',desc:'STONE ANTEC VISA',amt:113.64,type:'CREDIT'},
+  {id:'de2d243a',date:'2026-07-03',hora:'11:10',desc:'STONE ANTEC VISA',amt:171.66,type:'CREDIT'},
+  {id:'4e869121',date:'2026-07-03',hora:'11:10',desc:'STONE ANTEC MASTER',amt:38.31,type:'CREDIT'},
+  {id:'295de32a',date:'2026-07-03',hora:'10:50',desc:'RECEBIMENTO PIX - FERNANDA ROSA DA SILVA',amt:200.00,type:'CREDIT'},
+  {id:'8d09a652',date:'2026-07-03',hora:'10:11',desc:'STONE DEB VISA',amt:138.72,type:'CREDIT'},
+  {id:'139e836f',date:'2026-07-03',hora:'00:34',desc:'RECEBIMENTO PIX - JOSE ROBERTO CABRAL',amt:70.00,type:'CREDIT'},
+  {id:'e90bc545',date:'2026-07-03',hora:'14:43',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:1040.00,type:'DEBIT'},
+  {id:'76f3d0e8',date:'2026-07-03',hora:'14:38',desc:'PAGAMENTO PIX - NATANEL SANTANA GOMES',amt:110.00,type:'DEBIT'},
+  {id:'00282530',date:'2026-07-03',hora:'13:54',desc:'PAGAMENTO PIX - WENDELL ALEXANDRE FIRMINO DA SILVA',amt:124.00,type:'DEBIT'},
+  // ── 02/07/2026 ──
+  {id:'ec9771fc',date:'2026-07-02',hora:'23:36',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:2459.00,type:'CREDIT'},
+  {id:'9b8aea82',date:'2026-07-02',hora:'22:16',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA',amt:1164.00,type:'CREDIT'},
+  {id:'0b591b07',date:'2026-07-02',hora:'22:13',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:495.00,type:'CREDIT'},
+  {id:'8f0ba1e6',date:'2026-07-02',hora:'21:58',desc:'RECEBIMENTO PIX - ANDREIA MARTILIANO DE ARAUJO',amt:19.90,type:'CREDIT'},
+  {id:'7153027e',date:'2026-07-02',hora:'21:41',desc:'RECEBIMENTO PIX - ADAILTON RIBEIRO DA SILVA',amt:114.80,type:'CREDIT'},
+  {id:'6139f05d',date:'2026-07-02',hora:'21:30',desc:'RECEBIMENTO PIX - maria albaniza da silva',amt:74.00,type:'CREDIT'},
+  {id:'4140319e',date:'2026-07-02',hora:'21:25',desc:'RECEBIMENTO PIX - Jose Vinicius de Oliveira Bezerra',amt:506.47,type:'CREDIT'},
+  {id:'e20f98d8',date:'2026-07-02',hora:'20:59',desc:'RECEBIMENTO PIX - JEFFERSON BEZERRA DA COSTA',amt:9.00,type:'CREDIT'},
+  {id:'14257f54',date:'2026-07-02',hora:'20:40',desc:'RECEBIMENTO PIX - JOSAILTON JOSE DE LIRA FILHO',amt:120.00,type:'CREDIT'},
+  {id:'c916bbd0',date:'2026-07-02',hora:'18:21',desc:'RECEBIMENTO PIX - JONATAS RODRIGUES DA COSTA',amt:134.90,type:'CREDIT'},
+  {id:'84bf93be',date:'2026-07-02',hora:'17:17',desc:'RECEBIMENTO PIX - CARLOS EDUARDO SILVA DE GOIS',amt:159.90,type:'CREDIT'},
+  {id:'64aa0f3b',date:'2026-07-02',hora:'17:14',desc:'RECEBIMENTO PIX - Marlon Anderson Ferreira de Souza',amt:68.00,type:'CREDIT'},
+  {id:'21b156e9',date:'2026-07-02',hora:'17:04',desc:'RECEBIMENTO PIX - Gabriel Albino Varela',amt:175.65,type:'CREDIT'},
+  {id:'eefc7934',date:'2026-07-02',hora:'16:48',desc:'TED - BANCO TOPAZIO S.A.',amt:160.67,type:'CREDIT'},
+  {id:'44b3068a',date:'2026-07-02',hora:'16:34',desc:'RECEBIMENTO PIX - Maria Vitória Alves da Silva',amt:36.00,type:'CREDIT'},
+  {id:'c5a199ee',date:'2026-07-02',hora:'16:02',desc:'TED - PAGAR.ME PAGAMENTOS S.A.',amt:941.73,type:'CREDIT'},
+  {id:'83eaf826',date:'2026-07-02',hora:'15:55',desc:'RECEBIMENTO PIX - Aracilvo Viana da Silva',amt:49.90,type:'CREDIT'},
+  {id:'585a10ac',date:'2026-07-02',hora:'15:13',desc:'RECEBIMENTO PIX - Bruno Silva de Souza',amt:231.00,type:'CREDIT'},
+  {id:'99db7f00',date:'2026-07-02',hora:'14:54',desc:'RECEBIMENTO PIX - Edna Clementino Silva',amt:646.80,type:'CREDIT'},
+  {id:'5f5b7552',date:'2026-07-02',hora:'14:35',desc:'RECEBIMENTO PIX - PAGALI INSTITUICAO DE PAGAMENTO',amt:155.36,type:'CREDIT'},
+  {id:'8d7f30cc',date:'2026-07-02',hora:'13:59',desc:'RECEBIMENTO PIX - Idariany Safira de Assuncao Queiroz',amt:139.90,type:'CREDIT'},
+  {id:'dfd8ab43',date:'2026-07-02',hora:'13:43',desc:'RECEBIMENTO PIX - Judson Thiago de Souza Pegado',amt:50.00,type:'CREDIT'},
+  {id:'20fe1450',date:'2026-07-02',hora:'13:32',desc:'RECEBIMENTO PIX - Ana Paula Casitas Gabriel',amt:49.90,type:'CREDIT'},
+  {id:'f00be14d',date:'2026-07-02',hora:'10:56',desc:'STONE ANTEC MASTER',amt:131.81,type:'CREDIT'},
+  {id:'c9a2f641',date:'2026-07-02',hora:'10:56',desc:'STONE ANTEC MASTER',amt:427.45,type:'CREDIT'},
+  {id:'cc2150bf',date:'2026-07-02',hora:'10:56',desc:'STONE ANTEC VISA',amt:139.11,type:'CREDIT'},
+  {id:'4ba53692',date:'2026-07-02',hora:'10:56',desc:'STONE ANTEC VISA',amt:139.11,type:'CREDIT'},
+  {id:'613feba6',date:'2026-07-02',hora:'10:14',desc:'STONE DEB VISA',amt:49.48,type:'CREDIT'},
+  {id:'4d8fe06c',date:'2026-07-02',hora:'23:37',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:2459.00,type:'DEBIT'},
+  {id:'47a6cc08',date:'2026-07-02',hora:'22:18',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:3154.00,type:'DEBIT'},
+  {id:'5e50584f',date:'2026-07-02',hora:'17:33',desc:'LIQUIDACAO DE PARCELA (emprestimo)',amt:1025.05,type:'DEBIT'},
+  {id:'667a2b89',date:'2026-07-02',hora:'15:57',desc:'AMORTIZACAO CONTRATO (emprestimo)',amt:49.90,type:'DEBIT'},
+  {id:'ae9e96ad',date:'2026-07-02',hora:'15:17',desc:'AMORTIZACAO CONTRATO (emprestimo)',amt:0.16,type:'DEBIT'},
+  {id:'3ed8815b',date:'2026-07-02',hora:'15:14',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:1033.00,type:'DEBIT'},
+  {id:'814c1fab',date:'2026-07-02',hora:'14:01',desc:'AMORTIZACAO CONTRATO (emprestimo)',amt:239.80,type:'DEBIT'},
+  {id:'2e013fb1',date:'2026-07-02',hora:'12:10',desc:'AMORTIZACAO CONTRATO (emprestimo)',amt:837.48,type:'DEBIT'},
+  {id:'b67147be',date:'2026-07-02',hora:'10:27',desc:'AMORTIZACAO CONTRATO (emprestimo)',amt:49.48,type:'DEBIT'},
+  {id:'f26a4ec6',date:'2026-07-02',hora:'05:39',desc:'AMORTIZACAO CONTRATO (emprestimo)',amt:691.59,type:'DEBIT'},
+  // ── 01/07/2026 ──
+  {id:'45362434',date:'2026-07-01',hora:'00:45',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:3798.00,type:'CREDIT'},
+  {id:'ac728354',date:'2026-07-01',hora:'00:55',desc:'RECEBIMENTO PIX - Dhfit Nutricao Esportiva',amt:160.00,type:'CREDIT'},
+  {id:'0567336b',date:'2026-07-01',hora:'02:30',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA',amt:213.49,type:'CREDIT'},
+  {id:'263b831f',date:'2026-07-01',hora:'10:20',desc:'STONE DEB MASTER',amt:193.36,type:'CREDIT'},
+  {id:'0118ea8b',date:'2026-07-01',hora:'11:21',desc:'STONE ANTEC MASTER',amt:114.02,type:'CREDIT'},
+  {id:'d485ca14',date:'2026-07-01',hora:'11:21',desc:'STONE ANTEC MASTER',amt:85.52,type:'CREDIT'},
+  {id:'24a45614',date:'2026-07-01',hora:'13:12',desc:'RECEBIMENTO PIX - Deyse Dayana Cosme dos Santos',amt:710.90,type:'CREDIT'},
+  {id:'96e56531',date:'2026-07-01',hora:'13:21',desc:'RECEBIMENTO PIX - Jaqueline Felipe de Barros',amt:59.90,type:'CREDIT'},
+  {id:'26e8a041',date:'2026-07-01',hora:'13:29',desc:'RECEBIMENTO PIX - DANIELLE DIAS COSTA',amt:69.90,type:'CREDIT'},
+  {id:'0089bf16',date:'2026-07-01',hora:'14:02',desc:'RECEBIMENTO PIX - AGILA KELLY DE SOUSA ROSA',amt:199.90,type:'CREDIT'},
+  {id:'dd394797',date:'2026-07-01',hora:'14:17',desc:'RECEBIMENTO PIX - DIENNE SINDY ALVES SOUZA',amt:145.00,type:'CREDIT'},
+  {id:'98e3972b',date:'2026-07-01',hora:'14:30',desc:'RECEBIMENTO PIX - MATEUS FELIPE DO NASCIMENTO LIMA',amt:68.00,type:'CREDIT'},
+  {id:'4ac1c4ff',date:'2026-07-01',hora:'14:36',desc:'RECEBIMENTO PIX - DEBORA DO NASCIMENTO OLIVEIRA',amt:65.00,type:'CREDIT'},
+  {id:'1b6148ea',date:'2026-07-01',hora:'15:04',desc:'RECEBIMENTO PIX - PAGALI INSTITUICAO DE PAGAMENTO',amt:1065.99,type:'CREDIT'},
+  {id:'bea1d951',date:'2026-07-01',hora:'15:33',desc:'TED - PAGAR.ME PAGAMENTOS S.A.',amt:325.80,type:'CREDIT'},
+  {id:'434840ea',date:'2026-07-01',hora:'15:57',desc:'TED - BANCO TOPAZIO S.A.',amt:130.68,type:'CREDIT'},
+  {id:'c18e656d',date:'2026-07-01',hora:'15:13',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1745.00,type:'CREDIT'},
+  {id:'8ef18986',date:'2026-07-01',hora:'16:11',desc:'RECEBIMENTO PIX - Glauce Alves Ramos',amt:189.90,type:'CREDIT'},
+  {id:'f904b9ce',date:'2026-07-01',hora:'16:58',desc:'RECEBIMENTO PIX - Yelena Marcia Nascimento Menezes',amt:82.00,type:'CREDIT'},
+  {id:'090d4d8e',date:'2026-07-01',hora:'17:06',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:157.90,type:'CREDIT'},
+  {id:'ff4a5052',date:'2026-07-01',hora:'17:09',desc:'RECEBIMENTO PIX - Dhfit Nutricao Esportiva',amt:273.24,type:'CREDIT'},
+  {id:'6da16190',date:'2026-07-01',hora:'17:20',desc:'RECEBIMENTO PIX - Joel Luiz Silvestre de Lima',amt:395.90,type:'CREDIT'},
+  {id:'c7994d57',date:'2026-07-01',hora:'17:30',desc:'RECEBIMENTO PIX - Isabele Borges dos Santos',amt:59.90,type:'CREDIT'},
+  {id:'ac00de0e',date:'2026-07-01',hora:'17:55',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1071.00,type:'CREDIT'},
+  {id:'21743139',date:'2026-07-01',hora:'20:09',desc:'RECEBIMENTO PIX - Karen Rafaela Moura Macedo',amt:235.00,type:'CREDIT'},
+  {id:'34f8dd9a',date:'2026-07-01',hora:'20:19',desc:'RECEBIMENTO PIX - SIMONE MORENO DA SILVA',amt:140.00,type:'CREDIT'},
+  {id:'e2df8861',date:'2026-07-01',hora:'20:19',desc:'RECEBIMENTO PIX - Savio Silveira Leite',amt:185.00,type:'CREDIT'},
+  {id:'b191deb0',date:'2026-07-01',hora:'20:37',desc:'RECEBIMENTO PIX - Adriene Crispim de Lima',amt:55.00,type:'CREDIT'},
+  {id:'d9e6af52',date:'2026-07-01',hora:'21:19',desc:'RECEBIMENTO PIX - DAVID DO NASCIMENTO COSTA',amt:71.00,type:'CREDIT'},
+  {id:'468bb35c',date:'2026-07-01',hora:'23:03',desc:'RECEBIMENTO PIX - WANDERLANE SUELY ALVES RODRIGUES',amt:5.00,type:'CREDIT'},
+  {id:'fa554257',date:'2026-07-01',hora:'15:01',desc:'RECEBIMENTO PIX - LARA HELLEN SALES DOS SANTOS',amt:131.00,type:'CREDIT'},
+  {id:'c5d1b273',date:'2026-07-01',hora:'00:47',desc:'DEB.CTA.FATURA SICREDI',amt:6026.00,type:'DEBIT'},
+  {id:'bbf12c73',date:'2026-07-01',hora:'00:56',desc:'DEB.CTA.FATURA SICREDI',amt:775.00,type:'DEBIT'},
+  {id:'19a1219b',date:'2026-07-01',hora:'15:30',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:2100.00,type:'DEBIT'},
+  {id:'3093da09',date:'2026-07-01',hora:'17:57',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:4735.00,type:'DEBIT'},
+  {id:'6e264491',date:'2026-07-01',hora:'14:40',desc:'PAGAMENTO PIX - BANCO SANTANDER BRASIL S.A.',amt:750.00,type:'DEBIT'},
 ];
 
 // Estado
@@ -433,6 +610,7 @@ let filtro = 'todos';
 let busca = '';
 let tipoModal = 'entrada';
 let cfExp = {};
+let dataFiltro = '2026-07-04'; // data selecionada para livro/conciliação
 let PAGE = 'dash';
 let timeOpen = false;
 
@@ -479,7 +657,7 @@ function go(p, el){
   PAGE=p; openId=null; filtro='todos'; busca='';
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
   if(el) el.classList.add('act');
-  const T={dash:['Painel','Visão geral · Sicredi · 04/07/2026'],conc:['Conciliação','Revise e confirme cada lançamento do dia'],jour:['Livro Diário','Todos os lançamentos de hoje'],cf:['Fluxo de Caixa','Jan–Jun 2026'],metas:['Metas e Ações','Acompanhe seus objetivos']};
+  const T={dash:['Painel','Visão geral · Sicredi · 01-04/07/2026'],conc:['Conciliação','Revise e confirme cada lançamento do dia'],jour:['Livro Diário','Todos os lançamentos de hoje'],cf:['Fluxo de Caixa','Jan–Jun 2026'],metas:['Metas e Ações','Acompanhe seus objetivos']};
   const t=T[p]||['',''];
   document.getElementById('pt').textContent=t[0];
   document.getElementById('ps').textContent=t[1];
@@ -502,54 +680,245 @@ function render(){
   // Preencher select do modal
   document.getElementById('m-cat').innerHTML=catOpts();
   if(PAGE==='conc') ct.outerHTML='<div id="ct"></div>'; // reset scroll trick
-  document.getElementById('ct').innerHTML = PAGE==='dash'?renderDash():PAGE==='conc'?renderConc():PAGE==='jour'?renderJour():PAGE==='cf'?renderCF():renderMetas();
+  document.getElementById('ct').innerHTML = PAGE==='dash'?renderDash():PAGE==='conc'?renderConc():PAGE==='jour'?renderJour():PAGE==='cf'?renderCF():PAGE==='cad'?renderCad():renderMetas();
 }
 
 // ════════════════════════════════
 // PAINEL
 // ════════════════════════════════
 function renderDash(){
-  const ent=TX.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
-  const sai=TX.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
-  const conc=TX.filter(t=>t.status==='conciliado').length;
-  const pend=TX.filter(t=>t.status==='pendente').length;
+  const hoje = '2026-07-04';
+  const txHoje = TX.filter(t=>t.date===hoje);
+  const entHoje = txHoje.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
+  const saiHoje = txHoje.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
+
+  // Contas a pagar vencidas (saídas pendentes de datas anteriores)
+  const atrasados = TX.filter(t=>t.type==='DEBIT'&&t.status==='pendente'&&t.date<hoje);
+  const totalAtrasados = atrasados.reduce((s,t)=>s+t.amt,0);
+
+  // Contas a receber pendentes hoje
+  const aReceberHoje = TX.filter(t=>t.type==='CREDIT'&&t.status==='pendente'&&t.date===hoje).reduce((s,t)=>s+t.amt,0);
+  const aPagarHoje = TX.filter(t=>t.type==='DEBIT'&&t.status==='pendente'&&t.date===hoje).reduce((s,t)=>s+t.amt,0);
+
+  const saldoAtual = 432.06;
+  const saldoPrevisto = saldoAtual - aPagarHoje + aReceberHoje;
+
+  // Totais conciliação
+  const conc = TX.filter(t=>t.status==='conciliado').length;
+  const pend = TX.filter(t=>t.status==='pendente').length;
+  const totalE = TX.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
+  const totalS = TX.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
+
+  // últimas transações
+  const recentes = [...TX].slice(0,8);
+
   return `
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
-    <div class="kpi"><div class="kl">Saldo Sicredi</div><div class="kv n">R$ 432,06</div><div class="ks">Conta corrente</div></div>
-    <div class="kpi"><div class="kl">Entradas hoje</div><div class="kv g">${fmtR(ent)}</div><div class="ks">${TX.filter(t=>t.type==='CREDIT').length} lançamentos</div></div>
-    <div class="kpi"><div class="kl">Saídas hoje</div><div class="kv r">${fmtR(sai)}</div><div class="ks">${TX.filter(t=>t.type==='DEBIT').length} lançamentos</div></div>
-    <div class="kpi"><div class="kl">Conciliação</div><div class="kv n">${conc}/${TX.length}</div><div class="ks" style="color:${pend>0?'var(--yel)':'var(--grn)'}">${pend} pendentes</div></div>
+  <!-- TÍTULO -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div>
+      <div style="font-size:18px;font-weight:700">Painel</div>
+      <div style="font-size:12px;color:var(--tx3);margin-top:2px">Visão geral do seu negócio · Sicredi · 04/07/2026</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn">Feedback</button>
+      <button class="btn pri" style="background:#1e3d62;border-color:#1e3d62">✦ Customizar</button>
+    </div>
   </div>
-  <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:12px">
+
+  <!-- CARD PAGAMENTOS E RECEBIMENTOS (estilo Yampa) -->
+  <div class="card" style="margin-bottom:14px">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--bor)">
+      <div style="font-size:14px;font-weight:700;color:var(--txt)">Pagamentos e recebimentos</div>
+    </div>
+    <!-- TABELA ESTILO YAMPA -->
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="padding:10px 20px;text-align:left;font-size:12px;color:var(--tx3);font-weight:400;width:200px"></th>
+            <th style="padding:10px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border:1px solid var(--bor2);border-radius:20px;font-size:12px;font-weight:500;color:var(--txt);cursor:pointer">
+                Hoje <span style="font-size:10px">▼</span>
+              </div>
+            </th>
+            <th style="padding:10px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <div style="font-size:12px;font-weight:600;color:var(--txt)">Atrasados</div>
+            </th>
+            <th style="padding:10px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <div style="font-size:12px;font-weight:600;color:var(--txt)">TOTAL</div>
+              <div style="font-size:10px;color:var(--tx3);font-weight:400">com atrasados</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top:1px solid var(--bor)">
+            <td style="padding:14px 20px;font-size:12px;font-weight:600;color:var(--tx2)">A RECEBER</td>
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <span style="font-size:13px;font-weight:600;color:${aReceberHoje>0?'var(--grn)':'var(--tx3)'}">${aReceberHoje>0?'+ ':''} ${fmtR(aReceberHoje)}</span>
+            </td>
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <span style="font-size:13px;color:var(--tx3)">R$ 0,00</span>
+            </td>
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <span style="font-size:13px;color:var(--tx3)">R$ 0,00</span>
+            </td>
+          </tr>
+          <tr style="border-top:1px solid var(--bor)">
+            <td style="padding:14px 20px;font-size:12px;font-weight:600;color:var(--tx2)">A PAGAR</td>
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <span style="font-size:13px;font-weight:600;color:${aPagarHoje>0?'var(--red)':'var(--tx3)'}">
+                ${aPagarHoje>0?'— ':''} ${fmtR(aPagarHoje)}
+              </span>
+            </td>
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <span style="font-size:13px;font-weight:600;color:${totalAtrasados>0?'var(--red)':'var(--tx3)'}">
+                ${totalAtrasados>0?'— '+fmtR(totalAtrasados):'R$ 0,00'}
+              </span>
+            </td>
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <span style="font-size:13px;font-weight:600;color:${(aPagarHoje+totalAtrasados)>0?'var(--red)':'var(--tx3)'}">
+                ${(aPagarHoje+totalAtrasados)>0?'— '+fmtR(aPagarHoje+totalAtrasados):'R$ 0,00'}
+              </span>
+            </td>
+          </tr>
+          <tr style="border-top:1px solid var(--bor);background:var(--sur2)">
+            <td style="padding:12px 20px;font-size:12px;font-weight:700;color:var(--txt)">TOTAL</td>
+            <td style="padding:12px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <span style="font-size:13px;font-weight:700;color:${(aReceberHoje-aPagarHoje)>=0?'var(--grn)':'var(--red)'}">
+                ${(aReceberHoje-aPagarHoje)>=0?'+ ':' — '}${fmtR(Math.abs(aReceberHoje-aPagarHoje))}
+              </span>
+            </td>
+            <td style="padding:12px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <span style="font-size:13px;font-weight:700;color:${totalAtrasados>0?'var(--red)':'var(--tx3)'}">
+                ${totalAtrasados>0?'— '+fmtR(totalAtrasados):'R$ 0,00'}
+              </span>
+            </td>
+            <td style="padding:12px 16px;text-align:center;border-left:1px solid var(--bor)">
+              <span style="font-size:13px;font-weight:700;color:${(aPagarHoje+totalAtrasados)>0?'var(--red)':'var(--tx3)'}">
+                ${(aPagarHoje+totalAtrasados)>0?'— '+fmtR(aPagarHoje+totalAtrasados):'R$ 0,00'}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- SALDO RODAPÉ -->
+    <div style="padding:0 20px 4px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bor)">
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tx2)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          Saldo hoje
+        </div>
+        <span style="font-size:13px;font-weight:700;color:${saldoAtual>=0?'var(--grn)':'var(--red)'}">+ ${fmtR(saldoAtual)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bor)">
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tx2)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Movimentações previstas de hoje
+        </div>
+        <span style="font-size:13px;font-weight:700;color:${aPagarHoje>0?'var(--red)':'var(--tx3)'}">
+          ${aPagarHoje>0?'— '+fmtR(aPagarHoje):fmtR(0)}
+        </span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bor)">
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tx2)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Saldo previsto de hoje
+        </div>
+        <span style="font-size:13px;font-weight:700;color:${saldoPrevisto>=0?'var(--grn)':'var(--red)'}">
+          ${saldoPrevisto>=0?'+ ':' — '}${fmtR(Math.abs(saldoPrevisto))}
+        </span>
+      </div>
+      <div style="padding:8px 0;border-top:1px solid var(--bor)">
+        <span style="font-size:11px;color:var(--tx3)">
+          ⓘ São considerados os lançamentos previstos de hoje
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs SICREDI -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+    <div class="kpi" style="border-left:3px solid var(--grn)">
+      <div class="kl">Saldo Sicredi</div>
+      <div class="kv g">${fmtR(saldoAtual)}</div>
+      <div class="ks">Conta corrente · Atualizado</div>
+    </div>
+    <div class="kpi" style="border-left:3px solid var(--grn)">
+      <div class="kl">Entradas Jul (01-04)</div>
+      <div class="kv g">${fmtR(totalE)}</div>
+      <div class="ks">${TX.filter(t=>t.type==='CREDIT').length} lançamentos</div>
+    </div>
+    <div class="kpi" style="border-left:3px solid var(--red)">
+      <div class="kl">Saídas Jul (01-04)</div>
+      <div class="kv r">${fmtR(totalS)}</div>
+      <div class="ks">${TX.filter(t=>t.type==='DEBIT').length} lançamentos</div>
+    </div>
+    <div class="kpi" style="border-left:3px solid ${pend>0?'var(--yel)':'var(--grn)'}">
+      <div class="kl">Conciliação</div>
+      <div class="kv n">${conc}/${TX.length}</div>
+      <div class="ks" style="color:${pend>0?'var(--yel)':'var(--grn)'}">
+        ${pend>0?pend+' pendentes':'✓ Em dia'}
+      </div>
+    </div>
+  </div>
+
+  <!-- DOIS PAINÉIS: HOJE + CONCILIAÇÃO -->
+  <div style="display:grid;grid-template-columns:1.7fr 1fr;gap:12px">
     <div class="card cp">
-      <div class="sec">Lançamentos de hoje — 04/07/2026</div>
-      <div style="overflow-x:auto"><table>
-        <thead><tr><th>Hora</th><th>Descrição</th><th>Categoria</th><th>Entrada</th><th>Saída</th><th>Status</th></tr></thead>
-        <tbody>${TX.map(t=>`<tr style="cursor:pointer" onclick="go('conc',document.getElementById('ni-conc'));setTimeout(()=>{openId='${t.id}';render()},80)">
-          <td style="color:var(--tx3)">${t.hora}</td>
-          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${t.desc}</td>
-          <td><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${t.catInfo.cor}22;color:${t.catInfo.cor};font-weight:600">${t.catInfo.code}</span></td>
-          <td style="color:var(--grn);font-weight:600">${t.type==='CREDIT'?fmtR(t.amt):'—'}</td>
-          <td style="color:var(--red);font-weight:600">${t.type==='DEBIT'?fmtR(t.amt):'—'}</td>
-          <td><span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend'}">${t.status}</span></td>
-        </tr>`).join('')}</tbody>
-      </table></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700">Lançamentos de hoje — 04/07/2026</div>
+        <div style="display:flex;gap:10px;font-size:11px">
+          <span style="color:var(--grn);font-weight:600">↑ ${fmtR(entHoje)}</span>
+          <span style="color:var(--red);font-weight:600">↓ ${fmtR(saiHoje)}</span>
+        </div>
+      </div>
+      ${txHoje.length===0?'<div style="text-align:center;padding:20px;color:var(--tx3);font-size:12px">Nenhum lançamento hoje</div>':
+        txHoje.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bor)">
+          <span style="font-size:10px;color:var(--tx3);min-width:38px">${t.hora}</span>
+          <div style="width:7px;height:7px;border-radius:50%;background:${t.catInfo.cor};flex-shrink:0"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.desc.replace('RECEBIMENTO PIX - ','').replace('PAGAMENTO PIX - ','')}</div>
+            <div style="font-size:10px;color:${t.catInfo.cor};margin-top:1px">${t.catInfo.code} — ${t.catInfo.nome}</div>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:${t.type==='CREDIT'?'var(--grn)':'var(--red)'};white-space:nowrap">
+            ${t.type==='CREDIT'?'+':'-'}${fmtR(t.amt)}
+          </span>
+          <span style="font-size:10px;padding:1px 6px;border-radius:8px;background:${t.status==='conciliado'?'var(--gbg)':'var(--ybg)'};color:${t.status==='conciliado'?'var(--grn)':'var(--yel)'};white-space:nowrap">
+            ${t.status}
+          </span>
+        </div>`).join('')}
+      <div style="text-align:center;margin-top:10px">
+        <button class="btn" onclick="go('conc',document.getElementById('ni-conc'))">Ver todos os lançamentos →</button>
+      </div>
     </div>
     <div class="card cp">
-      <div class="sec">Status da conciliação</div>
-      ${[['Conciliados',TX.filter(t=>t.status==='conciliado').length,'var(--grn)','var(--gbg)'],
-         ['Pendentes',TX.filter(t=>t.status==='pendente').length,'var(--yel)','var(--ybg)'],
-         ['Ignorados',TX.filter(t=>t.status==='ignorado').length,'var(--tx3)','var(--sur2)']
-        ].map(([l,v,c,bg])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:6px;background:${bg};margin-bottom:6px">
-          <span style="font-size:12px;font-weight:600;color:${c}">${l}</span>
-          <span style="font-size:18px;font-weight:700;color:${c}">${v}</span>
-        </div>`).join('')}
-      <button class="btn pri" style="width:100%;justify-content:center;margin-top:8px" onclick="go('conc',document.getElementById('ni-conc'))">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px">Status da conciliação</div>
+      ${[
+        ['Conciliados',TX.filter(t=>t.status==='conciliado').length,'var(--grn)','var(--gbg)','✓'],
+        ['Pendentes',TX.filter(t=>t.status==='pendente').length,'var(--yel)','var(--ybg)','⏳'],
+        ['Ignorados',TX.filter(t=>t.status==='ignorado').length,'var(--tx3)','var(--sur2)','—'],
+      ].map(([l,v,c,bg,ic])=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:${bg};margin-bottom:6px">
+        <span style="font-size:16px">${ic}</span>
+        <span style="font-size:12px;font-weight:600;color:${c};flex:1">${l}</span>
+        <span style="font-size:20px;font-weight:700;color:${c}">${v}</span>
+      </div>`).join('')}
+      <div style="margin:10px 0;padding:10px;border-radius:8px;background:var(--sur2);border:1px solid var(--bor)">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-bottom:4px">
+          <span>Progresso</span>
+          <span style="font-weight:600;color:var(--txt)">${TX.length?Math.round(TX.filter(t=>t.status==='conciliado').length/TX.length*100):0}%</span>
+        </div>
+        <div style="height:6px;background:var(--bor);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${TX.length?Math.round(TX.filter(t=>t.status==='conciliado').length/TX.length*100):0}%;background:var(--grn);border-radius:3px;transition:width .5s"></div>
+        </div>
+      </div>
+      <button class="btn pri" style="width:100%;justify-content:center" onclick="go('conc',document.getElementById('ni-conc'))">
         Ir para Conciliação →
       </button>
     </div>
   </div>`;
 }
+
 
 // ════════════════════════════════
 // CONCILIAÇÃO — TELA CHEIA
@@ -745,52 +1114,83 @@ function concTodos(){
 // JOURNAL
 // ════════════════════════════════
 function renderJour(){
-  const fil=TX.filter(t=>!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase()));
+  // filtrar por data + busca
+  const txData = dataFiltro ? TX.filter(t=>t.date===dataFiltro) : TX;
+  const fil = txData.filter(t=>!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase()));
+  const tE = fil.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
+  const tS = fil.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
+  const liq = tE - tS;
+
   return `<div class="card">
-    <div class="cp" style="border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px">
-      <span class="sec" style="margin:0;flex:1">Lançamentos — Sicredi · 04/07/2026</span>
-      <input class="srch" placeholder="Buscar..." value="${busca}" oninput="busca=this.value;render()" style="width:200px">
+    <!-- TOOLBAR -->
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:8px">
+        <label style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px">Data</label>
+        <input type="date" value="${dataFiltro}" onchange="dataFiltro=this.value;render()"
+          style="padding:6px 10px;border:1px solid var(--bor2);border-radius:var(--r);font-size:13px;color:var(--txt);background:var(--sur);cursor:pointer">
+        <button class="btn" onclick="dataFiltro='';render()">Todas as datas</button>
+      </div>
+      <div style="display:flex;gap:5px;margin-left:4px">
+        <button class="btn" onclick="mudarDia(-1)">◀ Dia anterior</button>
+        <button class="btn" onclick="mudarDia(1)">Próximo dia ▶</button>
+      </div>
+      <input class="srch" placeholder="Buscar descrição ou cliente..." value="${busca}" oninput="busca=this.value;render()" style="flex:1;min-width:160px">
       <button class="btn pri" onclick="openModal()">+ Lançamento</button>
     </div>
-    <div style="padding:6px 14px;background:var(--sur2);border-bottom:1px solid var(--bor);display:flex;gap:14px">
-      <span style="font-size:11px;font-weight:600;color:var(--grn)">↑ ${fmtR(TX.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0))}</span>
-      <span style="font-size:11px;font-weight:600;color:var(--red)">↓ ${fmtR(TX.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0))}</span>
-      <span style="font-size:11px;color:var(--tx3)">${fil.length} registros</span>
+    <!-- RESUMO DIA -->
+    <div style="display:flex;align-items:center;gap:16px;padding:8px 14px;background:var(--sur2);border-bottom:1px solid var(--bor)">
+      <span style="font-size:12px;font-weight:700;color:var(--tx2)">${dataFiltro?fmtD(dataFiltro):'Todos os dias'} · Sicredi</span>
+      <span style="font-size:12px;font-weight:700;color:var(--grn)">↑ ${fmtR(tE)}</span>
+      <span style="font-size:12px;font-weight:700;color:var(--red)">↓ ${fmtR(tS)}</span>
+      <span style="font-size:12px;font-weight:700;color:${liq>=0?'var(--grn)':'var(--red)'}">= ${liq>=0?'+':''}${fmtR(liq)}</span>
+      <span style="font-size:11px;color:var(--tx3);margin-left:auto">${fil.length} lançamento(s)</span>
     </div>
+    <!-- TABELA -->
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>Hora</th><th>Descrição</th><th>Categoria</th><th>Entrada</th><th>Saída</th><th>Status</th><th>Concil.</th><th>Cliente</th></tr></thead>
-      <tbody>${fil.map(t=>`<tr style="cursor:pointer" onclick="go('conc',document.getElementById('ni-conc'));setTimeout(()=>{openId='${t.id}';render()},80)">
-        <td style="color:var(--tx3)">${t.hora}</td>
-        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">${t.desc}</td>
-        <td><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${t.catInfo.cor}22;color:${t.catInfo.cor};font-weight:600">${t.catInfo.code}</span></td>
-        <td style="color:var(--grn);font-weight:600">${t.type==='CREDIT'?'+'+fmtR(t.amt):'—'}</td>
-        <td style="color:var(--red);font-weight:600">${t.type==='DEBIT'?'−'+fmtR(t.amt):'—'}</td>
-        <td><span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend'}">${t.status}</span></td>
-        <td style="text-align:center;color:${t.status==='conciliado'?'var(--grn)':'var(--tx3)'}">${t.status==='conciliado'?'✓':'—'}</td>
-        <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis">${t.cli||'—'}</td>
-      </tr>`).join('')}</tbody>
+      <thead><tr><th>Hora</th><th>Data</th><th>Descrição</th><th>Categoria</th><th>Entrada</th><th>Saída</th><th>Status</th><th>Concil.</th><th>Cliente</th></tr></thead>
+      <tbody>${fil.length===0?`<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--tx3)">Nenhum lançamento encontrado para ${dataFiltro?fmtD(dataFiltro):'essa data'}</td></tr>`:
+        fil.map(t=>`<tr style="cursor:pointer" onclick="go('conc',document.getElementById('ni-conc'));setTimeout(()=>{openId='${t.id}';render()},80)" title="Clique para conciliar">
+          <td style="color:var(--tx3)">${t.hora}</td>
+          <td style="color:var(--tx3);white-space:nowrap">${fmtD(t.date)}</td>
+          <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">${t.desc}</td>
+          <td><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${t.catInfo.cor}22;color:${t.catInfo.cor};font-weight:600">${t.catInfo.code}</span></td>
+          <td style="color:var(--grn);font-weight:600">${t.type==='CREDIT'?'+'+fmtR(t.amt):'—'}</td>
+          <td style="color:var(--red);font-weight:600">${t.type==='DEBIT'?'−'+fmtR(t.amt):'—'}</td>
+          <td><span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend'}">${t.status}</span></td>
+          <td style="text-align:center;color:${t.status==='conciliado'?'var(--grn)':'var(--tx3)'}">${t.status==='conciliado'?'✓':'—'}</td>
+          <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis">${t.cli||'—'}</td>
+        </tr>`).join('')}
+      </tbody>
     </table></div>
   </div>`;
+}
+
+function mudarDia(delta){
+  if(!dataFiltro){ dataFiltro='2026-07-04'; return render(); }
+  const d = new Date(dataFiltro+'T12:00:00');
+  d.setDate(d.getDate()+delta);
+  dataFiltro = d.toISOString().split('T')[0];
+  render();
 }
 
 // ════════════════════════════════
 // CASH FLOW
 // ════════════════════════════════
 function renderCF(){
-  const M=['Jan','Fev','Mar','Abr','Mai','Jun'];
-  const REC=[338850,269581,286382,273646,257708,193762];
-  const FORN=[220218,99813,228764,210365,153216,114047];
-  const TRIB=[17418,24298,2270,27643,6159,6906];
-  const VEND=[4647,4401,3022,4589,3259,2415];
-  const MOTO=[3194,2268,3675,3290,4540,1590];
-  const ADM=[17378,16153,17512,19883,10180,11290];
-  const PES=[40280,28979,25800,36600,23065,23050];
-  const TRAF=[9402,6815,14904,10735,10736,6500];
-  const INV=[14563,12014,7229,11189,6263,2193];
-  const NOIN=[1998,1496,22084,35734,5821,1950];
-  const NOUT=[21836,29553,32711,7559,24644,49297];
-  const RES=[-8325,43139,-30475,-22657,19786,-18447];
-  const SF=[15227,58167,27692,5040,19448,1000];
+  const M=['Jan','Fev','Mar','Abr','Mai','Jun','Jul*'];
+  const REC=[338850,269581,286382,273646,257708,193762,26594];
+  const FORN=[220218,99813,228764,210365,153216,114047,15041];
+  const TRIB=[17418,24298,2270,27643,6159,6906,0];
+  const VEND=[4647,4401,3022,4589,3259,2415,0];
+  const MOTO=[3194,2268,3675,3290,4540,1590,0];
+  const ADM=[17378,16153,17512,19883,10180,11290,0];
+  const PES=[40280,28979,25800,36600,23065,23050,0];
+  const TRAF=[9402,6815,14904,10735,10736,6500,0];
+  const INV=[14563,12014,7229,11189,6263,2193,0];
+  const NOIN=[1998,1496,22084,35734,5821,1950,0];
+  const NOUT=[21836,29553,32711,7559,24644,49297,13996];
+  const RES=[-8325,43139,-30475,-22657,19786,-18447,-2443];
+  const SF=[15227,58167,27692,5040,19448,1000,432];
   const cv=M.map((_,i)=>-(FORN[i]+TRIB[i]+VEND[i]+MOTO[i]));
   const mc=M.map((_,i)=>REC[i]+cv[i]);
   const df=M.map((_,i)=>-(ADM[i]+PES[i]+TRAF[i]));
@@ -799,7 +1199,7 @@ function renderCF(){
   function row(vals){const tot=vals.reduce((s,v)=>s+v,0);return vals.map(v=>`<td class="${v>0?'vp':v<0?'vn':''}">${v?fmtR(v):'—'}</td>`).join('')+`<td class="${tot>0?'vp':tot<0?'vn':''}" style="font-weight:700">${fmtR(tot)}</td>`;}
   return `<div class="card" style="overflow:auto">
     <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px">
-      <span style="font-size:13px;font-weight:700">Fluxo de Caixa — Jan/Jun 2026</span>
+      <span style="font-size:13px;font-weight:700">Fluxo de Caixa — Jan/Jul 2026</span>
       <span style="font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:2px 9px">● Sicredi</span>
     </div>
     <div style="overflow-x:auto"><table class="cft">
@@ -891,6 +1291,257 @@ async function syncSicredi(){
   const now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
   badge.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span> Sicredi · ${now}`;
   toast('✓ Dados atualizados — 04/07/2026','ok');
+}
+
+// ════════════════════════════════
+// CADASTROS
+// ════════════════════════════════
+let CADASTROS = {};
+let cadBusca = '';
+let cadTipo = 'todos'; // todos | cliente | fornecedor
+let cadAberto = null;
+let cadEditando = null;
+
+// Carregar cadastros do localStorage
+try{ CADASTROS = JSON.parse(localStorage.getItem('yf_cad')||'{}'); }catch(e){}
+
+// Auto-criar fornecedores das transações
+function autoPopularCadastros(){
+  TX.forEach(t=>{
+    if(t.type==='DEBIT' && t.cli && t.cli.length>2){
+      const id = 'f_'+t.cli.toLowerCase().replace(/\s+/g,'_').substring(0,20);
+      if(!CADASTROS[id]){
+        CADASTROS[id]={
+          id, tipo:'fornecedor',
+          nome: t.cli,
+          cnpj:'', email:'', tel:'', obs:'',
+          criado: t.date,
+          ultima_tx: t.date,
+          total_pago: 0,
+        };
+      }
+      CADASTROS[id].ultima_tx = t.date > CADASTROS[id].ultima_tx ? t.date : CADASTROS[id].ultima_tx;
+      CADASTROS[id].total_pago = (CADASTROS[id].total_pago||0) + t.amt;
+    }
+    if(t.type==='CREDIT' && t.cli && t.cli.length>2){
+      const id = 'c_'+t.cli.toLowerCase().replace(/\s+/g,'_').substring(0,20);
+      if(!CADASTROS[id]){
+        CADASTROS[id]={
+          id, tipo:'cliente',
+          nome: t.cli,
+          cpf:'', email:'', tel:'', obs:'',
+          criado: t.date,
+          ultima_tx: t.date,
+          total_recebido: 0,
+        };
+      }
+      CADASTROS[id].ultima_tx = t.date > CADASTROS[id].ultima_tx ? t.date : CADASTROS[id].ultima_tx;
+      CADASTROS[id].total_recebido = (CADASTROS[id].total_recebido||0) + t.amt;
+    }
+  });
+}
+
+function saveCad(id, data){
+  CADASTROS[id] = {...(CADASTROS[id]||{}), ...data};
+  try{ localStorage.setItem('yf_cad', JSON.stringify(CADASTROS)); }catch(e){}
+}
+
+function delCad(id){
+  delete CADASTROS[id];
+  try{ localStorage.setItem('yf_cad', JSON.stringify(CADASTROS)); }catch(e){}
+  cadAberto=null; render();
+}
+
+function renderCad(){
+  autoPopularCadastros();
+  const lista = Object.values(CADASTROS).filter(c=>{
+    const mT = cadTipo==='todos' || c.tipo===cadTipo;
+    const mB = !cadBusca || c.nome.toLowerCase().includes(cadBusca.toLowerCase()) ||
+                (c.cnpj||'').includes(cadBusca) || (c.cpf||'').includes(cadBusca) ||
+                (c.email||'').toLowerCase().includes(cadBusca.toLowerCase());
+    return mT && mB;
+  }).sort((a,b)=>a.nome.localeCompare(b.nome));
+
+  const nForn = Object.values(CADASTROS).filter(c=>c.tipo==='fornecedor').length;
+  const nCli  = Object.values(CADASTROS).filter(c=>c.tipo==='cliente').length;
+
+  return `
+  <!-- KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+    <div class="kpi"><div class="kl">Total Cadastros</div><div class="kv n">${Object.keys(CADASTROS).length}</div><div class="ks">clientes + fornecedores</div></div>
+    <div class="kpi"><div class="kl">Fornecedores</div><div class="kv r">${nForn}</div><div class="ks">extraídos das saídas</div></div>
+    <div class="kpi"><div class="kl">Clientes</div><div class="kv g">${nCli}</div><div class="ks">extraídos das entradas</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:${cadAberto?'1fr 380px':'1fr'};gap:12px;min-height:0">
+    <!-- LISTA -->
+    <div class="card" style="overflow:hidden">
+      <!-- TOOLBAR -->
+      <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;gap:4px">
+          <button class="fchip${cadTipo==='todos'?' on':''}" onclick="cadTipo='todos';render()">Todos (${Object.keys(CADASTROS).length})</button>
+          <button class="fchip${cadTipo==='fornecedor'?' on':''}" onclick="cadTipo='fornecedor';render()" style="${cadTipo!=='fornecedor'?'border-color:var(--red);color:var(--red)':''}">Fornecedores (${nForn})</button>
+          <button class="fchip${cadTipo==='cliente'?' on':''}" onclick="cadTipo='cliente';render()" style="${cadTipo!=='cliente'?'border-color:var(--grn);color:var(--grn)':''}">Clientes (${nCli})</button>
+        </div>
+        <input class="srch" placeholder="Buscar nome, CNPJ/CPF ou email..." value="${cadBusca}" oninput="cadBusca=this.value;render()" style="flex:1;min-width:160px">
+        <button class="btn pri" onclick="novoCadastro()">+ Novo Cadastro</button>
+      </div>
+      <!-- TABELA -->
+      <div style="overflow-y:auto;max-height:calc(100vh - 280px)">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr>
+            <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Nome</th>
+            <th style="padding:8px 12px;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Tipo</th>
+            <th style="padding:8px 12px;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">CNPJ/CPF</th>
+            <th style="padding:8px 12px;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Total Movimentado</th>
+            <th style="padding:8px 12px;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Última Transação</th>
+            <th style="padding:8px 12px;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Lançamentos</th>
+          </tr></thead>
+          <tbody>${lista.length===0?`<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--tx3);font-size:12px">Nenhum cadastro encontrado</td></tr>`:
+            lista.map(c=>{
+              const isForn = c.tipo==='fornecedor';
+              const txs = TX.filter(t=>t.cli===c.nome);
+              const total = isForn ? (c.total_pago||0) : (c.total_recebido||0);
+              const isOpen = cadAberto===c.id;
+              return `<tr style="border-bottom:1px solid var(--bor);cursor:pointer;background:${isOpen?'var(--acl)':'transparent'}" onclick="cadAberto='${c.id}';render()">
+                <td style="padding:9px 12px">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:28px;height:28px;border-radius:50%;background:${isForn?'var(--rbg)':'var(--gbg)'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:${isForn?'var(--red)':'var(--grn)'};flex-shrink:0">
+                      ${c.nome.substring(0,1).toUpperCase()}
+                    </div>
+                    <div>
+                      <div style="font-size:12px;font-weight:600;color:var(--txt)">${c.nome}</div>
+                      ${c.email?`<div style="font-size:10px;color:var(--tx3)">${c.email}</div>`:''}
+                    </div>
+                  </div>
+                </td>
+                <td style="padding:9px 12px">
+                  <span style="font-size:10px;padding:2px 8px;border-radius:8px;font-weight:600;background:${isForn?'var(--rbg)':'var(--gbg)'};color:${isForn?'var(--red)':'var(--grn)'}">
+                    ${isForn?'Fornecedor':'Cliente'}
+                  </span>
+                </td>
+                <td style="padding:9px 12px;font-size:11px;color:var(--tx3)">${c.cnpj||c.cpf||'—'}</td>
+                <td style="padding:9px 12px;font-size:12px;font-weight:600;color:${isForn?'var(--red)':'var(--grn)'}">
+                  ${isForn?'−':'+'}${fmtR(total)}
+                </td>
+                <td style="padding:9px 12px;font-size:11px;color:var(--tx3)">${c.ultima_tx?fmtD(c.ultima_tx):'—'}</td>
+                <td style="padding:9px 12px;font-size:12px;font-weight:600;color:var(--sacc)">${txs.length}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAINEL DETALHE -->
+    ${cadAberto && CADASTROS[cadAberto] ? renderCadDetalhe(CADASTROS[cadAberto]) : ''}
+  </div>`;
+}
+
+function renderCadDetalhe(c){
+  const isForn = c.tipo==='fornecedor';
+  const txs = TX.filter(t=>t.cli===c.nome);
+  const total = isForn ? (c.total_pago||0) : (c.total_recebido||0);
+  const ed = cadEditando===c.id;
+
+  return `<div class="card" style="overflow:hidden;display:flex;flex-direction:column">
+    <!-- CABEÇALHO -->
+    <div style="padding:14px 16px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div style="width:36px;height:36px;border-radius:50%;background:${isForn?'var(--rbg)':'var(--gbg)'};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:${isForn?'var(--red)':'var(--grn)'};flex-shrink:0">
+        ${c.nome.substring(0,1).toUpperCase()}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</div>
+        <span style="font-size:10px;padding:1px 7px;border-radius:8px;background:${isForn?'var(--rbg)':'var(--gbg)'};color:${isForn?'var(--red)':'var(--grn)'};font-weight:600">${isForn?'Fornecedor':'Cliente'}</span>
+      </div>
+      <button class="fbtn" onclick="cadAberto=null;render()" style="color:var(--tx3)">✕</button>
+    </div>
+    <!-- TOTAL -->
+    <div style="padding:12px 16px;background:${isForn?'var(--rbg)':'var(--gbg)'};border-bottom:1px solid var(--bor);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+      <div style="font-size:11px;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:.4px">Total ${isForn?'Pago':'Recebido'}</div>
+      <div style="font-size:18px;font-weight:700;color:${isForn?'var(--red)':'var(--grn)'}">
+        ${isForn?'−':'+'}${fmtR(total)}
+      </div>
+    </div>
+    <!-- FORMULÁRIO -->
+    <div style="padding:14px 16px;flex:1;overflow-y:auto">
+      ${ed ? `
+        <!-- MODO EDIÇÃO -->
+        <div style="display:grid;gap:8px;margin-bottom:12px">
+          <div class="eg"><label>Nome *</label><input type="text" id="cd-nome" value="${c.nome}" style="width:100%;padding:7px 9px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt)"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="eg"><label>${isForn?'CNPJ':'CPF'}</label><input type="text" id="cd-doc" value="${c.cnpj||c.cpf||''}" placeholder="${isForn?'00.000.000/0000-00':'000.000.000-00'}" style="width:100%;padding:7px 9px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt)"></div>
+            <div class="eg"><label>Telefone</label><input type="text" id="cd-tel" value="${c.tel||''}" placeholder="(84) 99999-9999" style="width:100%;padding:7px 9px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt)"></div>
+          </div>
+          <div class="eg"><label>E-mail</label><input type="email" id="cd-email" value="${c.email||''}" placeholder="email@exemplo.com" style="width:100%;padding:7px 9px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt)"></div>
+          <div class="eg"><label>Observação</label><input type="text" id="cd-obs" value="${c.obs||''}" placeholder="Notas internas..." style="width:100%;padding:7px 9px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt)"></div>
+        </div>
+        <div style="display:flex;gap:7px">
+          <button class="btn pri" onclick="salvarCad('${c.id}')">Salvar</button>
+          <button class="btn" onclick="cadEditando=null;render()">Cancelar</button>
+          <button class="btn" style="margin-left:auto;color:var(--red);border-color:var(--red)" onclick="if(confirm('Remover cadastro?'))delCad('${c.id}')">🗑 Remover</button>
+        </div>
+      ` : `
+        <!-- MODO VISUALIZAÇÃO -->
+        <div style="display:grid;gap:6px;margin-bottom:14px">
+          ${[
+            [isForn?'CNPJ':'CPF', c.cnpj||c.cpf||'—'],
+            ['Telefone', c.tel||'—'],
+            ['E-mail', c.email||'—'],
+            ['Observação', c.obs||'—'],
+            ['Criado em', c.criado?fmtD(c.criado):'—'],
+            ['Última transação', c.ultima_tx?fmtD(c.ultima_tx):'—'],
+          ].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--bor)">
+            <span style="font-size:11px;color:var(--tx3);font-weight:600">${l}</span>
+            <span style="font-size:12px;color:var(--txt)">${v}</span>
+          </div>`).join('')}
+        </div>
+        <button class="btn" style="width:100%;justify-content:center;margin-bottom:12px" onclick="cadEditando='${c.id}';render()">✏ Editar cadastro</button>
+      `}
+
+      <!-- TRANSAÇÕES DO CADASTRO -->
+      <div style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">
+        Transações (${txs.length})
+      </div>
+      ${txs.length===0?`<div style="text-align:center;padding:16px;color:var(--tx3);font-size:12px">Nenhuma transação encontrada</div>`:
+        txs.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bor)">
+          <div style="width:6px;height:6px;border-radius:50%;background:${t.type==='CREDIT'?'var(--grn)':'var(--red)'};flex-shrink:0"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:11px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.desc}</div>
+            <div style="font-size:10px;color:var(--tx3)">${fmtD(t.date)} · ${t.catInfo.code}</div>
+          </div>
+          <span style="font-size:11px;font-weight:600;color:${t.type==='CREDIT'?'var(--grn)':'var(--red)'};white-space:nowrap">
+            ${t.type==='CREDIT'?'+':'-'}${fmtR(t.amt)}
+          </span>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function novoCadastro(){
+  const id = 'novo_'+Date.now();
+  CADASTROS[id] = {id, tipo:'fornecedor', nome:'Novo Cadastro', cnpj:'', email:'', tel:'', obs:'', criado:new Date().toISOString().split('T')[0], ultima_tx:'', total_pago:0};
+  cadAberto = id;
+  cadEditando = id;
+  render();
+}
+
+function salvarCad(id){
+  const nome = document.getElementById('cd-nome')?.value?.trim();
+  const doc  = document.getElementById('cd-doc')?.value?.trim();
+  const tel  = document.getElementById('cd-tel')?.value?.trim();
+  const email= document.getElementById('cd-email')?.value?.trim();
+  const obs  = document.getElementById('cd-obs')?.value?.trim();
+  if(!nome){ toast('Informe o nome!','err'); return; }
+  const isForn = CADASTROS[id]?.tipo==='fornecedor';
+  const update = {nome, tel, email, obs};
+  if(isForn) update.cnpj = doc; else update.cpf = doc;
+  saveCad(id, update);
+  // atualizar nome nas transações também
+  TX.forEach(t=>{ if(t.id===id || t.cli===CADASTROS[id]?.nome) t.cli=nome; });
+  cadEditando = null;
+  toast('✓ Cadastro salvo!','ok');
+  render();
 }
 
 // ════════════════════════════════
