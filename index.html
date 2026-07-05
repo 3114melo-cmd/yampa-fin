@@ -121,6 +121,12 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 .eb.undo{background:var(--ybg);color:var(--yel);border:1px solid var(--yel)}
 .eb.skip{background:var(--rbg);color:var(--red);border:1px solid var(--rbr)}
 .no-cat{font-size:10px;background:#fee2e2;color:#dc2626;padding:1px 5px;border-radius:4px;margin-left:5px;font-weight:600}
+.transf-badge{font-size:10px;background:#e0f2fe;color:#0369a1;padding:1px 6px;border-radius:4px;margin-left:5px;font-weight:600}
+.transf-panel{background:#f0f9ff;border:1.5px solid #7dd3fc;border-radius:var(--r);padding:12px 14px;margin-top:8px}
+.transf-title{font-size:11px;font-weight:700;color:#0369a1;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.conta-btn{padding:6px 12px;border-radius:var(--r);border:1.5px solid var(--bor2);background:var(--sur);font-size:12px;font-weight:500;color:var(--tx2);cursor:pointer;transition:.12s;white-space:nowrap}
+.conta-btn:hover{border-color:#0369a1;color:#0369a1}
+.conta-btn.sel{background:#0369a1;color:#fff;border-color:#0369a1}
 
 /* MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center}
@@ -179,6 +185,19 @@ tr:hover td{background:var(--sur2)}
 .pill.pend{background:var(--ybg);color:var(--yel)}
 .pill.ig{background:var(--sur2);color:var(--tx3)}
 .pill.prev{background:#e0f2fe;color:#0369a1}
+.status-chip{padding:7px 16px;border-radius:20px;border:1.5px solid var(--bor2);background:var(--sur);font-size:12px;font-weight:500;color:var(--tx2);cursor:pointer;transition:.12s;white-space:nowrap}
+.status-chip:hover{border-color:var(--sacc);color:var(--sacc)}
+.status-chip.sel{background:var(--sacc);color:#fff;border-color:var(--sacc)}
+.status-chip.sel-grn{background:var(--grn);color:#fff;border-color:var(--grn)}
+.status-chip.sel-red{background:var(--red);color:#fff;border-color:var(--red)}
+.status-chip.sel-yel{background:var(--yel);color:#fff;border-color:var(--yel)}
+.status-chip.sel-blu{background:#0369a1;color:#fff;border-color:#0369a1}
+.filtro-panel{background:var(--sur);border:1px solid var(--bor2);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;box-shadow:var(--sh)}
+.filtro-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.filtro-title{font-size:12px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px}
+.filtro-actions{display:flex;gap:8px}
+.filtro-action{font-size:11px;font-weight:600;color:var(--sacc);cursor:pointer;padding:3px 8px;border-radius:6px;border:none;background:none}
+.filtro-action:hover{background:var(--acl)}
 
 /* CF */
 .cft{min-width:800px}
@@ -635,6 +654,36 @@ const RAW = [
   {id:'brg262_12',date:'2026-10-01',hora:'09:00',desc:'BOLETO NF 262.206 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 12/13',amt:1197.24,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
   {id:'brg262_13',date:'2026-10-06',hora:'09:00',desc:'BOLETO NF 262.206 - BRG SUPLEMENTOS NUTRICIONAIS LTDA - PARCELA 13/13',amt:1197.22,type:'DEBIT',previsto:true,cli:'BRG Suplementos Nutricionais Ltda',cat:'4.2.1'},
 
+  // ── SICREDI DISTRIBUIDORA (CNPJ 55.656.085/0001-52 · Conta 00054257-1) ──
+  {id:'d_3350eb3d',date:'2026-07-04',hora:'02:02',desc:'AMORTIZACAO CONTRATO',amt:0.92,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'7.2.13',cli:'AMORTIZACAO CONTRATO'},
+  {id:'d_c41e8b01',date:'2026-07-04',hora:'01:26',desc:'DEB.CTA.FATURA SICREDI',amt:3693.0,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'5.1.1',cli:'DEB.CTA.FATURA SICREDI'},
+  {id:'d_0280da98',date:'2026-07-04',hora:'01:24',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:3694.0,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+  {id:'d_6e3d4ef0',date:'2026-07-04',hora:'00:11',desc:'AMORTIZACAO CONTRATO',amt:261.69,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'7.2.13',cli:'AMORTIZACAO CONTRATO'},
+  {id:'d_a51b6012',date:'2026-07-04',hora:'00:11',desc:'IOF S/ OPER. CREDITO PJ',amt:0.08,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.1.99',cli:'IOF S/ OPER. CREDITO PJ'},
+  {id:'d_f869d749',date:'2026-07-04',hora:'00:05',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:261.69,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+  {id:'d_82b6557f',date:'2026-07-03',hora:'14:46',desc:'DEB.CTA.FATURA SICREDI',amt:2984.0,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'5.1.1',cli:'DEB.CTA.FATURA SICREDI'},
+  {id:'d_bcb5aa3c',date:'2026-07-03',hora:'14:44',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1944.0,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+  {id:'d_4584e3a1',date:'2026-07-03',hora:'14:43',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1040.0,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+  {id:'d_ab3f9e97',date:'2026-07-02',hora:'23:38',desc:'DEB.CTA.FATURA SICREDI',amt:2459.0,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'5.1.1',cli:'DEB.CTA.FATURA SICREDI'},
+  {id:'d_9d1b5add',date:'2026-07-02',hora:'23:37',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:2459.0,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+  {id:'d_302eaed3',date:'2026-07-02',hora:'22:51',desc:'AMORTIZACAO CONTRATO',amt:0.75,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'7.2.13',cli:'AMORTIZACAO CONTRATO'},
+  {id:'d_b4cc2982',date:'2026-07-02',hora:'22:21',desc:'DEB.CTA.FATURA SICREDI',amt:3153.0,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'5.1.1',cli:'DEB.CTA.FATURA SICREDI'},
+  {id:'d_26b2177a',date:'2026-07-02',hora:'22:18',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:3154.0,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+  {id:'d_f85e1f68',date:'2026-07-02',hora:'15:17',desc:'AMORTIZACAO CONTRATO',amt:1033.98,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'7.2.13',cli:'AMORTIZACAO CONTRATO'},
+  {id:'d_d4526062',date:'2026-07-02',hora:'15:17',desc:'IOF S/ OPER. CREDITO PJ',amt:0.25,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.1.99',cli:'IOF S/ OPER. CREDITO PJ'},
+  {id:'d_ee52b89a',date:'2026-07-02',hora:'15:14',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1033.0,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+  {id:'d_a026b2e4',date:'2026-07-02',hora:'15:11',desc:'DEB.CTA.FATURA SICREDI',amt:3303.0,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'5.1.1',cli:'DEB.CTA.FATURA SICREDI'},
+  {id:'d_5196870d',date:'2026-07-02',hora:'15:08',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:3313.0,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+  {id:'d_7cee05fb',date:'2026-07-02',hora:'02:36',desc:'IOF BASICO AD PJ',amt:2.3,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.1.99',cli:'IOF BASICO AD PJ'},
+  {id:'d_bd5c5f0c',date:'2026-07-02',hora:'02:28',desc:'IOF ADICIONAL PJ-AD. DEP.',amt:6.66,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.1.99',cli:'IOF ADICIONAL PJ-AD. DEP.'},
+  {id:'d_e6c2e8f2',date:'2026-07-01',hora:'18:10',desc:'IOF S/ OPER. CREDITO PJ',amt:0.06,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.1.99',cli:'IOF S/ OPER. CREDITO PJ'},
+  {id:'d_dceb04cb',date:'2026-07-01',hora:'18:10',desc:'AMORTIZACAO CONTRATO',amt:381.48,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'7.2.13',cli:'AMORTIZACAO CONTRATO'},
+  {id:'d_052010f7',date:'2026-07-01',hora:'18:01',desc:'PAGAMENTO PIX - NATAL 1 OFICIO DE NOTAS',amt:4353.52,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'5.2.19',cli:'NATAL 1 OFICIO DE NOTAS'},
+  {id:'d_8929a868',date:'2026-07-01',hora:'17:57',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:4735.0,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+  {id:'d_7a3914f1',date:'2026-07-01',hora:'15:42',desc:'AMORTIZACAO CONTRATO',amt:0.12,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'7.2.13',cli:'AMORTIZACAO CONTRATO'},
+  {id:'d_0ca5b409',date:'2026-07-01',hora:'15:32',desc:'DEB.CTA.FATURA SICREDI',amt:346.0,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'5.1.1',cli:'DEB.CTA.FATURA SICREDI'},
+  {id:'d_af749e0b',date:'2026-07-01',hora:'15:30',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:2100.0,type:'CREDIT',conta:'Sicredi Distribuidora',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA'},
+
 ];
 
 // Estado
@@ -734,7 +783,7 @@ function render(){
 // PAINEL
 // ════════════════════════════════
 function renderDash(){
-  const hoje = '2026-07-04';
+  const hoje = '2026-07-05';
   const txHoje = TX.filter(t=>t.date===hoje);
   const entHoje = txHoje.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
   const saiHoje = txHoje.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
@@ -743,7 +792,9 @@ function renderDash(){
   const totalAtrasados = atrasados.reduce((s,t)=>s+t.amt,0);
   const aReceberHoje = TX.filter(t=>t.type==='CREDIT'&&t.status==='pendente'&&t.date===hoje).reduce((s,t)=>s+t.amt,0);
   const aPagarHoje = TX.filter(t=>t.type==='DEBIT'&&(t.status==='pendente'||t.status==='previsto')&&t.date===hoje).reduce((s,t)=>s+t.amt,0);
-  const saldoAtual = 432.06;
+  const saldoMatriz = 432.06;
+  const saldoDist = 0.00;
+  const saldoAtual = saldoMatriz + saldoDist;
   const saldoPrevisto = saldoAtual - aPagarHoje + aReceberHoje;
   const conc = TX.filter(t=>t.status==='conciliado').length;
   const pend = TX.filter(t=>t.status==='pendente').length;
@@ -957,11 +1008,17 @@ function renderConc(){
   const ents=TX.filter(t=>t.type==='CREDIT');
   const sais=TX.filter(t=>t.type==='DEBIT');
   const fil=list=>list.filter(t=>{
-    // 'pendente' default não mostra previstos — eles ficam em aba própria
     let mf;
-    if(filtro==='pendente') mf = t.status==='pendente';
-    else if(filtro==='previsto') mf = t.status==='previsto';
-    else mf = filtro==='todos' || t.status===filtro;
+    if(filtrosStatus.length>0){
+      // Filtro por status múltiplo (estilo Yampa)
+      mf = filtrosStatus.includes(getStatusTx(t));
+    } else if(filtro==='pendente'){
+      mf = t.status==='pendente';
+    } else if(filtro==='previsto'){
+      mf = t.status==='previsto';
+    } else {
+      mf = filtro==='todos' || t.status===filtro;
+    }
     const ms=!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase());
     return mf&&ms;
   });
@@ -1036,16 +1093,19 @@ function renderConc(){
 
 function btnAcao(t){
   if(t.status==='previsto') return `<button class="eb ok" onclick="conc('${t.id}')">✓ Confirmar Pagamento</button><button class="eb skip" onclick="ign('${t.id}')">✕ Cancelar Previsão</button>`;
-  if(t.status==='conciliado') return `<button class="eb undo" onclick="desconc('${t.id}')">↩ Desfazer</button>`;
-  return `<button class="eb ok" onclick="conc('${t.id}')">✓ Conciliar</button><button class="eb skip" onclick="ign('${t.id}')">✕ Ignorar</button>`;
+  if(t.status==='transferencia') return `<span style="font-size:11px;color:#0369a1;font-weight:600">🔄 Transferência entre contas</span><button class="eb undo" style="margin-left:8px" onclick="desconc('${t.id}')">↩ Desfazer</button>`;
+  if(t.status==='conciliado') return `<button class="eb ok" onclick="conc('${t.id}')">✓ Conciliar</button><button class="eb undo" onclick="desconc('${t.id}')">↩ Desfazer</button>`;
+  return `<button class="eb ok" onclick="conc('${t.id}')">✓ Conciliar</button>
+    <button class="eb" style="background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc" onclick="abrirTransf('${t.id}')">🔄 Transferência</button>
+    <button class="eb skip" onclick="ign('${t.id}')">✕ Ignorar</button>`;
 }
 
 function txItem(t){
   const isOpen = openId===t.id;
   const ed = EDITED[t.id]||{};
   const semCat = t.cat==='OUT';
-  const ckClass = t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':t.status==='previsto'?'ig':'pend';
-  const ckLabel = t.status==='conciliado'?'✓':t.status==='ignorado'?'—':t.status==='previsto'?'📅':'';
+  const ckClass = t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':(t.status==='previsto'||t.status==='transferencia')?'ig':'pend';
+  const ckLabel = t.status==='conciliado'?'✓':t.status==='ignorado'?'—':t.status==='previsto'?'📅':t.status==='transferencia'?'🔄':'';
   return `<div class="tx${isOpen?' open':''}" id="txi-${t.id}">
     <div class="tx-row" onclick="toggleOpen('${t.id}')">
       <div class="tx-ck ${ckClass}" onclick="event.stopPropagation();ckClick('${t.id}')">${ckLabel}</div>
@@ -1083,6 +1143,31 @@ function txItem(t){
         ${btnAcao(t)}
         <span style="font-size:10px;color:var(--tx3);margin-left:auto">Sicredi · ${fmtD(t.date)} · ${t.type==='CREDIT'?'Entrada':'Saída'}</span>
       </div>
+      ${t._showTransf?`
+      <div class="transf-panel">
+        <div class="transf-title">🔄 Marcar como Transferência entre Contas</div>
+        <div style="font-size:12px;color:var(--tx2);margin-bottom:10px">
+          Selecione a conta de <strong>${t.type==='CREDIT'?'origem (saída)':'destino (entrada)'}</strong> desta transferência:
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          ${['Sicredi Matriz','Sicredi Distribuidora','Nubank','Itaú','Mercado Pago','Caixa (Dinheiro)'].map(c=>
+            `<button class="conta-btn${t._contaTransf===c?' sel':''}" onclick="setContaTransf('${t.id}','${c}')">${c}</button>`
+          ).join('')}
+        </div>
+        ${t._contaTransf?`
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--sur);border-radius:6px;border:1px solid var(--bor);margin-bottom:10px;font-size:12px">
+          <span style="color:var(--tx3)">${t.type==='CREDIT'?'Saiu de':'Entrou em'}:</span>
+          <strong>${t._contaTransf}</strong>
+          <span style="color:var(--tx3);margin:0 4px">→</span>
+          <strong>${t.conta||'Sicredi'}</strong>
+          <span style="margin-left:auto;font-weight:700;color:#0369a1">${fmtR(t.amt)}</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="eb ok" style="background:#0369a1" onclick="confirmarTransf('${t.id}')">✓ Confirmar Transferência</button>
+          <button class="eb skip" onclick="cancelarTransf('${t.id}')">✕ Cancelar</button>
+        </div>`:`
+        <div style="font-size:11px;color:var(--tx3)">↑ Selecione a conta acima para continuar</div>`}
+      </div>`:''}
     </div>`:''}
   </div>`;
 }
@@ -1830,213 +1915,386 @@ function salvarMetaForn(val){
 }
 
 function renderForn(){
-  // Agrupar TX de fornecedores (cat 4.2.1) por nome
-  const txForn = TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT');
-  const prevForn = TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.status==='previsto');
+  const cores=['#dc2626','#ea580c','#d97706','#16a34a','#0284c7','#7c3aed','#db2777','#0891b2','#65a30d','#059669'];
 
-  // Agrupar por fornecedor
-  const grupos = {};
-  txForn.forEach(t=>{
-    const nome = t.cli||t.desc.replace('PAGAMENTO PIX - ','').replace('BOLETO NF ','').split(' - ')[0].trim()||'Sem nome';
-    if(!grupos[nome]) grupos[nome]={nome, realizado:0, previsto:0, txs:[]};
-    if(t.status==='previsto') grupos[nome].previsto += t.amt;
-    else grupos[nome].realizado += t.amt;
-    grupos[nome].txs.push(t);
-  });
+  // ── Montar meses disponíveis ──
+  const todosMeses = [...new Set(TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT').map(t=>t.date.substring(0,7)))].sort();
+  const hoje = '2026-07-05';
+  const mesHoje = hoje.substring(0,7);
+  const mesesFuturos = ['2026-07','2026-08','2026-09','2026-10'];
+  const todosPeriodos = [...new Set([...todosMeses,...mesesFuturos])].sort();
 
-  const lista = Object.values(grupos).sort((a,b)=>(b.realizado+b.previsto)-(a.realizado+a.previsto));
-  const totalRealizado = lista.reduce((s,g)=>s+g.realizado,0);
-  const totalPrevisto  = lista.reduce((s,g)=>s+g.previsto,0);
-  const totalGeral     = totalRealizado + totalPrevisto;
-  const pctMeta        = Math.min(100, Math.round(totalGeral/metaForn*100));
-  const sobra          = metaForn - totalGeral;
-  const cores = ['#dc2626','#ea580c','#d97706','#65a30d','#059669','#0284c7','#7c3aed','#db2777','#0891b2','#16a34a'];
+  // Período selecionado: 'mes' | 'panorama' | '2026-07' etc
+  const periodoSel = window._fornPeriodo || 'mes';
+  const metaBase = metaForn; // meta mensal quando período = mes
+
+  // ── Filtrar TX pelo período ──
+  function txDoPeriodo(){
+    if(periodoSel==='mes') return TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.date.startsWith(mesHoje));
+    if(periodoSel==='panorama') return TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT');
+    return TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.date.startsWith(periodoSel));
+  }
+
+  // ── Agrupar por fornecedor ──
+  function agruparForn(txs){
+    const g={};
+    txs.forEach(t=>{
+      const nome = t.cli&&t.cli.length>2 ? t.cli : t.desc.replace(/PAGAMENTO PIX - |BOLETO NF \d+ - /g,'').split(' - ')[0].trim().substring(0,40);
+      if(!g[nome]) g[nome]={nome,realizado:0,previsto:0,txs:[]};
+      if(t.status==='previsto') g[nome].previsto+=t.amt;
+      else g[nome].realizado+=t.amt;
+      g[nome].txs.push(t);
+    });
+    return Object.values(g).sort((a,b)=>(b.realizado+b.previsto)-(a.realizado+a.previsto));
+  }
+
+  const txSel = txDoPeriodo();
+  const lista = agruparForn(txSel);
+  const totalReal = lista.reduce((s,g)=>s+g.realizado,0);
+  const totalPrev = lista.reduce((s,g)=>s+g.previsto,0);
+  const totalGeral = totalReal+totalPrev;
+  const meta = periodoSel==='panorama' ? metaBase*6 : metaBase;
+  const pct = meta>0?Math.min(150,Math.round(totalGeral/meta*100)):0;
+  const sobra = meta-totalGeral;
+
+  // ── Dados por mês para gráfico panorama ──
+  function dadosPorMes(){
+    return todosPeriodos.map(m=>{
+      const txm = TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.date.startsWith(m));
+      const real = txm.filter(t=>t.status!=='previsto').reduce((s,t)=>s+t.amt,0);
+      const prev = txm.filter(t=>t.status==='previsto').reduce((s,t)=>s+t.amt,0);
+      const lbl = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][+m.split('-')[1]];
+      return {mes:m,lbl,real,prev,total:real+prev};
+    });
+  }
+  const porMes = dadosPorMes();
+  const maxMes = Math.max(...porMes.map(m=>m.total), meta);
+
+  // ── SVG DONUT ──
+  function donut(lista, total){
+    if(total<=0) return '<text x="70" y="75" text-anchor="middle" font-size="11" fill="var(--tx3)" font-family="sans-serif">Sem dados</text>';
+    let svgs=''; let startAngle=-Math.PI/2;
+    const cx=70,cy=70,r=56,ri=38;
+    lista.slice(0,10).forEach((g,i)=>{
+      const v=g.realizado+g.previsto;
+      if(v<=0) return;
+      const angle=(v/total)*2*Math.PI;
+      const endAngle=startAngle+angle;
+      const x1=cx+r*Math.cos(startAngle),y1=cy+r*Math.sin(startAngle);
+      const x2=cx+r*Math.cos(endAngle),y2=cy+r*Math.sin(endAngle);
+      const xi1=cx+ri*Math.cos(startAngle),yi1=cy+ri*Math.sin(startAngle);
+      const xi2=cx+ri*Math.cos(endAngle),yi2=cy+ri*Math.sin(endAngle);
+      const large=angle>Math.PI?1:0;
+      const cor=cores[i%cores.length];
+      // realizado opaco, previsto mais claro
+      svgs+=`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${xi2.toFixed(1)} ${yi2.toFixed(1)} A${ri} ${ri} 0 ${large} 0 ${xi1.toFixed(1)} ${yi1.toFixed(1)} Z" fill="${cor}" opacity="${g.previsto>0&&g.realizado===0?'0.4':'0.9'}"/>`;
+      startAngle=endAngle;
+    });
+    const valorCentro = fmtR(total).replace('R$ ','');
+    svgs+=`<circle cx="70" cy="70" r="33" fill="var(--sur)"/>
+      <text x="70" y="64" text-anchor="middle" font-size="8" fill="var(--tx3)" font-family="sans-serif">TOTAL</text>
+      <text x="70" y="76" text-anchor="middle" font-size="${valorCentro.length>8?'9':'11'}" fill="var(--txt)" font-weight="700" font-family="sans-serif">R$${valorCentro}</text>
+      <text x="70" y="88" text-anchor="middle" font-size="8" fill="${pct>100?'#dc2626':'var(--tx3)'}" font-family="sans-serif">${pct}% meta</text>`;
+    return svgs;
+  }
+
+  // ── SVG BARRAS PANORAMA ──
+  function barrasMeses(){
+    const W=480,H=160,pad=40,barW=Math.floor((W-pad*2)/porMes.length)-4;
+    const escala=v=>Math.round((v/maxMes)*(H-30));
+    let svg=`<svg width="100%" viewBox="0 0 ${W} ${H+40}" font-family="sans-serif">`;
+    // Linha da meta
+    const yMeta=H-escala(meta);
+    svg+=`<line x1="${pad}" y1="${yMeta}" x2="${W-10}" y2="${yMeta}" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.7"/>
+      <text x="${W-12}" y="${yMeta-4}" font-size="9" fill="#dc2626" text-anchor="end">Meta</text>`;
+    porMes.forEach((m,i)=>{
+      const x=pad+i*(barW+4);
+      const hReal=escala(m.real);
+      const hPrev=escala(m.prev);
+      const hTotal=hReal+hPrev;
+      const isSel = periodoSel===m.mes;
+      // Barra realizado
+      if(m.real>0) svg+=`<rect x="${x}" y="${H-hReal}" width="${barW}" height="${hReal}" fill="#dc2626" opacity="${isSel?'1':'0.7'}" rx="2" onclick="window._fornPeriodo='${m.mes}';render()" style="cursor:pointer"/>`;
+      // Barra previsto
+      if(m.prev>0) svg+=`<rect x="${x}" y="${H-hReal-hPrev}" width="${barW}" height="${hPrev}" fill="#fca5a5" opacity="${isSel?'1':'0.7'}" rx="2" onclick="window._fornPeriodo='${m.mes}';render()" style="cursor:pointer"/>`;
+      // Label mês
+      svg+=`<text x="${x+barW/2}" y="${H+14}" text-anchor="middle" font-size="9" fill="${isSel?'var(--sacc)':'var(--tx3)'}" font-weight="${isSel?'700':'400'}">${m.lbl}</text>`;
+      // Valor total se >0
+      if(m.total>0){
+        const yVal=H-hTotal-5;
+        svg+=`<text x="${x+barW/2}" y="${yVal<8?8:yVal}" text-anchor="middle" font-size="8" fill="${m.total>meta?'#dc2626':'var(--tx2)'}">${fmtR(m.total).replace('R$ ','')}</text>`;
+      }
+    });
+    svg+='</svg>';
+    return svg;
+  }
 
   return `
-  <!-- META EDITÁVEL -->
-  <div class="card cp" style="margin-bottom:14px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-      <div>
-        <div style="font-size:15px;font-weight:700">🎯 Meta de Fornecedores</div>
-        <div style="font-size:12px;color:var(--tx3);margin-top:2px">Teto máximo de gastos com fornecedores no período</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        ${editandoMeta?`
-          <input type="number" id="inp-meta" value="${metaForn}" step="1000"
-            style="padding:7px 10px;border:1.5px solid var(--sacc);border-radius:var(--r);font-size:14px;font-weight:700;width:160px;color:var(--txt)">
-          <button class="btn pri" onclick="salvarMetaForn(document.getElementById('inp-meta').value)">✓ Salvar</button>
-          <button class="btn" onclick="editandoMeta=false;render()">Cancelar</button>
-        `:`
-          <div style="font-size:22px;font-weight:700;color:var(--txt)">${fmtR(metaForn)}</div>
-          <button class="btn" onclick="editandoMeta=true;render()">✏ Editar meta</button>
-        `}
-      </div>
+  <!-- HEADER -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:16px;font-weight:700">🏭 Controle de Fornecedores</div>
+      <div style="font-size:12px;color:var(--tx3)">Monitore gastos, metas e panorama futuro</div>
     </div>
-
-    <!-- BARRA GERAL -->
-    <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
-        <span style="font-weight:600;color:var(--txt)">Utilizado: <span style="color:${pctMeta>=90?'var(--red)':pctMeta>=70?'var(--yel)':'var(--grn)'}">${fmtR(totalGeral)} (${pctMeta}%)</span></span>
-        <span style="color:${sobra<0?'var(--red)':'var(--tx3)'}">
-          ${sobra>=0?'Disponível: '+fmtR(sobra):'⚠ Estourou: '+fmtR(Math.abs(sobra))}
-        </span>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <!-- SELETOR DE PERÍODO -->
+      <div style="display:flex;border:1px solid var(--bor2);border-radius:var(--r);overflow:hidden">
+        <button class="level-btn${periodoSel==='mes'?' active':''}" onclick="window._fornPeriodo='mes';render()">Mês Atual</button>
+        ${todosPeriodos.map(m=>{
+          const lbl=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][+m.split('-')[1]];
+          return`<button class="level-btn${periodoSel===m?' active':''}" onclick="window._fornPeriodo='${m}';render()">${lbl}</button>`;
+        }).join('')}
+        <button class="level-btn${periodoSel==='panorama'?' active':''}" onclick="window._fornPeriodo='panorama';render()">Panorama</button>
       </div>
-      <div style="height:14px;background:var(--bor);border-radius:8px;overflow:hidden;position:relative">
-        <!-- Realizado -->
-        <div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(100,Math.round(totalRealizado/metaForn*100))}%;background:var(--red);border-radius:8px 0 0 8px;transition:width .5s"></div>
-        <!-- Previsto -->
-        <div style="position:absolute;left:${Math.min(100,Math.round(totalRealizado/metaForn*100))}%;top:0;height:100%;width:${Math.min(100-Math.round(totalRealizado/metaForn*100),Math.round(totalPrevisto/metaForn*100))}%;background:#fca5a5;transition:width .5s"></div>
-        <!-- Teto -->
-        <div style="position:absolute;right:0;top:0;height:100%;width:2px;background:#7f1d1d"></div>
-      </div>
-      <div style="display:flex;gap:14px;margin-top:6px;font-size:11px">
-        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--red)"></div>Realizado: ${fmtR(totalRealizado)}</div>
-        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>Previsto: ${fmtR(totalPrevisto)}</div>
-        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--bor)"></div>Disponível: ${fmtR(Math.max(0,sobra))}</div>
-      </div>
-    </div>
-
-    <!-- KPIs -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px">
-      <div class="kpi" style="border-left:3px solid var(--red)">
-        <div class="kl">Total Realizado</div>
-        <div class="kv r">${fmtR(totalRealizado)}</div>
-        <div class="ks">${txForn.filter(t=>t.status!=='previsto').length} lançamentos</div>
-      </div>
-      <div class="kpi" style="border-left:3px solid #fca5a5">
-        <div class="kl">Total Previsto</div>
-        <div class="kv" style="color:#dc2626;font-size:16px">${fmtR(totalPrevisto)}</div>
-        <div class="ks">${txForn.filter(t=>t.status==='previsto').length} parcelas</div>
-      </div>
-      <div class="kpi" style="border-left:3px solid ${sobra<0?'var(--red)':'var(--grn)'}">
-        <div class="kl">${sobra>=0?'Disponível':'Estourou'}</div>
-        <div class="kv" style="color:${sobra<0?'var(--red)':'var(--grn)'}">${fmtR(Math.abs(sobra))}</div>
-        <div class="ks">${pctMeta}% da meta utilizado</div>
-      </div>
-      <div class="kpi" style="border-left:3px solid var(--sacc)">
-        <div class="kl">Fornecedores</div>
-        <div class="kv n">${lista.length}</div>
-        <div class="ks">fornecedores ativos</div>
-      </div>
+      <!-- META -->
+      ${editandoMeta?`
+        <input type="number" id="inp-meta" value="${metaForn}" step="1000" style="padding:6px 10px;border:1.5px solid var(--sacc);border-radius:var(--r);font-size:13px;font-weight:700;width:140px;color:var(--txt)">
+        <button class="btn pri" onclick="salvarMetaForn(document.getElementById('inp-meta').value)">✓ Salvar</button>
+        <button class="btn" onclick="editandoMeta=false;render()">✕</button>
+      `:`
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--sur);border:1px solid var(--bor2);border-radius:var(--r)">
+          <span style="font-size:11px;color:var(--tx3)">Meta mensal:</span>
+          <span style="font-size:14px;font-weight:700;color:var(--txt)">${fmtR(metaForn)}</span>
+          <button class="btn" style="padding:3px 8px;font-size:11px" onclick="editandoMeta=true;render()">✏</button>
+        </div>
+      `}
     </div>
   </div>
 
-  <!-- GRÁFICO DE BARRAS + TABELA -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+  <!-- KPIs DO PERÍODO -->
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px">
+    <div class="kpi" style="border-left:3px solid var(--red)">
+      <div class="kl">Realizado ${periodoSel==='mes'?'('+mesHoje+')':periodoSel==='panorama'?'(Total)':'('+periodoSel+')'}</div>
+      <div class="kv r">${fmtR(totalReal)}</div>
+      <div class="ks">${txSel.filter(t=>t.status!=='previsto').length} lançamentos</div>
+    </div>
+    <div class="kpi" style="border-left:3px solid #fca5a5">
+      <div class="kl">Previsto</div>
+      <div class="kv" style="font-size:16px;font-weight:700;color:#dc2626">${fmtR(totalPrev)}</div>
+      <div class="ks">${txSel.filter(t=>t.status==='previsto').length} parcelas</div>
+    </div>
+    <div class="kpi" style="border-left:3px solid var(--yel)">
+      <div class="kl">Total Geral</div>
+      <div class="kv" style="font-size:16px;font-weight:700;color:var(--yel)">${fmtR(totalGeral)}</div>
+      <div class="ks">${pct}% da meta</div>
+    </div>
+    <div class="kpi" style="border-left:3px solid ${sobra<0?'var(--red)':'var(--grn)'}">
+      <div class="kl">${sobra>=0?'Disponível':'Estourou'}</div>
+      <div class="kv" style="font-size:16px;font-weight:700;color:${sobra<0?'var(--red)':'var(--grn)'}">${fmtR(Math.abs(sobra))}</div>
+      <div class="ks">Meta: ${fmtR(meta)}</div>
+    </div>
+    <div class="kpi" style="border-left:3px solid var(--sacc)">
+      <div class="kl">Fornecedores</div>
+      <div class="kv n">${lista.length}</div>
+      <div class="ks">ativos no período</div>
+    </div>
+  </div>
 
-    <!-- GRÁFICO -->
+  <!-- BARRA GERAL -->
+  <div class="card cp" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:13px;font-weight:700">Utilização da Meta${periodoSel==='panorama'?' (Acumulado)':''}</span>
+      <span style="font-size:12px;font-weight:600;color:${pct>100?'var(--red)':pct>80?'var(--yel)':'var(--grn)'}">${pct}%${pct>100?' ⚠ ESTOUROU!':''}</span>
+    </div>
+    <div style="height:18px;background:var(--bor);border-radius:9px;overflow:hidden;position:relative">
+      <div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(100,Math.round(totalReal/meta*100))}%;background:var(--red);border-radius:9px;transition:width .5s"></div>
+      <div style="position:absolute;left:${Math.min(100,Math.round(totalReal/meta*100))}%;top:0;height:100%;width:${Math.min(100-Math.round(totalReal/meta*100),Math.round(totalPrev/meta*100))}%;background:#fca5a5"></div>
+      ${pct>100?`<div style="position:absolute;right:0;top:0;height:100%;width:${Math.min(30,(pct-100)/2)}%;background:#7f1d1d;border-radius:0 9px 9px 0"></div>`:''}
+    </div>
+    <div style="display:flex;gap:16px;margin-top:7px;font-size:11px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--red)"></div>Realizado: ${fmtR(totalReal)}</div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>Previsto: ${fmtR(totalPrev)}</div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--bor)"></div>Disponível: ${fmtR(Math.max(0,sobra))}</div>
+    </div>
+  </div>
+
+  <!-- GRÁFICOS -->
+  <div style="display:grid;grid-template-columns:${periodoSel==='panorama'?'1fr':'300px 1fr'};gap:14px;margin-bottom:14px">
+
+    ${periodoSel!=='panorama'?`
+    <!-- DONUT -->
     <div class="card cp">
-      <div style="font-size:13px;font-weight:700;margin-bottom:16px">Distribuição por Fornecedor</div>
-
-      <!-- GRÁFICO DONUT SVG -->
-      <div style="display:flex;align-items:center;gap:20px;margin-bottom:16px">
-        <svg width="140" height="140" viewBox="0 0 140 140">
-          ${(()=>{
-            let svgs='';
-            const cx=70,cy=70,r=55,ri=35;
-            let startAngle=-Math.PI/2;
-            lista.forEach((g,i)=>{
-              const v=g.realizado+g.previsto;
-              if(v<=0) return;
-              const angle=(v/totalGeral)*2*Math.PI;
-              const endAngle=startAngle+angle;
-              const x1=cx+r*Math.cos(startAngle), y1=cy+r*Math.sin(startAngle);
-              const x2=cx+r*Math.cos(endAngle),   y2=cy+r*Math.sin(endAngle);
-              const xi1=cx+ri*Math.cos(startAngle),yi1=cy+ri*Math.sin(startAngle);
-              const xi2=cx+ri*Math.cos(endAngle),  yi2=cy+ri*Math.sin(endAngle);
-              const large=angle>Math.PI?1:0;
-              const cor=cores[i%cores.length];
-              svgs+=`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${xi2.toFixed(1)} ${yi2.toFixed(1)} A${ri} ${ri} 0 ${large} 0 ${xi1.toFixed(1)} ${yi1.toFixed(1)} Z" fill="${cor}" opacity="0.9"/>`;
-              startAngle=endAngle;
-            });
-            // Centro
-            svgs+=`<circle cx="70" cy="70" r="30" fill="var(--sur)"/>
-              <text x="70" y="66" text-anchor="middle" font-size="9" fill="var(--tx3)" font-family="sans-serif">TOTAL</text>
-              <text x="70" y="80" text-anchor="middle" font-size="10" fill="var(--txt)" font-weight="700" font-family="sans-serif">${fmtR(totalGeral).replace('R$ ','R$')}</text>`;
-            return svgs;
-          })()}
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px">Por Fornecedor</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink:0">
+          ${donut(lista,totalGeral)}
         </svg>
-        <!-- LEGENDA -->
-        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
           ${lista.slice(0,8).map((g,i)=>{
-            const total=g.realizado+g.previsto;
-            const pct=totalGeral>0?Math.round(total/totalGeral*100):0;
-            const cor=cores[i%cores.length];
-            return`<div style="display:flex;align-items:center;gap:7px">
-              <div style="width:10px;height:10px;border-radius:3px;background:${cor};flex-shrink:0"></div>
+            const tot=g.realizado+g.previsto;
+            const p=totalGeral>0?Math.round(tot/totalGeral*100):0;
+            return`<div style="display:flex;align-items:center;gap:6px;cursor:pointer" onclick="abrirDiarioData('${periodoSel==='mes'?mesHoje:periodoSel}','4.2.1','DEBIT','')">
+              <div style="width:9px;height:9px;border-radius:2px;background:${cores[i%cores.length]};flex-shrink:0"></div>
               <div style="flex:1;min-width:0">
-                <div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${g.nome}">${g.nome.split(' ').slice(0,2).join(' ')}</div>
-                <div style="font-size:9px;color:var(--tx3)">${pct}% · ${fmtR(total)}</div>
+                <div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${g.nome}">${g.nome.substring(0,22)}</div>
+                <div style="font-size:9px;color:var(--tx3)">${p}% · ${fmtR(tot)}</div>
               </div>
             </div>`;
           }).join('')}
-          ${lista.length>8?`<div style="font-size:10px;color:var(--tx3)">+${lista.length-8} outros...</div>`:''}
+          ${lista.length>8?`<div style="font-size:10px;color:var(--tx3)">+${lista.length-8} outros</div>`:''}
         </div>
       </div>
+    </div>`:''}
 
-      <!-- BARRAS POR FORNECEDOR -->
-      <div style="border-top:1px solid var(--bor);padding-top:12px">
-        <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px">Detalhamento</div>
-        ${lista.map((g,i)=>{
-          const total=g.realizado+g.previsto;
-          const pct=Math.round(total/metaForn*100);
-          const pctReal=Math.round(g.realizado/metaForn*100);
-          const cor=cores[i%cores.length];
-          return`<div style="margin-bottom:10px" onclick="abrirDiarioData('','4.2.1','DEBIT','')" style="cursor:pointer" title="Ver lançamentos de ${g.nome}">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <span style="font-size:11px;font-weight:600;color:var(--txt);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.nome}</span>
-              <div style="text-align:right;flex-shrink:0">
-                <span style="font-size:11px;font-weight:700;color:var(--red)">${fmtR(g.realizado)}</span>
-                ${g.previsto>0?`<span style="font-size:10px;color:#dc2626;opacity:.6"> + ${fmtR(g.previsto)} prev</span>`:''}
-              </div>
-            </div>
-            <div style="height:8px;background:var(--bor);border-radius:4px;overflow:hidden">
-              <div style="height:100%;width:${Math.min(100,pctReal)}%;background:${cor};border-radius:4px 0 0 4px;float:left"></div>
-              ${g.previsto>0?`<div style="height:100%;width:${Math.min(100-pctReal,Math.round(g.previsto/metaForn*100))}%;background:${cor};opacity:.35;float:left"></div>`:''}
-            </div>
-            <div style="font-size:9px;color:var(--tx3);margin-top:2px">${pct}% da meta · ${g.txs.length} lançamento${g.txs.length!==1?'s':''}</div>
-          </div>`;
-        }).join('')}
+    <!-- BARRAS POR MÊS (panorama) ou BARRAS POR FORNECEDOR (mês) -->
+    <div class="card cp">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px">
+        ${periodoSel==='panorama'?'Gastos mensais com Fornecedores (clique no mês para detalhar)':'Detalhamento por Fornecedor'}
       </div>
+
+      ${periodoSel==='panorama'?`
+        <!-- GRÁFICO DE BARRAS MENSAIS -->
+        <div style="width:100%;overflow-x:auto">
+          ${barrasMeses()}
+        </div>
+        <div style="display:flex;gap:14px;margin-top:8px;font-size:11px">
+          <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626;opacity:.9"></div>Realizado</div>
+          <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>Previsto</div>
+          <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626;opacity:.3;border:1px dashed #dc2626"></div>Linha de meta mensal</div>
+        </div>
+
+        <!-- TABELA PANORAMA -->
+        <div style="margin-top:14px;border-top:1px solid var(--bor);padding-top:12px">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Resumo por Mês</div>
+          <table style="width:100%;border-collapse:collapse;font-size:11px">
+            <thead><tr>
+              <th style="text-align:left;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">Mês</th>
+              <th style="text-align:right;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">Realizado</th>
+              <th style="text-align:right;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">Previsto</th>
+              <th style="text-align:right;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">Total</th>
+              <th style="text-align:right;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">vs Meta</th>
+            </tr></thead>
+            <tbody>
+              ${porMes.filter(m=>m.total>0).map(m=>{
+                const p=Math.round(m.total/metaForn*100);
+                const status=p>100?'var(--red)':p>80?'var(--yel)':'var(--grn)';
+                return`<tr style="border-bottom:1px solid var(--bor);cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()">
+                  <td style="padding:6px 8px;font-weight:600">${m.lbl}/26</td>
+                  <td style="padding:6px 8px;text-align:right;color:var(--red)">${m.real>0?fmtR(m.real):'—'}</td>
+                  <td style="padding:6px 8px;text-align:right;color:#dc2626;opacity:.7">${m.prev>0?fmtR(m.prev):'—'}</td>
+                  <td style="padding:6px 8px;text-align:right;font-weight:700;color:var(--red)">${fmtR(m.total)}</td>
+                  <td style="padding:6px 8px;text-align:right">
+                    <span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${status}22;color:${status};font-weight:700">${p}%</span>
+                  </td>
+                </tr>`;
+              }).join('')}
+              <tr style="background:var(--sur2);font-weight:700">
+                <td style="padding:6px 8px">TOTAL</td>
+                <td style="padding:6px 8px;text-align:right;color:var(--red)">${fmtR(porMes.reduce((s,m)=>s+m.real,0))}</td>
+                <td style="padding:6px 8px;text-align:right;color:#dc2626;opacity:.7">${fmtR(porMes.reduce((s,m)=>s+m.prev,0))}</td>
+                <td style="padding:6px 8px;text-align:right;color:var(--red)">${fmtR(porMes.reduce((s,m)=>s+m.total,0))}</td>
+                <td style="padding:6px 8px;text-align:right">
+                  <span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#dc262622;color:var(--red);font-weight:700">${Math.round(porMes.reduce((s,m)=>s+m.total,0)/metaForn/porMes.filter(m=>m.total>0).length*100)}%/mês</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `:`
+        <!-- BARRAS POR FORNECEDOR -->
+        <div style="max-height:350px;overflow-y:auto">
+          ${lista.map((g,i)=>{
+            const tot=g.realizado+g.previsto;
+            const pctR=Math.round(g.realizado/meta*100);
+            const pctP=Math.min(100-pctR,Math.round(g.previsto/meta*100));
+            const cor=cores[i%cores.length];
+            return`<div style="margin-bottom:12px;cursor:pointer" onclick="abrirDiarioData('${periodoSel==='mes'?mesHoje:periodoSel}','4.2.1','DEBIT','')" title="Ver lançamentos de ${g.nome}">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                <span style="font-size:12px;font-weight:600;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${g.nome}">${g.nome}</span>
+                <div style="text-align:right;flex-shrink:0">
+                  <span style="font-size:12px;font-weight:700;color:var(--red)">${fmtR(g.realizado)}</span>
+                  ${g.previsto>0?`<span style="font-size:10px;color:#dc2626;opacity:.6"> +${fmtR(g.previsto)}</span>`:''}
+                </div>
+              </div>
+              <div style="height:10px;background:var(--bor);border-radius:5px;overflow:hidden">
+                <div style="height:100%;width:${Math.min(100,pctR)}%;background:${cor};float:left;border-radius:5px 0 0 5px"></div>
+                ${g.previsto>0?`<div style="height:100%;width:${pctP}%;background:${cor};opacity:.35;float:left"></div>`:''}
+              </div>
+              <div style="font-size:9px;color:var(--tx3);margin-top:2px;display:flex;gap:8px">
+                <span>${Math.round(tot/meta*100)}% da meta</span>
+                <span>·</span>
+                <span>${g.txs.length} lançamento${g.txs.length!==1?'s':''}</span>
+                ${g.previsto>0?`<span>· <span style="color:#0369a1">${g.txs.filter(t=>t.status==='previsto').length} previstos</span></span>`:''}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      `}
     </div>
+  </div>
 
-    <!-- TABELA DETALHADA -->
-    <div class="card" style="overflow:hidden">
-      <div style="padding:12px 14px;border-bottom:1px solid var(--bor);font-size:13px;font-weight:700">Lançamentos por Fornecedor</div>
-      <div style="overflow-y:auto;max-height:600px">
-        ${lista.map((g,i)=>{
-          const cor=cores[i%cores.length];
-          const total=g.realizado+g.previsto;
-          return`<div style="border-bottom:1px solid var(--bor)">
-            <!-- CABEÇALHO FORNECEDOR -->
-            <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--sur2);cursor:pointer" onclick="abrirDiarioData('','4.2.1','DEBIT','')" title="Ver lançamentos">
-              <div style="width:28px;height:28px;border-radius:50%;background:${cor};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${g.nome.substring(0,1)}</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.nome}</div>
-                <div style="font-size:10px;color:var(--tx3)">${g.txs.length} lançamentos · ${Math.round(total/metaForn*100)}% da meta</div>
-              </div>
-              <div style="text-align:right;flex-shrink:0">
-                <div style="font-size:13px;font-weight:700;color:var(--red)">${fmtR(g.realizado)}</div>
-                ${g.previsto>0?`<div style="font-size:10px;color:#dc2626;opacity:.7">+${fmtR(g.previsto)} prev</div>`:''}
-              </div>
-            </div>
-            <!-- PARCELAS -->
-            ${g.txs.slice(0,5).map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 14px 6px 50px;border-top:1px solid var(--bor)">
-              <div style="flex:1;min-width:0">
-                <div style="font-size:11px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.desc}</div>
-                <div style="font-size:10px;color:var(--tx3)">${fmtD(t.date)} · ${t.meio||'PIX'}</div>
-              </div>
-              <div style="text-align:right;flex-shrink:0">
-                <span style="font-size:11px;font-weight:600;color:var(--red)">−${fmtR(t.amt)}</span>
-                <span style="display:block;font-size:9px;padding:1px 5px;border-radius:6px;background:${t.status==='previsto'?'#e0f2fe':t.status==='conciliado'?'var(--gbg)':'var(--ybg)'};color:${t.status==='previsto'?'#0369a1':t.status==='conciliado'?'var(--grn)':'var(--yel)'};margin-top:2px;text-align:center">${t.status}</span>
-              </div>
-            </div>`).join('')}
-            ${g.txs.length>5?`<div style="padding:5px 14px 8px 50px;font-size:10px;color:var(--sacc);cursor:pointer" onclick="abrirDiarioData('','4.2.1','DEBIT','')">+ ${g.txs.length-5} mais lançamentos →</div>`:''}
-          </div>`;
-        }).join('')}
-      </div>
+  <!-- TABELA DETALHADA DOS LANÇAMENTOS -->
+  <div class="card" style="overflow:hidden">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:13px;font-weight:700">Lançamentos ${periodoSel==='panorama'?'(Todos os períodos)':periodoSel==='mes'?'('+mesHoje+')':'('+periodoSel+')'}</span>
+      <span style="font-size:11px;color:var(--tx3)">${txSel.length} lançamentos · ${fmtR(totalGeral)}</span>
+    </div>
+    <div style="overflow-x:auto;max-height:300px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr>
+          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;position:sticky;top:0">Data</th>
+          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Fornecedor / Descrição</th>
+          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;position:sticky;top:0">Nota</th>
+          <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;position:sticky;top:0">Valor</th>
+          <th style="padding:7px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Status</th>
+        </tr></thead>
+        <tbody>
+          ${txSel.sort((a,b)=>a.date.localeCompare(b.date)).map(t=>{
+            const nf = t.desc.match(/NF[\s-]*(e\s*)?[Nº]*\s*([\d.]+)/i);
+            const nfNum = nf ? nf[2] : '—';
+            const nome = t.cli&&t.cli.length>2 ? t.cli : t.desc.replace(/PAGAMENTO PIX - |BOLETO /g,'').split(' - ')[0].substring(0,35);
+            return`<tr style="border-bottom:1px solid var(--bor);cursor:pointer" onclick="abrirDiarioData('${t.date.substring(0,7)}','4.2.1','DEBIT','${t.date}')" title="Ver no Livro Diário">
+              <td style="padding:7px 12px;font-size:11px;color:var(--tx3);white-space:nowrap">${fmtD(t.date)}</td>
+              <td style="padding:7px 12px;font-size:12px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.desc}">${nome}</td>
+              <td style="padding:7px 12px;font-size:11px;color:var(--tx3)">${nfNum}</td>
+              <td style="padding:7px 12px;text-align:right;font-size:12px;font-weight:700;color:var(--red)">−${fmtR(t.amt)}</td>
+              <td style="padding:7px 12px;text-align:center">
+                <span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:${t.status==='previsto'?'#e0f2fe':t.status==='conciliado'?'var(--gbg)':'var(--ybg)'};color:${t.status==='previsto'?'#0369a1':t.status==='conciliado'?'var(--grn)':'var(--yel)'}">${t.status}</span>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
     </div>
   </div>`;
+}
+
+
+
+// ════════════════════════════════
+// TRANSFERÊNCIAS ENTRE CONTAS
+// ════════════════════════════════
+function abrirTransf(id){
+  TX.forEach(t=>{ if(t.id!==id) t._showTransf=false; });
+  const t = TX.find(x=>x.id===id);
+  if(t){ t._showTransf=!t._showTransf; t._contaTransf=null; }
+  render();
+}
+
+function setContaTransf(id, conta){
+  const t = TX.find(x=>x.id===id);
+  if(t){ t._contaTransf=conta; }
+  render();
+}
+
+function confirmarTransf(id){
+  const t = TX.find(x=>x.id===id);
+  if(!t||!t._contaTransf){ toast('Selecione a conta de origem/destino!','warn'); return; }
+  t.status='transferencia';
+  t._showTransf=false;
+  saveEd(id,{status:'transferencia',cat:'transf',contaTransf:t._contaTransf});
+  // Criar lançamento espelho na outra conta (opcional — apenas marca)
+  toast(`🔄 Transferência registrada: ${t._contaTransf} → ${t.conta||'Sicredi'}`, 'ok');
+  openId=null;
+  const prox=TX.find(x=>x.status==='pendente');
+  openId=prox?prox.id:null;
+  render();
+}
+
+function cancelarTransf(id){
+  const t = TX.find(x=>x.id===id);
+  if(t){ t._showTransf=false; t._contaTransf=null; }
+  render();
 }
 
 // ════════════════════════════════
