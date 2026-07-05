@@ -1148,7 +1148,28 @@ function concTodos(){
 // ════════════════════════════════
 function renderJour(){
   // filtrar por data + busca
-  const txData = dataFiltro ? TX.filter(t=>t.date===dataFiltro) : TX;
+  // Filtro vindo do Fluxo de Caixa (clique em valor)
+  const cfMes = window._cfFiltroMes;
+  const cfCats = window._cfFiltroCats;
+  const cfTipo = window._cfFiltroTipo;
+
+  let txData;
+  if(cfMes){
+    // Drill-down do Fluxo de Caixa
+    txData = TX.filter(t=>{
+      const mes = t.date.substring(0,7);
+      const mesOk = mes === cfMes;
+      const catOk = !cfCats || cfCats.length===0 || cfCats.includes(t.cat);
+      const tipoOk = !cfTipo || t.type===cfTipo;
+      return mesOk && catOk && tipoOk;
+    });
+  } else if(dataFiltro){
+    txData = TX.filter(t=>t.date===dataFiltro);
+  } else if(window.dataFiltroMes){
+    txData = TX.filter(t=>t.date.startsWith(window.dataFiltroMes));
+  } else {
+    txData = TX;
+  }
   const fil = txData.filter(t=>!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase()));
   const tE = fil.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
   const tS = fil.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
@@ -1157,6 +1178,15 @@ function renderJour(){
   return `<div class="card">
     <!-- TOOLBAR -->
     <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      ${window._cfFiltroMes?`<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:var(--r)">
+        <span style="font-size:12px;color:#0369a1">📊 Fluxo de Caixa · ${window._cfFiltroMes} ${window._cfFiltroCats&&window._cfFiltroCats.length>0?'· '+window._cfFiltroCats.slice(0,3).join(', ')+(window._cfFiltroCats.length>3?'...':''):window._cfFiltroTipo==='CREDIT'?'· Todas Entradas':window._cfFiltroTipo==='DEBIT'?'· Todas Saídas':'· Todos'}</span>
+        <button class="btn" onclick="window._cfFiltroMes=null;window._cfFiltroCats=null;window.dataFiltroMes=null;go('cf',document.getElementById('ni-cf'))">
+          ← Voltar ao Fluxo de Caixa
+        </button>
+        <button class="btn" onclick="window._cfFiltroMes=null;window._cfFiltroCats=null;window.dataFiltroMes=null;render()">
+          ✕ Limpar filtro
+        </button>
+      </div>`:''}
       <div style="display:flex;align-items:center;gap:8px">
         <label style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px">Data</label>
         <input type="date" value="${dataFiltro}" onchange="dataFiltro=this.value;render()"
@@ -1196,6 +1226,16 @@ function renderJour(){
       </tbody>
     </table></div>
   </div>`;
+}
+
+function abrirDiario(mesISO, catCodesStr, tipo){
+  dataFiltro = '';
+  busca = '';
+  window._cfFiltroMes = mesISO || null;
+  window._cfFiltroCats = catCodesStr ? catCodesStr.split(',').filter(c=>c) : [];
+  window._cfFiltroTipo = tipo || null;
+  window.dataFiltroMes = mesISO || null;
+  go('jour', document.getElementById('ni-jour'));
 }
 
 function mudarDia(delta){
@@ -1298,13 +1338,28 @@ function renderCF(){
   const fornFut = futData.reduce((s,d)=>s+d.forn,0);
   const fornTotal = FORN.reduce((s,v)=>s+v,0);
 
-  function row(vals, isFut){
+  // Mapeamento mês → data ISO para filtro do livro diário
+  const MES_ISO = {
+    'Jan':'2026-01','Fev':'2026-02','Mar':'2026-03','Abr':'2026-04',
+    'Mai':'2026-05','Jun':'2026-06','Jul*':'2026-07','Ago*':'2026-08','Set*':'2026-09'
+  };
+
+  function row(vals, isFut, catCodes, tipo){
     const tot = vals.reduce((s,v)=>s+v,0);
     return vals.map((v,i)=>{
+      if(v===0) return '<td style="color:var(--tx3)">—</td>';
       const fut = i >= KEYS.length;
-      const s = fut ? `style="color:${v>0?'#059669':v<0?'#dc2626':'#9aa5b4'};font-style:italic"` : (v>0?'class="vp"':v<0?'class="vn"':'');
-      return `<td ${s}>${v!==0?fmtR(v):'—'}</td>`;
-    }).join('') + `<td style="font-weight:700;${tot>0?'color:var(--grn)':tot<0?'color:var(--red)':''}">${tot!==0?fmtR(tot):'—'}</td>`;
+      const mesLabel = meses[i];
+      const mesISO = MES_ISO[mesLabel]||'';
+      const color = fut
+        ? (v>0?'#059669':v<0?'#dc2626':'#9aa5b4')
+        : (v>0?'var(--grn)':v<0?'var(--red)':'var(--txt)');
+      // SEMPRE clicável se tem mesISO
+      const cats = catCodes ? catCodes.join(',') : '';
+      const tp = tipo||'';
+      const onClick = mesISO ? `onclick="abrirDiario('${mesISO}','${cats}','${tp}')"` : '';
+      return `<td style="color:${color};${fut?'font-style:italic':''}cursor:pointer;text-decoration:underline dotted" ${onClick} title="Ver lançamentos · ${mesLabel}">${fmtR(v)}</td>`;
+    }).join('') + `<td onclick="abrirDiario('','${catCodes?catCodes.join(','):''}','${tipo||''}')" style="font-weight:700;cursor:pointer;text-decoration:underline dotted;${tot>0?'color:var(--grn)':tot<0?'color:var(--red)':''}" title="Ver todos os lançamentos desta linha">${fmtR(tot)}</td>`;
   }
 
   const heads = meses.map((m,i)=>`<th style="text-align:right;white-space:nowrap;${i>=KEYS.length?'color:#0369a1;font-style:italic':''}">${m}/26</th>`).join('');
@@ -1360,40 +1415,40 @@ function renderCF(){
         </tr></thead>
         <tbody>
           <!-- RECEITA -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.r=!cfExp.r;render()">${cfExp.r?'▼':'▶'}</button>Receita/Faturamento</td>${row(REC)}</tr>
-          ${cfExp.r&&cfExp.lvl!==1?`<tr class="rs"><td>3.1.8 — Receita de Vendas</td>${row(REC)}</tr>`:''}
+          <tr class="rg"><td><button class="xb" onclick="cfExp.r=!cfExp.r;render()">${cfExp.r?'▼':'▶'}</button>Receita/Faturamento</td>${row(REC, false, null, 'CREDIT')}</tr>
+          ${cfExp.r&&cfExp.lvl!==1?`<tr class="rs"><td>3.1.8 — Receita de Vendas</td>${row(REC, false, null, 'CREDIT')}</tr>`:''}
 
           <!-- CUSTOS VARIÁVEIS -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.c=!cfExp.c;render()">${cfExp.c?'▼':'▶'}</button>Custos Variáveis</td>${row(cv)}</tr>
+          <tr class="rg"><td><button class="xb" onclick="cfExp.c=!cfExp.c;render()">${cfExp.c?'▼':'▶'}</button>Custos Variáveis</td>${row(cv, false, null, 'DEBIT')}</tr>
           ${cfExp.c&&cfExp.lvl!==1?`
-            <tr class="rs"><td>4.1 — Custos Tributários</td>${row(TRIB.map(v=>-v))}</tr>
-            <tr class="rs" style="background:#fff5f5"><td style="padding-left:26px;font-weight:700;color:var(--red)">4.2 — Fornecedores</td>${row(FORN.map(v=>-v))}</tr>
-            <tr class="rs"><td>4.4 — Custo com Vendas</td>${row(VEND.map(v=>-v))}</tr>
-            <tr class="rs"><td>4.6 — Custos com Motos</td>${row(MOTO.map(v=>-v))}</tr>`:''}
+            <tr class="rs"><td>4.1 — Custos Tributários</td>${row(TRIB.map(v=>-v), false, ['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'], 'DEBIT')}</tr>
+            <tr class="rs" style="background:#fff5f5"><td style="padding-left:26px;font-weight:700;color:var(--red)">4.2 — Fornecedores</td>${row(FORN.map(v=>-v), false, ['4.2.1','4.2.4'], 'DEBIT')}</tr>
+            <tr class="rs"><td>4.4 — Custo com Vendas</td>${row(VEND.map(v=>-v), false, ['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'], 'DEBIT')}</tr>
+            <tr class="rs"><td>4.6 — Custos com Motos</td>${row(MOTO.map(v=>-v), false, ['4.6.1','4.6.2','4.6.3'], 'DEBIT')}</tr>`:''}
 
-          <tr class="rr"><td>Margem de Contribuição</td>${row(mc)}</tr>
+          <tr class="rr"><td>Margem de Contribuição</td>${row(mc, false, null, null)}</tr>
 
           <!-- DESPESAS FIXAS -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.d=!cfExp.d;render()">${cfExp.d?'▼':'▶'}</button>Despesas Fixas</td>${row(df)}</tr>
+          <tr class="rg"><td><button class="xb" onclick="cfExp.d=!cfExp.d;render()">${cfExp.d?'▼':'▶'}</button>Despesas Fixas</td>${row(df, false, null, 'DEBIT')}</tr>
           ${cfExp.d&&cfExp.lvl!==1?`
-            <tr class="rs"><td>5.1+5.2 — Desp. Administrativas</td>${row(ADM.map(v=>-v))}</tr>
-            <tr class="rs"><td>5.3 — Desp. com Pessoal</td>${row(PES.map(v=>-v))}</tr>
-            <tr class="rs"><td>5.8 — Tráfego Pago</td>${row(TRAF.map(v=>-v))}</tr>`:''}
+            <tr class="rs"><td>5.1+5.2 — Desp. Administrativas</td>${row(ADM.map(v=>-v), false, ['5.1.1','5.1.99','5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'], 'DEBIT')}</tr>
+            <tr class="rs"><td>5.3 — Desp. com Pessoal</td>${row(PES.map(v=>-v), false, ['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'], 'DEBIT')}</tr>
+            <tr class="rs"><td>5.8 — Tráfego Pago</td>${row(TRAF.map(v=>-v), false, ['5.8.1','5.8.2'], 'DEBIT')}</tr>`:''}
 
-          <tr class="rr"><td>Lucro Op. Antes Investimentos</td>${row(lai)}</tr>
+          <tr class="rr"><td>Lucro Op. Antes Investimentos</td>${row(lai, false, null, null)}</tr>
 
           <!-- INVESTIMENTOS -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.i=!cfExp.i;render()">${cfExp.i?'▼':'▶'}</button>Investimentos DHFIT</td>${row(INV.map(v=>-v))}</tr>
+          <tr class="rg"><td><button class="xb" onclick="cfExp.i=!cfExp.i;render()">${cfExp.i?'▼':'▶'}</button>Investimentos DHFIT</td>${row(INV.map(v=>-v), false, ['6.4.1','6.4.2'], 'DEBIT')}</tr>
 
           <!-- NÃO OPERACIONAL -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.n=!cfExp.n;render()">${cfExp.n?'▼':'▶'}</button>Movimentações Não Operacionais</td>${row(no)}</tr>
+          <tr class="rg"><td><button class="xb" onclick="cfExp.n=!cfExp.n;render()">${cfExp.n?'▼':'▶'}</button>Movimentações Não Operacionais</td>${row(no, false, null, null)}</tr>
           ${cfExp.n&&cfExp.lvl!==1?`
-            <tr class="rs"><td>7.1 — Entradas não operacionais</td>${row(NOIN)}</tr>
-            <tr class="rs"><td>7.2 — Saídas não operacionais</td>${row(NOUT.map(v=>-v))}</tr>`:''}
+            <tr class="rs"><td>7.1 — Entradas não operacionais</td>${row(NOIN, false, ['7.1.4','7.1.6','7.1.7','7.1.99'], 'CREDIT')}</tr>
+            <tr class="rs"><td>7.2 — Saídas não operacionais</td>${row(NOUT.map(v=>-v), false, ['7.2.1','7.2.13','7.2.99'], 'DEBIT')}</tr>`:''}
 
           <!-- RESULTADO -->
-          <tr class="rl"><td>Resultado Líquido</td>${row(RES)}</tr>
-          <tr class="rr"><td>Saldo Final Sicredi</td>${row(SF)}</tr>
+          <tr class="rl"><td>Resultado Líquido</td>${row(RES, false, null, null)}</tr>
+          <tr class="rr"><td>Saldo Final Sicredi</td>${row(SF, false, null, null)}</tr>
         </tbody>
       </table></div>
     </div>
