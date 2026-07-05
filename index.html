@@ -960,6 +960,8 @@ function renderConc(){
   const ef=fil(ents), sf=fil(sais);
   const conc=TX.filter(t=>t.status==='conciliado').length;
   const pend=TX.filter(t=>t.status==='pendente').length;
+  const prev=TX.filter(t=>t.status==='previsto').length;
+  const totalPrev=TX.filter(t=>t.status==='previsto').reduce((s,t)=>s+t.amt,0);
   const tE=ents.reduce((s,t)=>s+t.amt,0);
   const tS=sais.reduce((s,t)=>s+t.amt,0);
   const pct=TX.length?Math.round(conc/TX.length*100):0;
