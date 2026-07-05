@@ -4,315 +4,288 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yampa Fin</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --sw:220px;
-  --sbg:#0d1f35;--sh:#1a3050;--sa:#1e3d62;--st:#c8d8e8;--sd:#6a8aaa;
-  --acc:#2563eb;--acl:#eff6ff;
+  --sw:200px;--sbg:#0d1f35;--sacc:#2563eb;
   --bg:#f0f2f5;--sur:#fff;--sur2:#f8f9fb;
   --bor:#e2e6eb;--bor2:#d0d5dd;
   --txt:#0f1923;--tx2:#4a5568;--tx3:#9aa5b4;
   --grn:#059669;--gbg:#ecfdf5;--gbr:#a7f3d0;
   --red:#dc2626;--rbg:#fef2f2;--rbr:#fca5a5;
-  --yel:#d97706;--ybg:#fffbeb;--ybr:#fde68a;
-  --r:8px;--sh1:0 1px 3px rgba(0,0,0,.08);
+  --yel:#d97706;--ybg:#fffbeb;
+  --r:8px;--sh:0 1px 3px rgba(0,0,0,.08);
 }
-@media(prefers-color-scheme:dark){:root{
-  --bg:#111;--sur:#1c1c1a;--sur2:#242422;--bor:#2c2c2a;--bor2:#3a3a38;
-  --txt:#f5f4f0;--tx2:#b0afa8;--tx3:#686760;
-  --gbg:#0a2a1f;--rbg:#2a0f0f;--ybg:#2a1f00;--acl:#042c53;
-}}
 body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;display:flex;height:100vh;overflow:hidden}
 
 /* SIDEBAR */
-.sb{width:var(--sw);background:var(--sbg);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:100;transition:width .2s;flex-shrink:0}
-.sb.col{width:56px}
-.sb-head{padding:14px 14px 8px;border-bottom:1px solid rgba(255,255,255,.07)}
-.logo{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.logo-i{width:30px;height:30px;background:var(--acc);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
-.logo-t{font-size:15px;font-weight:700;color:#fff;white-space:nowrap}
-.logo-t span{color:#60a5fa}
-.sb.col .logo-t,.sb.col .un,.sb.col .nl,.sb.col .nb,.sb.col .nsl{display:none}
-.ur{display:flex;align-items:center;gap:7px}
-.ua{width:26px;height:26px;border-radius:50%;background:#1e3d62;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#60a5fa;flex-shrink:0}
-.un{font-size:11px;color:var(--st);font-weight:500;white-space:nowrap}
+.sb{width:var(--sw);background:var(--sbg);display:flex;flex-direction:column;height:100vh;flex-shrink:0}
+.sb-logo{padding:14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.logo-ic{width:28px;height:28px;background:var(--sacc);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.logo-tx{font-size:15px;font-weight:700;color:#fff}.logo-tx span{color:#60a5fa}
+.user-row{display:flex;align-items:center;gap:7px}
+.ua{width:24px;height:24px;border-radius:50%;background:#1e3d62;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#60a5fa}
+.un{font-size:11px;color:#c8d8e8;font-weight:500}
 .nb-wrap{padding:8px 10px}
-.nb-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:7px;border-radius:var(--r);background:var(--acc);color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer}
+.nb-btn{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;padding:7px;border-radius:var(--r);background:var(--sacc);color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer}
 .nb-btn:hover{background:#1d4ed8}
-.sb.col .nb-btn span{display:none}
-/* sicredi live badge */
-.sc-badge{display:flex;align-items:center;gap:6px;padding:7px 12px;margin:4px 10px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:var(--r)}
-.sc-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.sc-info{flex:1;min-width:0}
-.sc-name{font-size:10px;font-weight:600;color:#86efac;white-space:nowrap;overflow:hidden}
-.sc-saldo{font-size:12px;font-weight:700;color:#4ade80}
-.sb.col .sc-info,.sb.col .sc-saldo{display:none}
-.sb.col .sc-badge{padding:5px;justify-content:center;margin:4px 8px}
-.snav{flex:1;overflow-y:auto;padding:6px 0;scrollbar-width:none}
+.sc-live{display:flex;align-items:center;gap:6px;padding:6px 10px;margin:0 8px 4px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:var(--r)}
+.sc-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sc-txt{font-size:10px;color:#86efac;font-weight:600;flex:1}
+.sc-saldo{font-size:11px;font-weight:700;color:#4ade80}
+.snav{flex:1;overflow-y:auto;padding:4px 0;scrollbar-width:none}
 .snav::-webkit-scrollbar{display:none}
-.nsg{padding:6px 14px 2px}
-.nsl{font-size:10px;font-weight:600;color:var(--sd);text-transform:uppercase;letter-spacing:.7px}
-.ni{display:flex;align-items:center;gap:9px;padding:7px 14px;cursor:pointer;color:var(--st);text-decoration:none;position:relative;transition:.1s;border:none;background:none;width:100%;text-align:left}
-.ni:hover{background:var(--sh)}
-.ni.act{background:var(--sa);color:#fff}
-.ni.act::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--acc);border-radius:0 2px 2px 0}
-.ni svg{width:17px;height:17px;flex-shrink:0;opacity:.75}
+.ng{padding:6px 12px 2px;font-size:9px;font-weight:700;color:#6a8aaa;text-transform:uppercase;letter-spacing:.7px}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;color:#c8d8e8;border:none;background:none;width:100%;text-align:left;font-size:12px;font-weight:500;position:relative;transition:.1s}
+.ni:hover{background:#1a3050}
+.ni.act{background:#1e3d62;color:#fff}
+.ni.act::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sacc);border-radius:0 2px 2px 0}
+.ni svg{width:15px;height:15px;flex-shrink:0;opacity:.75}
 .ni.act svg{opacity:1}
-.nl{font-size:12px;white-space:nowrap;font-weight:500}
-.nb{font-size:9px;padding:1px 5px;border-radius:8px;background:#1e40af;color:#bfdbfe;font-weight:600;margin-left:auto}
-.sbf{padding:8px 14px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
-.sb.col .sbf{justify-content:center}
-.fbtn{background:none;border:none;color:var(--sd);cursor:pointer;padding:4px;border-radius:5px;display:flex;align-items:center}
-.fbtn:hover{background:rgba(255,255,255,.07);color:var(--st)}
+.ni-badge{font-size:9px;padding:1px 5px;border-radius:8px;background:#1e40af;color:#bfdbfe;font-weight:600;margin-left:auto}
+.sbf{padding:8px 12px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between}
+.fbtn{background:none;border:none;color:#6a8aaa;cursor:pointer;padding:4px;border-radius:5px;display:flex}
+.fbtn:hover{background:rgba(255,255,255,.07);color:#c8d8e8}
 
 /* MAIN */
-.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;transition:margin-left .2s}
-.main.exp{margin-left:56px}
-.topbar{background:var(--sur);border-bottom:1px solid var(--bor);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--sh1)}
-.tb-left{display:flex;flex-direction:column}
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0}
+.topbar{background:var(--sur);border-bottom:1px solid var(--bor);padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--sh)}
 .pt{font-size:15px;font-weight:700}
-.ps{font-size:11px;color:var(--tx3);margin-top:1px}
-.tb-right{display:flex;align-items:center;gap:7px}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:var(--r);border:1px solid var(--bor2);background:var(--sur);color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;transition:.12s;white-space:nowrap}
-.btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acl)}
-.btn.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+.ps{font-size:11px;color:var(--tx3)}
+.tbr{display:flex;align-items:center;gap:7px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);border:1px solid var(--bor2);background:var(--sur);color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;transition:.1s;white-space:nowrap}
+.btn:hover{border-color:var(--sacc);color:var(--sacc)}
+.btn.pri{background:var(--sacc);color:#fff;border-color:var(--sacc)}
 .btn.pri:hover{background:#1d4ed8}
 .btn.grn{background:var(--grn);color:#fff;border-color:var(--grn)}
-.sync-ok{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:3px 9px}
-.ct{flex:1;overflow:auto;padding:14px 16px;scrollbar-width:thin}
+.sync-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:3px 9px}
 
-/* CARDS/KPIS */
-.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.kc{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh1)}
-.kl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;font-weight:600}
-.kv{font-size:18px;font-weight:700;letter-spacing:-.3px}
-.kv.g{color:var(--grn)}.kv.r{color:var(--red)}.kv.n{color:var(--txt)}
-.ks{font-size:11px;color:var(--tx3);margin-top:3px}
+.ct{flex:1;overflow-y:auto;padding:16px 20px}
 
-/* CONCILIAÇÃO — principal */
-.conc-wrap{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh1)}
-.conc-head{padding:12px 16px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.conc-title{font-size:13px;font-weight:700;flex:1}
-.conc-filters{display:flex;gap:5px}
+/* CONCILIAÇÃO LAYOUT */
+.conc-page{display:flex;flex-direction:column;height:calc(100vh - 50px);padding:12px 16px;gap:10px;overflow:hidden}
+.conc-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;flex-shrink:0}
+.kpi{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:10px 14px;box-shadow:var(--sh)}
+.kl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;font-weight:600;margin-bottom:3px}
+.kv{font-size:17px;font-weight:700}
+.kv.g{color:var(--grn)}.kv.r{color:var(--red)}.kv.y{color:var(--yel)}.kv.n{color:var(--txt)}
+.ks{font-size:10px;color:var(--tx3);margin-top:2px}
+.conc-toolbar{display:flex;align-items:center;gap:7px;flex-shrink:0;flex-wrap:wrap}
 .fchip{padding:4px 10px;border-radius:20px;border:1px solid var(--bor2);background:transparent;font-size:11px;font-weight:500;color:var(--tx2);cursor:pointer;transition:.1s}
-.fchip.on{background:var(--acc);color:#fff;border-color:var(--acc)}
-.search-in{padding:6px 10px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt);background:var(--sur);min-width:180px}
-.search-in:focus{outline:none;border-color:var(--acc)}
-.conc-stats{display:flex;gap:14px;padding:8px 16px;background:var(--sur2);border-bottom:1px solid var(--bor)}
-.cstat{font-size:11px;font-weight:600}
-.cstat.g{color:var(--grn)}.cstat.r{color:var(--red)}.cstat.y{color:var(--yel)}.cstat.n{color:var(--tx3)}
-/* LINHA de transação */
-.tx-list{max-height:calc(100vh - 320px);overflow-y:auto}
-.tx-item{border-bottom:1px solid var(--bor);transition:.1s}
-.tx-item:last-child{border-bottom:none}
-.tx-item:hover{background:var(--sur2)}
-.tx-item.expanded{background:var(--acl)}
-.tx-row{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer}
-.tx-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--bor2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:.1s;background:var(--sur)}
-.tx-check.ok{background:var(--grn);border-color:var(--grn);color:#fff}
-.tx-check.pend{background:var(--ybg);border-color:var(--yel)}
-.tx-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.tx-info{flex:1;min-width:0}
-.tx-desc{font-size:13px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
-.tx-meta{font-size:11px;color:var(--tx3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
-.tx-cat{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;white-space:nowrap;flex-shrink:0}
-.tx-amt{font-size:13px;font-weight:700;min-width:90px;text-align:right;flex-shrink:0}
-.tx-amt.g{color:var(--grn)}.tx-amt.r{color:var(--red)}
-.tx-expand-icon{color:var(--tx3);font-size:12px;flex-shrink:0;transition:.2s}
-.tx-item.expanded .tx-expand-icon{transform:rotate(180deg)}
+.fchip.on{background:var(--sacc);color:#fff;border-color:var(--sacc)}
+.srch{flex:1;min-width:160px;padding:6px 10px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt);background:var(--sur)}
+.srch:focus{outline:none;border-color:var(--sacc)}
+.conc-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-height:0}
+.col-box{display:flex;flex-direction:column;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.col-head{padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.col-title{font-size:13px;font-weight:700}
+.col-total{font-size:14px;font-weight:700}
+.col-sub{font-size:10px;color:var(--tx3);margin-top:1px}
+.col-list{flex:1;overflow-y:auto}
 
-/* PAINEL DE EDIÇÃO (expandido) */
-.tx-edit{padding:14px 16px 16px 44px;border-top:1px solid var(--bor);background:var(--sur)}
-.edit-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
-.edit-grid.two{grid-template-columns:1fr 1fr}
-.eg{display:flex;flex-direction:column;gap:3px}
-.eg label{font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px}
-.eg input,.eg select,.eg textarea{padding:7px 9px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt);background:var(--sur);width:100%}
-.eg input:focus,.eg select:focus,.eg textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 2px rgba(37,99,235,.1)}
-.eg select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%239aa5b4' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:24px}
-.edit-actions{display:flex;align-items:center;gap:8px;margin-top:4px}
-.btn-conc{padding:7px 16px;border-radius:var(--r);border:none;font-size:12px;font-weight:600;cursor:pointer;transition:.12s}
-.btn-conc.ok{background:var(--grn);color:#fff}
-.btn-conc.ok:hover{background:#047857}
-.btn-conc.skip{background:var(--sur);color:var(--tx2);border:1px solid var(--bor2)}
-.btn-conc.skip:hover{border-color:var(--red);color:var(--red)}
-.btn-conc.undo{background:var(--ybg);color:var(--yel);border:1px solid var(--ybr)}
-.status-tag{font-size:11px;padding:3px 9px;border-radius:8px;font-weight:600}
-.status-tag.ok{background:var(--gbg);color:var(--grn)}
-.status-tag.pend{background:var(--ybg);color:var(--yel)}
-.status-tag.ig{background:var(--sur2);color:var(--tx3)}
+/* LINHA TX */
+.tx{border-bottom:1px solid var(--bor);transition:.1s}
+.tx:last-child{border-bottom:none}
+.tx-row{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer}
+.tx:hover .tx-row{background:var(--sur2)}
+.tx.open .tx-row{background:#f0f7ff}
+.tx-ck{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--bor2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;font-size:11px;font-weight:700;transition:.1s}
+.tx-ck.ok{background:var(--grn);border-color:var(--grn);color:#fff}
+.tx-ck.ig{background:var(--sur2);border-color:var(--bor2);color:var(--tx3)}
+.tx-ck.pend{background:var(--ybg);border-color:var(--yel)}
+.tx-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.tx-body{flex:1;min-width:0}
+.tx-desc{font-size:12px;font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-meta{font-size:10px;color:var(--tx3);margin-top:1px;display:flex;gap:6px}
+.tx-cat{font-size:10px;padding:1px 6px;border-radius:6px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.tx-amt{font-size:12px;font-weight:700;flex-shrink:0;min-width:75px;text-align:right}
+.tx-amt.g{color:var(--grn)}.tx-amt.r{color:var(--red)}
+.tx-arr{font-size:11px;color:var(--tx3);flex-shrink:0;transition:.2s}
+.tx.open .tx-arr{transform:rotate(180deg)}
+
+/* PAINEL EDIÇÃO */
+.tx-edit{background:#f8faff;border-top:1px solid var(--bor);padding:12px 14px 14px}
+.edit-row{display:grid;gap:8px;margin-bottom:8px}
+.edit-2{grid-template-columns:1fr 1fr}
+.edit-3{grid-template-columns:1fr 1fr 1fr}
+.eg label{display:block;font-size:9px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.eg input,.eg select{width:100%;padding:6px 8px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt);background:#fff}
+.eg input:focus,.eg select:focus{outline:none;border-color:var(--sacc)}
+.eg select{appearance:none;cursor:pointer}
+.edit-btns{display:flex;align-items:center;gap:7px;margin-top:10px}
+.eb{padding:6px 14px;border-radius:var(--r);border:none;font-size:12px;font-weight:600;cursor:pointer;transition:.1s}
+.eb.ok{background:var(--grn);color:#fff}
+.eb.ok:hover{background:#047857}
+.eb.undo{background:var(--ybg);color:var(--yel);border:1px solid var(--yel)}
+.eb.skip{background:var(--rbg);color:var(--red);border:1px solid var(--rbr)}
+.no-cat{font-size:10px;background:#fee2e2;color:#dc2626;padding:1px 5px;border-radius:4px;margin-left:5px;font-weight:600}
 
 /* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:var(--sur);border-radius:12px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.mh{padding:16px 18px 12px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--sur);z-index:1}
+.modal{background:var(--sur);border-radius:12px;width:480px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.mh{padding:14px 16px 12px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--sur)}
 .mt{font-size:14px;font-weight:700}
-.mc{background:none;border:none;font-size:20px;color:var(--tx3);cursor:pointer;padding:0 4px}
-.mb{padding:16px 18px}
-.mf{padding:12px 18px;border-top:1px solid var(--bor);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--sur)}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.fr.f1{grid-template-columns:1fr}
+.mc{background:none;border:none;font-size:20px;color:var(--tx3);cursor:pointer;padding:0 4px;line-height:1}
+.mb{padding:14px 16px}
+.mf{padding:10px 16px;border-top:1px solid var(--bor);display:flex;justify-content:flex-end;gap:7px;position:sticky;bottom:0;background:var(--sur)}
+.fr{display:grid;gap:9px;margin-bottom:9px}
+.fr2{grid-template-columns:1fr 1fr}
 .fg{display:flex;flex-direction:column;gap:3px}
 .fg label{font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px}
-.fg input,.fg select{padding:8px 10px;border:1px solid var(--bor2);border-radius:var(--r);font-size:13px;color:var(--txt);background:var(--sur);width:100%}
-.fg input:focus,.fg select:focus{outline:none;border-color:var(--acc)}
-.tipo-g{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
-.tipo-b{padding:10px 6px;border-radius:var(--r);border:1.5px solid var(--bor2);background:var(--sur);cursor:pointer;text-align:center;transition:.12s}
-.tipo-b:hover,.tipo-b.sel{border-color:var(--acc);background:var(--acl)}
-.tipo-ic{font-size:17px;margin-bottom:3px}
+.fg input,.fg select{padding:7px 9px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--txt);background:var(--sur);width:100%}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--sacc)}
+.tipo-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.tipo-b{padding:10px 4px;border-radius:var(--r);border:1.5px solid var(--bor2);background:var(--sur);cursor:pointer;text-align:center;transition:.1s}
+.tipo-b:hover,.tipo-b.sel{border-color:var(--sacc);background:#eff6ff}
+.tipo-ic{font-size:16px;margin-bottom:2px}
 .tipo-lb{font-size:10px;font-weight:600;color:var(--tx2)}
 
-/* CASH FLOW */
-.cft{width:100%;border-collapse:collapse;min-width:900px}
-.cft th{padding:7px 12px;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-align:right;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px}
-.cft th:first-child{text-align:left;min-width:200px;position:sticky;left:0;z-index:2;background:var(--sur2)}
-.cft td{padding:6px 12px;border-bottom:1px solid var(--bor);font-size:12px;text-align:right;white-space:nowrap}
-.cft td:first-child{text-align:left;font-weight:500;position:sticky;left:0;background:var(--sur);z-index:1}
-.cft .rg td{background:#f5f8ff!important;font-weight:700;font-size:13px}
-.cft .rs td:first-child{padding-left:26px;font-weight:400;color:var(--tx2)}
-.cft .rr td{background:#e8f0fe!important;font-weight:700}
-.cft .rr td:first-child{color:var(--acc)}
-.cft .rl td{background:#0d1f35!important;color:#fff!important;font-weight:700}
-.cft .rl td:first-child{color:#60a5fa!important}
-.vp{color:var(--grn)}.vn{color:var(--red)}.vz{color:var(--txt)}
-.xb{background:none;border:none;cursor:pointer;color:var(--tx3);font-size:12px;margin-right:3px;display:inline-block;width:14px;text-align:center}
-.xb:hover{color:var(--acc)}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:#0d1f35;color:#fff;padding:12px 18px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:999;transform:translateY(80px);opacity:0;transition:.3s;max-width:320px}
-.toast.show{transform:translateY(0);opacity:1}
-.toast.ok{background:var(--grn)}.toast.err{background:var(--red)}
-
-/* PAINEL TEAM */
-.time-p{position:fixed;right:0;top:0;width:280px;height:100vh;background:var(--sur);border-left:1px solid var(--bor);z-index:150;transform:translateX(100%);transition:.25s;box-shadow:-4px 0 20px rgba(0,0,0,.1)}
+/* TIME PANEL */
+.time-p{position:fixed;right:0;top:0;width:260px;height:100vh;background:var(--sur);border-left:1px solid var(--bor);z-index:150;transform:translateX(100%);transition:.25s;box-shadow:-4px 0 20px rgba(0,0,0,.1)}
 .time-p.open{transform:translateX(0)}
-.tph{padding:14px 16px;border-bottom:1px solid var(--bor);display:flex;justify-content:space-between;align-items:center}
+.tph{padding:12px 14px;border-bottom:1px solid var(--bor);display:flex;justify-content:space-between;align-items:center}
 .tpt{font-size:13px;font-weight:700}
 .tpc{background:none;border:none;font-size:18px;color:var(--tx3);cursor:pointer}
-.ai-c{padding:12px 14px;border-bottom:1px solid var(--bor);cursor:pointer;transition:.1s}
+.ai-c{padding:11px 14px;border-bottom:1px solid var(--bor);cursor:pointer;transition:.1s}
 .ai-c:hover{background:var(--sur2)}
 .ai-h{display:flex;align-items:center;gap:8px;margin-bottom:3px}
-.ai-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.ai-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
 .ai-n{font-size:12px;font-weight:600}
 .ai-r{font-size:10px;color:var(--tx3)}
-.ai-s{font-size:10px;padding:2px 6px;border-radius:7px;font-weight:600;margin-left:auto}
+.ai-s{font-size:10px;padding:1px 6px;border-radius:6px;font-weight:600;margin-left:auto}
 .ai-s.on{background:var(--gbg);color:var(--grn)}
 .ai-s.off{background:var(--sur2);color:var(--tx3);border:1px solid var(--bor)}
 .ai-d{font-size:11px;color:var(--tx2)}
 
-/* EMPTY / SKELETON */
-.empty{text-align:center;padding:50px 20px;color:var(--tx3)}
-.sk{background:linear-gradient(90deg,var(--bor) 25%,var(--sur2) 50%,var(--bor) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:5px}
-@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:#0d1f35;color:#fff;padding:10px 16px;border-radius:var(--r);font-size:12px;font-weight:500;z-index:999;opacity:0;transform:translateY(20px);transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--grn)}.toast.err{background:var(--red)}.toast.warn{background:var(--yel)}
 
-/* GOALS */
+/* PAINEL/JOURNAL */
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);box-shadow:var(--sh)}
+.cp{padding:14px 16px}
+.sec{font-size:12px;font-weight:700;color:var(--txt);margin-bottom:10px}
+table{width:100%;border-collapse:collapse}
+th{padding:7px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--bor);font-size:12px;color:var(--tx2);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--sur2)}
+.pill{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600}
+.pill.ok{background:var(--gbg);color:var(--grn)}
+.pill.pend{background:var(--ybg);color:var(--yel)}
+.pill.ig{background:var(--sur2);color:var(--tx3)}
+
+/* CF */
+.cft{min-width:800px}
+.cft th{text-align:right}.cft th:first-child{text-align:left;min-width:180px;position:sticky;left:0;z-index:2}
+.cft td{text-align:right}.cft td:first-child{text-align:left;position:sticky;left:0;background:var(--sur)}
+.rg td{background:#f5f8ff!important;font-weight:700;font-size:13px}
+.rs td:first-child{padding-left:24px;font-weight:400;color:var(--tx2)}
+.rr td{background:#e8f0fe!important;font-weight:700;color:var(--sacc)}
+.rl td{background:#0d1f35!important;color:#fff!important;font-weight:700}
+.rl td:first-child{color:#60a5fa!important}
+.vp{color:var(--grn)}.vn{color:var(--red)}
+.xb{background:none;border:none;cursor:pointer;color:var(--tx3);font-size:11px;margin-right:3px;width:14px;display:inline-block}
+.xb:hover{color:var(--sacc)}
+
+/* METAS */
 .gg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.gc{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh1)}
-.gch{display:flex;justify-content:space-between;margin-bottom:7px}
-.gct{font-size:12px;font-weight:700}
-.gcs{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600}
-.gb{height:6px;background:var(--bor);border-radius:3px;overflow:hidden;margin:6px 0}
+.gc{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh)}
+.gb{height:6px;background:var(--bor);border-radius:3px;overflow:hidden;margin:8px 0}
 .gf{height:100%;border-radius:3px}
-.gn{display:flex;justify-content:space-between;font-size:10px;color:var(--tx3)}
 
 @media(max-width:768px){
-  .sb{width:56px}.main{margin-left:56px}
-  .logo-t,.un,.nl,.nb,.nsl,.sc-info,.sc-saldo{display:none!important}
-  .kgrid{grid-template-columns:1fr 1fr}
-  .edit-grid{grid-template-columns:1fr 1fr}
-  .gg{grid-template-columns:1fr}
+  .sb{width:48px}.snav .ni span,.ng,.logo-tx,.un,.sc-txt,.sc-saldo{display:none}
+  .conc-cols{grid-template-columns:1fr}
+  .conc-kpis{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 <body>
 
-<aside class="sb" id="sb">
-  <div class="sb-head">
-    <div class="logo">
-      <div class="logo-i">YF</div>
-      <span class="logo-t">Yampa<span>Fin</span></span>
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="logo-row">
+      <div class="logo-ic">YF</div>
+      <span class="logo-tx">Yampa<span>Fin</span></span>
     </div>
-    <div class="ur">
+    <div class="user-row">
       <div class="ua">FE</div>
       <span class="un">Felipe Elias</span>
     </div>
   </div>
   <div class="nb-wrap">
     <button class="nb-btn" onclick="openModal()">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      <span>Novo Lançamento</span>
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Novo Lançamento
     </button>
   </div>
-  <div class="sc-badge">
+  <div class="sc-live">
     <div class="sc-dot"></div>
-    <div class="sc-info">
-      <div class="sc-name">Sicredi · 38.364.354/0001-98</div>
-    </div>
-    <div class="sc-saldo" id="sb-saldo">R$ 596,23</div>
+    <span class="sc-txt">Sicredi · 04/07/2026</span>
+    <span class="sc-saldo" id="sb-saldo">R$ 432,06</span>
   </div>
   <nav class="snav">
-    <div class="nsg"><span class="nsl">Controle</span></div>
-    <button class="ni act" id="ni-dashboard" onclick="go('dashboard',this)">
+    <div class="ng">Controle</div>
+    <button class="ni act" id="ni-dash" onclick="go('dash',this)">
       <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      <span class="nl">Painel</span>
+      <span>Painel</span>
     </button>
-    <button class="ni" id="ni-conciliacao" onclick="go('conciliacao',this)">
+    <button class="ni" id="ni-conc" onclick="go('conc',this)">
       <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      <span class="nl">Conciliação</span>
-      <span class="nb" id="nb-pend">0</span>
+      <span>Conciliação</span>
+      <span class="ni-badge" id="badge-pend">0</span>
     </button>
-    <button class="ni" id="ni-journal" onclick="go('journal',this)">
+    <button class="ni" id="ni-jour" onclick="go('jour',this)">
       <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      <span class="nl">Livro Diário</span>
+      <span>Livro Diário</span>
     </button>
-    <button class="ni" id="ni-cashflow" onclick="go('cashflow',this)">
+    <button class="ni" id="ni-cf" onclick="go('cf',this)">
       <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <span class="nl">Fluxo de Caixa</span>
+      <span>Fluxo de Caixa</span>
     </button>
-    <div class="nsg" style="margin-top:4px"><span class="nsl">Resultado</span></div>
-    <button class="ni" id="ni-goals" onclick="go('goals',this)">
+    <div class="ng" style="margin-top:6px">Resultado</div>
+    <button class="ni" id="ni-metas" onclick="go('metas',this)">
       <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      <span class="nl">Metas</span>
-      <span class="nb">BETA</span>
+      <span>Metas</span>
+      <span class="ni-badge">BETA</span>
     </button>
   </nav>
   <div class="sbf">
     <button class="fbtn" onclick="toggleTime()" title="Time Financeiro">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    </button>
-    <button class="fbtn" onclick="toggleSB()" id="col-btn">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" id="col-ic"><path d="M15 18l-6-6 6-6"/></svg>
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     </button>
   </div>
 </aside>
 
-<div class="main" id="main">
+<!-- MAIN -->
+<div class="main">
   <div class="topbar">
-    <div class="tb-left">
+    <div>
       <div class="pt" id="pt">Painel</div>
-      <div class="ps" id="ps">Visão geral · Sicredi Empresas</div>
+      <div class="ps" id="ps">Sicredi Empresas · 04/07/2026</div>
     </div>
-    <div class="tb-right">
-      <div class="sync-ok" id="sync-st">
+    <div class="tbr">
+      <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Sicredi · 29/06 · 21:44
+        Sicredi · 04/07 · 20:04
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" onclick="toggleTime()">Time</button>
     </div>
   </div>
-  <div class="ct" id="ct"></div>
+  <div id="ct" class="ct"></div>
 </div>
 
-<!-- MODAL LANÇAMENTO -->
+<!-- MODAL NOVO LANÇAMENTO -->
 <div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="mh"><div class="mt">Novo Lançamento</div><button class="mc" onclick="closeModal()">×</button></div>
+    <div class="mh"><span class="mt">Novo Lançamento</span><button class="mc" onclick="closeModal()">×</button></div>
     <div class="mb">
       <div class="tipo-g">
         <div class="tipo-b sel" onclick="selTipo(this,'entrada')"><div class="tipo-ic">📈</div><div class="tipo-lb" style="color:#059669">Entrada</div></div>
@@ -320,20 +293,18 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
         <div class="tipo-b" onclick="selTipo(this,'fantasma')"><div class="tipo-ic">👻</div><div class="tipo-lb">Fantasma</div></div>
       </div>
-      <div class="fr">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-06-29"></div>
-        <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01"></div>
+      <div class="fr fr2">
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-07-04"></div>
+        <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
-      <div class="fr f1">
-        <div class="fg"><label>Descrição</label><input type="text" id="m-desc" placeholder="Ex: Pagamento DHFIT Distribuidora"></div>
-      </div>
-      <div class="fr">
-        <div class="fg"><label>Plano de Conta</label><select id="m-cat">${getCatOptions()}</select></div>
+      <div class="fr"><div class="fg"><label>Descrição</label><input type="text" id="m-desc" placeholder="Ex: Pagamento DHFIT Distribuidora"></div></div>
+      <div class="fr fr2">
+        <div class="fg"><label>Plano de Conta</label><select id="m-cat" style="appearance:none"></select></div>
         <div class="fg"><label>Meio de Pagamento</label>
-          <select id="m-meio"><option>PIX</option><option>Boleto</option><option>Transferência</option><option>Cartão</option><option>Débito Automático</option><option>Dinheiro</option></select>
+          <select id="m-meio"><option>PIX</option><option>Boleto</option><option>TED</option><option>Cartão</option><option>Débito Automático</option><option>Dinheiro</option></select>
         </div>
       </div>
-      <div class="fr">
+      <div class="fr fr2">
         <div class="fg"><label>Cliente / Fornecedor</label><input type="text" id="m-cli" placeholder="Nome ou CNPJ"></div>
         <div class="fg"><label>Centro de Custo</label>
           <select id="m-cc"><option>Yampa Suplementos</option><option>DHFIT Distribuidora</option><option>MotoRun Delivery</option><option>Holding</option></select>
@@ -342,599 +313,509 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
     </div>
     <div class="mf">
       <button class="btn" onclick="closeModal()">Cancelar</button>
-      <button class="btn pri" onclick="salvarManual()">Salvar</button>
+      <button class="btn pri" onclick="salvarManual()">Salvar Lançamento</button>
     </div>
   </div>
 </div>
 
-<!-- TEAM -->
+<!-- TIME FINANCEIRO -->
 <div class="time-p" id="time-p">
-  <div class="tph"><div class="tpt">⚡ Time Financeiro</div><button class="tpc" onclick="toggleTime()">×</button></div>
+  <div class="tph"><span class="tpt">⚡ Time Financeiro</span><button class="tpc" onclick="toggleTime()">×</button></div>
   <div class="ai-c"><div class="ai-h"><div class="ai-av" style="background:#6366f1">YG</div><div><div class="ai-n">Yago</div><div class="ai-r">Assistente · Automação</div></div><span class="ai-s off">Em breve</span></div><div class="ai-d">Automação de fluxo de caixa e conciliação</div></div>
   <div class="ai-c"><div class="ai-h"><div class="ai-av" style="background:#ec4899">YN</div><div><div class="ai-n">Yana</div><div class="ai-r">Consultora · Estratégia</div></div><span class="ai-s off">Em breve</span></div><div class="ai-d">Insights para maximizar lucratividade</div></div>
   <div class="ai-c"><div class="ai-h"><div class="ai-av" style="background:#10b981">SP</div><div><div class="ai-n">Suporte</div><div class="ai-r">Técnico</div></div><span class="ai-s on">● Ativo</span></div><div class="ai-d">Apoio técnico e dúvidas</div></div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════
-// FIREBASE CONFIG
-// ═══════════════════════════════════════
-const FB_CONFIG = {
-  apiKey:"AIzaSyDemo-substitua-pela-sua-chave",
-  authDomain:"yampa-fin.firebaseapp.com",
-  databaseURL:"https://yampa-fin-default-rtdb.firebaseio.com",
-  projectId:"yampa-fin",
-  storageBucket:"yampa-fin.appspot.com",
-  messagingSenderId:"000000000000",
-  appId:"1:000000000000:web:000000000000000000"
-};
-
-let db = null;
-let TX = []; // transações em memória
-let EDITED = {}; // edições locais {id: {cat, desc, cli, obs, status}}
-
-// Tenta conectar Firebase, mas app funciona offline também
-try {
-  firebase.initializeApp(FB_CONFIG);
-  db = firebase.database();
-  // Carregar edições salvas
-  db.ref('yampa_fin/edicoes').once('value').then(snap => {
-    if(snap.val()) EDITED = snap.val();
-    console.log('Firebase conectado. Edições carregadas:', Object.keys(EDITED).length);
-  }).catch(()=>console.log('Firebase offline — usando localStorage'));
-} catch(e) {
-  console.log('Firebase não configurado — usando localStorage');
-}
-
-// Fallback localStorage
-function saveLocal(id, data) {
-  EDITED[id] = {...(EDITED[id]||{}), ...data};
-  try { localStorage.setItem('yampa_edited', JSON.stringify(EDITED)); } catch(e){}
-  if(db) db.ref('yampa_fin/edicoes/'+id).update(data).catch(()=>{});
-}
-
-function loadLocal() {
-  try {
-    const s = localStorage.getItem('yampa_edited');
-    if(s) EDITED = {...JSON.parse(s), ...EDITED};
-  } catch(e){}
-}
-loadLocal();
-
-// ═══════════════════════════════════════
+// ════════════════════════════════
 // CATEGORIAS YAMPA
-// ═══════════════════════════════════════
+// ════════════════════════════════
 const CATS = [
-  {code:'3.1.8',nome:'Receita de Vendas',grupo:'Receitas',cor:'#059669'},
-  {code:'4.1.4',nome:'PIS/COFINS/ICMS',grupo:'Custos Tributários',cor:'#e34948'},
-  {code:'4.1.1',nome:'Imposto Receita Federal',grupo:'Custos Tributários',cor:'#e34948'},
-  {code:'4.2.1',nome:'Fornecedores',grupo:'Custos com Fornecedores',cor:'#d03b3b'},
-  {code:'4.2.4',nome:'Juros por atraso',grupo:'Custos com Fornecedores',cor:'#d03b3b'},
-  {code:'4.3.1',nome:'Custo com Sacolas DH',grupo:'Custo com Embalagens',cor:'#eb6834'},
-  {code:'4.4.1',nome:'Taxas de maquininha',grupo:'Custo com Vendas',cor:'#eb6834'},
-  {code:'4.4.2',nome:'Comissão Vendedor',grupo:'Custo com Vendas',cor:'#eb6834'},
-  {code:'4.4.3',nome:'Taxa de Pix',grupo:'Custo com Vendas',cor:'#eb6834'},
-  {code:'4.4.4',nome:'Frete',grupo:'Custo com Vendas',cor:'#eb6834'},
-  {code:'4.4.6',nome:'Motoboy Terceirizado',grupo:'Custo com Vendas',cor:'#eb6834'},
-  {code:'4.6.1',nome:'Gasolina',grupo:'Custos com Motos',cor:'#eda100'},
-  {code:'4.6.2',nome:'Manutenção de Moto',grupo:'Custos com Motos',cor:'#eda100'},
-  {code:'4.6.3',nome:'Manutenção Moto Elétrica',grupo:'Custos com Motos',cor:'#eda100'},
-  {code:'5.1.1',nome:'Mensalidade Banco',grupo:'Desp. Financeiras',cor:'#888780'},
-  {code:'5.2.1',nome:'Internet da loja',grupo:'Desp. Administrativas',cor:'#4a3aa7'},
-  {code:'5.2.3',nome:'Energia elétrica',grupo:'Desp. Administrativas',cor:'#4a3aa7'},
-  {code:'5.2.4',nome:'Aluguel',grupo:'Desp. Administrativas',cor:'#4a3aa7'},
-  {code:'5.2.11',nome:'Contador',grupo:'Desp. Administrativas',cor:'#4a3aa7'},
-  {code:'5.2.17',nome:'CAERN – Água',grupo:'Desp. Administrativas',cor:'#4a3aa7'},
-  {code:'5.2.19',nome:'Outras desp. adm. eventuais',grupo:'Desp. Administrativas',cor:'#4a3aa7'},
-  {code:'5.2.99',nome:'Outras desp. adm. fixas',grupo:'Desp. Administrativas',cor:'#4a3aa7'},
-  {code:'5.3.1',nome:'Salário de funcionários',grupo:'Desp. com Pessoal',cor:'#e87ba4'},
-  {code:'5.3.2',nome:'Pró-labore',grupo:'Desp. com Pessoal',cor:'#e87ba4'},
-  {code:'5.3.4',nome:'Rescisão',grupo:'Desp. com Pessoal',cor:'#e87ba4'},
-  {code:'5.3.5',nome:'FGTS',grupo:'Desp. com Pessoal',cor:'#e87ba4'},
-  {code:'5.3.6',nome:'DARF INSS/IRRF',grupo:'Desp. com Pessoal',cor:'#e87ba4'},
-  {code:'5.3.7',nome:'13º e Férias',grupo:'Desp. com Pessoal',cor:'#e87ba4'},
-  {code:'5.3.12',nome:'Horas Extras',grupo:'Desp. com Pessoal',cor:'#e87ba4'},
-  {code:'5.3.13',nome:'Alimentação',grupo:'Desp. com Pessoal',cor:'#e87ba4'},
-  {code:'5.5.3',nome:'IPVA/Licenciamento',grupo:'Desp. com Veículos',cor:'#eda100'},
-  {code:'5.5.5',nome:'Multas (Motoboys)',grupo:'Desp. com Veículos',cor:'#eda100'},
-  {code:'5.8.1',nome:'Tráfego Pago',grupo:'Outros',cor:'#2a78d6'},
-  {code:'6.4.1',nome:'Bens materiais/estrutura',grupo:'Investimentos',cor:'#1baf7a'},
-  {code:'7.1.6',nome:'Entrada de Empréstimos',grupo:'Não Operacional',cor:'#888780'},
-  {code:'7.2.1',nome:'Empréstimo Cartão',grupo:'Não Operacional',cor:'#888780'},
-  {code:'7.2.13',nome:'Custos com Empréstimos',grupo:'Não Operacional',cor:'#888780'},
-  {code:'7.2.99',nome:'Outras saídas não operacionais',grupo:'Não Operacional',cor:'#888780'},
-  {code:'OUT',nome:'A classificar',grupo:'Sem categoria',cor:'#b4b2a9'},
+  {code:'3.1.8',nome:'Receita de Vendas',cor:'#059669'},
+  {code:'4.1.4',nome:'PIS/COFINS/ICMS',cor:'#e34948'},
+  {code:'4.2.1',nome:'Fornecedores',cor:'#d03b3b'},
+  {code:'4.2.4',nome:'Juros por atraso',cor:'#d03b3b'},
+  {code:'4.3.1',nome:'Sacolas DH',cor:'#eb6834'},
+  {code:'4.4.1',nome:'Taxas maquininha',cor:'#eb6834'},
+  {code:'4.4.2',nome:'Comissão Vendedor',cor:'#eb6834'},
+  {code:'4.4.3',nome:'Taxa de Pix',cor:'#eb6834'},
+  {code:'4.4.4',nome:'Frete',cor:'#eb6834'},
+  {code:'4.4.6',nome:'Motoboy Terceirizado',cor:'#eb6834'},
+  {code:'4.6.1',nome:'Gasolina',cor:'#eda100'},
+  {code:'4.6.2',nome:'Manutenção de Moto',cor:'#eda100'},
+  {code:'4.6.3',nome:'Manutenção Moto Elétrica',cor:'#eda100'},
+  {code:'5.1.1',nome:'Mensalidade Banco',cor:'#888780'},
+  {code:'5.2.1',nome:'Internet da loja',cor:'#4a3aa7'},
+  {code:'5.2.3',nome:'Energia elétrica',cor:'#4a3aa7'},
+  {code:'5.2.4',nome:'Aluguel',cor:'#4a3aa7'},
+  {code:'5.2.11',nome:'Contador',cor:'#4a3aa7'},
+  {code:'5.2.17',nome:'CAERN – Água',cor:'#4a3aa7'},
+  {code:'5.2.19',nome:'Outras desp. adm. eventuais',cor:'#4a3aa7'},
+  {code:'5.2.99',nome:'Outras desp. adm. fixas',cor:'#4a3aa7'},
+  {code:'5.3.1',nome:'Salário de funcionários',cor:'#e87ba4'},
+  {code:'5.3.2',nome:'Pró-labore',cor:'#e87ba4'},
+  {code:'5.3.4',nome:'Rescisão',cor:'#e87ba4'},
+  {code:'5.3.5',nome:'FGTS',cor:'#e87ba4'},
+  {code:'5.3.6',nome:'DARF INSS/IRRF',cor:'#e87ba4'},
+  {code:'5.3.7',nome:'13º e Férias',cor:'#e87ba4'},
+  {code:'5.3.12',nome:'Horas Extras',cor:'#e87ba4'},
+  {code:'5.3.13',nome:'Alimentação',cor:'#e87ba4'},
+  {code:'5.5.3',nome:'IPVA/Licenciamento',cor:'#eda100'},
+  {code:'5.5.5',nome:'Multas (Motoboys)',cor:'#eda100'},
+  {code:'5.8.1',nome:'Tráfego Pago',cor:'#2a78d6'},
+  {code:'6.4.1',nome:'Bens materiais/estrutura',cor:'#1baf7a'},
+  {code:'7.1.6',nome:'Entrada de Empréstimos',cor:'#888780'},
+  {code:'7.2.13',nome:'Custos com Empréstimos',cor:'#888780'},
+  {code:'7.2.99',nome:'Outras saídas não operacionais',cor:'#888780'},
+  {code:'OUT',nome:'⚠ A classificar',cor:'#dc2626'},
 ];
 
-function getCatByCode(code){ return CATS.find(c=>c.code===code)||CATS[CATS.length-1]; }
-function getCatOptions(sel=''){
-  const groups = {};
-  CATS.forEach(c=>{ if(!groups[c.grupo])groups[c.grupo]=[]; groups[c.grupo].push(c); });
-  return Object.entries(groups).map(([g,cats])=>
-    `<optgroup label="${g}">${cats.map(c=>`<option value="${c.code}" ${c.code===sel?'selected':''}>${c.code} — ${c.nome}</option>`).join('')}</optgroup>`
-  ).join('');
+function cat(code){ return CATS.find(c=>c.code===code)||CATS[CATS.length-1]; }
+
+function catOpts(sel=''){
+  return CATS.map(c=>`<option value="${c.code}"${c.code===sel?' selected':''}>${c.code} — ${c.nome}</option>`).join('');
 }
 
-// ═══════════════════════════════════════
+// ════════════════════════════════
 // AUTO-CATEGORIZAÇÃO
-// ═══════════════════════════════════════
-function autoCategoria(desc, tipo) {
-  const d = desc.toUpperCase();
-  if(d.includes('STONE') || d.includes('PAGALI') || d.includes('PAGAR.ME') || d.includes('TOPAZIO') || d.includes('ALELO')) return tipo==='CREDIT'?'3.1.8':'OUT';
-  if(tipo==='CREDIT' && (d.includes('RECEBIMENTO PIX') || d.includes('RECEB'))) return '3.1.8';
+// ════════════════════════════════
+function autocat(desc, tipo){
+  const d=desc.toUpperCase();
   if(d.includes('DHFIT DISTRIBUIDORA')) return '4.2.1';
-  if(d.includes('DHFIT NUTRICAO')) return tipo==='CREDIT'?'3.1.8':'4.2.1';
-  if(d.includes('DEB.CTA.FATURA') || d.includes('FATURA')) return '5.1.1';
-  if(d.includes('COSERN') || d.includes('ENERGIA ELETRICA')) return '5.2.3';
-  if(d.includes('POSTO') || d.includes('COMBUSTIVEL') || d.includes('GASOLINA')) return '4.6.1';
-  if(d.includes('CAERN') || d.includes('AGUA')) return '5.2.17';
-  if(d.includes('META') || d.includes('TRAFEGO') || d.includes('GOOGLE ADS')) return '5.8.1';
-  if(d.includes('AMORTIZACAO') || d.includes('LIQUIDACAO DE PARCELA') || d.includes('EMPRESTIMO')) return '7.2.13';
-  if(d.includes('SEGURO')) return '5.2.99';
-  if(d.includes('MOTO') || d.includes('MANUTENCAO MOTO') || d.includes('ZN ACESSORIOS')) return '4.6.2';
-  if(d.includes('ALUGUEL') || d.includes('HOLDING')) return '5.2.4';
-  if(d.includes('CONTADOR') || d.includes('CONTABIL')) return '5.2.11';
+  if(d.includes('DHFIT NUTRICAO') || d.includes('DHFIT NUTRIÇÃO')) return tipo==='CREDIT'?'3.1.8':'4.2.1';
+  if(d.includes('DEB.CTA.FATURA')||d.includes('FATURA SICREDI')) return '5.1.1';
+  if(d.includes('COSERN')||d.includes('ENERGIA ELETRICA')) return '5.2.3';
+  if(d.includes('POSTO')||d.includes('COMBUSTIVEL')||d.includes('GASOLINA')) return '4.6.1';
+  if(d.includes('CAERN')||d.includes('AGUA')) return '5.2.17';
+  if(d.includes('META ADS')||d.includes('TRAFEGO PAGO')||d.includes('GOOGLE ADS')) return '5.8.1';
+  if(d.includes('AMORTIZACAO')||d.includes('LIQUIDACAO DE PARCELA')||d.includes('EMPRESTIMO')) return '7.2.13';
+  if(d.includes('ALUGUEL')||d.includes('HOLDING IMOBILIARIA')) return '5.2.4';
+  if(d.includes('CONTADOR')||d.includes('CONTABIL')) return '5.2.11';
   if(d.includes('FGTS')) return '5.3.5';
-  if(d.includes('INSS') || d.includes('DARF')) return '5.3.6';
-  if(d.includes('SALARIO') || d.includes('FOLHA')) return '5.3.1';
-  if(d.includes('INTERNET') || d.includes('VIVO') || d.includes('CLARO')) return '5.2.1';
+  if(d.includes('INSS')||d.includes('DARF')) return '5.3.6';
+  if(d.includes('SALARIO')||d.includes('FOLHA')) return '5.3.1';
+  if(d.includes('STONE')||d.includes('PAGALI')||d.includes('TOPAZIO')||d.includes('ALELO')&&tipo==='CREDIT') return '3.1.8';
+  if(d.includes('SEGURO')) return '5.2.99';
+  if(d.includes('ZN ACESSORIOS')||d.includes('MANUTENCAO MOTO')) return '4.6.2';
+  if(d.includes('MOTO ENTREGAS')) return '4.4.6';
+  if(d.includes('OMIEXPERIENCE')) return '5.2.99';
+  if(d.includes('ZOOP')||d.includes('SISTEMA')) return '5.2.99';
+  if(d.includes('BANCO SANTANDER')||d.includes('SANTANDER')) return '7.2.13';
   if(tipo==='CREDIT') return '3.1.8';
   return 'OUT';
 }
 
-// ═══════════════════════════════════════
-// DADOS SICREDI (271 transações Jun 2026)
-// ═══════════════════════════════════════
-const RAW_TXS = [
-  {id:'s001',date:'2026-06-29',desc:'PAGAMENTO PIX - Juscelino Francisco da Silva',amt:-36.00,type:'DEBIT'},
-  {id:'s002',date:'2026-06-29',desc:'TED - ALELO S.A.',amt:221.71,type:'CREDIT'},
-  {id:'s003',date:'2026-06-29',desc:'TED - BANCO TOPAZIO S.A.',amt:212.58,type:'CREDIT'},
-  {id:'s004',date:'2026-06-29',desc:'RECEBIMENTO PIX - Renata Priscila do Nascimento',amt:137.00,type:'CREDIT'},
-  {id:'s005',date:'2026-06-29',desc:'RECEBIMENTO PIX - DANIELE CRISTINA DO NASCIMENTO',amt:59.90,type:'CREDIT'},
-  {id:'s006',date:'2026-06-29',desc:'DEB.CTA.FATURA SICREDI RIO GRANDE DO NORTE',amt:-4400.00,type:'DEBIT'},
-  {id:'s007',date:'2026-06-29',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:3394.00,type:'CREDIT'},
-  {id:'s008',date:'2026-06-29',desc:'PAGAMENTO PIX - VELIK INDUSTRIA E COMERCIO LTDA',amt:-1297.00,type:'DEBIT'},
-  {id:'s009',date:'2026-06-29',desc:'RECEBIMENTO PIX - DANIELE DIONISIO DA SILVA',amt:119.80,type:'CREDIT'},
-  {id:'s010',date:'2026-06-29',desc:'RECEBIMENTO PIX - PAGALI INSTITUICAO DE PAGAMENTO',amt:609.30,type:'CREDIT'},
-  {id:'s011',date:'2026-06-29',desc:'PAGAMENTO PIX - METTA FIT DISTRIBUIDORA SUPLEMENTOS',amt:-130.00,type:'DEBIT'},
-  {id:'s012',date:'2026-06-29',desc:'RECEBIMENTO PIX - Zilnete Lopes barbosa',amt:75.00,type:'CREDIT'},
-  {id:'s013',date:'2026-06-29',desc:'PAGAMENTO PIX - FLAVIO JEAN MARTINS',amt:-7.40,type:'DEBIT'},
-  {id:'s014',date:'2026-06-29',desc:'STONE ANTEC MASTER',amt:237.73,type:'CREDIT'},
-  {id:'s015',date:'2026-06-29',desc:'STONE ANTEC MASTER',amt:271.02,type:'CREDIT'},
-  {id:'s016',date:'2026-06-29',desc:'STONE ANTEC VISA',amt:171.34,type:'CREDIT'},
-  {id:'s017',date:'2026-06-29',desc:'STONE ANTEC VISA',amt:149.18,type:'CREDIT'},
-  {id:'s018',date:'2026-06-29',desc:'STONE DEB VISA',amt:89.24,type:'CREDIT'},
-  {id:'s019',date:'2026-06-29',desc:'STONE DEB MASTER',amt:128.81,type:'CREDIT'},
-  {id:'s020',date:'2026-06-27',desc:'RECEBIMENTO PIX - ARACELLI MESQUITA DOS SANTOS',amt:7.00,type:'CREDIT'},
-  {id:'s021',date:'2026-06-27',desc:'RECEBIMENTO PIX - ARACELLI MESQUITA DOS SANTOS',amt:59.90,type:'CREDIT'},
-  {id:'s022',date:'2026-06-27',desc:'RECEBIMENTO PIX - Maria Teresa Possidonio de Freitas',amt:27.00,type:'CREDIT'},
-  {id:'s023',date:'2026-06-27',desc:'RECEBIMENTO PIX - DAIANE DIAS DO AMARANTE',amt:65.00,type:'CREDIT'},
-  {id:'s024',date:'2026-06-27',desc:'PAGAMENTO PIX - E J N FERREIRA (instalação elétrica)',amt:-200.00,type:'DEBIT'},
-  {id:'s025',date:'2026-06-27',desc:'RECEBIMENTO PIX - Joise Lopes De Souza',amt:71.25,type:'CREDIT'},
-  {id:'s026',date:'2026-06-27',desc:'RECEBIMENTO PIX - Gabriel Santos da Silva',amt:161.40,type:'CREDIT'},
-  {id:'s027',date:'2026-06-26',desc:'DEB.CTA.FATURA SICREDI',amt:-5800.00,type:'DEBIT'},
-  {id:'s028',date:'2026-06-26',desc:'PAGAMENTO PIX - POSTO NOVA NATAL (gasolina)',amt:-50.00,type:'DEBIT'},
-  {id:'s029',date:'2026-06-26',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:-132.42,type:'DEBIT'},
-  {id:'s030',date:'2026-06-26',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1574.00,type:'CREDIT'},
-  {id:'s031',date:'2026-06-26',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:100.00,type:'CREDIT'},
-  {id:'s032',date:'2026-06-26',desc:'RECEBIMENTO PIX - ACADEMIA AIRYS FITINESS',amt:2295.10,type:'CREDIT'},
-  {id:'s033',date:'2026-06-25',desc:'DEB.CTA.FATURA SICREDI',amt:-3874.00,type:'DEBIT'},
-  {id:'s034',date:'2026-06-25',desc:'DEBITO CONVENIOS - COSERN-G (energia elétrica)',amt:-277.84,type:'DEBIT'},
-  {id:'s035',date:'2026-06-25',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:2267.00,type:'CREDIT'},
-  {id:'s036',date:'2026-06-25',desc:'INTEGR.CAPITAL SUBSCRITO',amt:-50.00,type:'DEBIT'},
-  {id:'s037',date:'2026-06-25',desc:'RECEBIMENTO PIX - PAGALI INSTITUICAO DE PAGAMENTO',amt:731.26,type:'CREDIT'},
-  {id:'s038',date:'2026-06-24',desc:'DEB.CTA.FATURA SICREDI',amt:-3845.00,type:'DEBIT'},
-  {id:'s039',date:'2026-06-24',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1226.00,type:'CREDIT'},
-  {id:'s040',date:'2026-06-24',desc:'RECEBIMENTO PIX - Amanda Medeiros de Oliveira',amt:1047.50,type:'CREDIT'},
-  {id:'s041',date:'2026-06-23',desc:'DEB.CTA.FATURA SICREDI',amt:-5000.00,type:'DEBIT'},
-  {id:'s042',date:'2026-06-23',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:2683.44,type:'CREDIT'},
-  {id:'s043',date:'2026-06-23',desc:'PAGAMENTO PIX - ADAILTON RIBEIRO DA SILVA',amt:-75.50,type:'DEBIT'},
-  {id:'s044',date:'2026-06-22',desc:'PAGAMENTO PIX - 99 TECNOLOGIA LTDA (transporte)',amt:-4.23,type:'DEBIT'},
-  {id:'s045',date:'2026-06-22',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:-2060.42,type:'DEBIT'},
-  {id:'s046',date:'2026-06-22',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1065.00,type:'CREDIT'},
-  {id:'s047',date:'2026-06-22',desc:'DEB.CTA.FATURA SICREDI',amt:-776.00,type:'DEBIT'},
-  {id:'s048',date:'2026-06-22',desc:'DEB.CTA.FATURA SICREDI',amt:-5000.00,type:'DEBIT'},
-  {id:'s049',date:'2026-06-22',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:3336.00,type:'CREDIT'},
-  {id:'s050',date:'2026-06-22',desc:'TED - BANCO TOPAZIO S.A.',amt:602.28,type:'CREDIT'},
-  {id:'s051',date:'2026-06-20',desc:'PAGAMENTO PIX - DH HOLDING IMOBILIARIA LTDA (aluguel)',amt:-2300.00,type:'DEBIT'},
-  {id:'s052',date:'2026-06-20',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:2093.00,type:'CREDIT'},
-  {id:'s053',date:'2026-06-19',desc:'PAGAMENTO PIX - D T SUPLEMENTOS DISTRIBUIDORA',amt:-109.90,type:'DEBIT'},
-  {id:'s054',date:'2026-06-19',desc:'PAGAMENTO PIX - DH HOLDING IMOBILIARIA LTDA (aluguel)',amt:-965.00,type:'DEBIT'},
-  {id:'s055',date:'2026-06-19',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:964.00,type:'CREDIT'},
-  {id:'s056',date:'2026-06-18',desc:'PAGAMENTO PIX - DH HOLDING IMOBILIARIA LTDA (aluguel)',amt:-3270.00,type:'DEBIT'},
-  {id:'s057',date:'2026-06-18',desc:'SEGURO PRESTAMISTA',amt:-17.47,type:'DEBIT'},
-  {id:'s058',date:'2026-06-18',desc:'SEGURO PRESTAMISTA',amt:-11.98,type:'DEBIT'},
-  {id:'s059',date:'2026-06-17',desc:'PAGAMENTO PIX - DH HOLDING IMOBILIARIA LTDA (aluguel)',amt:-2458.00,type:'DEBIT'},
-  {id:'s060',date:'2026-06-16',desc:'PAGAMENTO PIX - DH HOLDING IMOBILIARIA LTDA (aluguel)',amt:-4000.00,type:'DEBIT'},
-  {id:'s061',date:'2026-06-16',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1583.00,type:'CREDIT'},
-  {id:'s062',date:'2026-06-15',desc:'PAGAMENTO PIX - JOSE CARLOS SOARES NETO',amt:-500.00,type:'DEBIT'},
-  {id:'s063',date:'2026-06-15',desc:'PAGAMENTO PIX - MOTO ENTREGAS NATAL',amt:-1136.00,type:'DEBIT'},
-  {id:'s064',date:'2026-06-15',desc:'PAGAMENTO PIX - DH HOLDING IMOBILIARIA LTDA (aluguel)',amt:-3000.00,type:'DEBIT'},
-  {id:'s065',date:'2026-06-15',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1922.00,type:'CREDIT'},
-  {id:'s066',date:'2026-06-12',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:-1704.00,type:'DEBIT'},
-  {id:'s067',date:'2026-06-11',desc:'PAGAMENTO PIX - DH HOLDING IMOBILIARIA LTDA (aluguel)',amt:-5292.00,type:'DEBIT'},
-  {id:'s068',date:'2026-06-11',desc:'DEVOLUCAO PIX - DH HOLDING IMOBILIARIA LTDA',amt:7292.00,type:'CREDIT'},
-  {id:'s069',date:'2026-06-11',desc:'PAGAMENTO PIX - DH HOLDING IMOBILIARIA LTDA (aluguel)',amt:-7292.00,type:'DEBIT'},
-  {id:'s070',date:'2026-06-11',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:5220.00,type:'CREDIT'},
-  {id:'s071',date:'2026-06-09',desc:'PAGAMENTO PIX - OMIEXPERIENCE LTDA (sistema)',amt:-528.90,type:'DEBIT'},
-  {id:'s072',date:'2026-06-09',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:-5885.00,type:'DEBIT'},
-  {id:'s073',date:'2026-06-08',desc:'PAGAMENTO PIX - JVC COMERCIAL LTDA (gasolina)',amt:-30.00,type:'DEBIT'},
-  {id:'s074',date:'2026-06-08',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:821.00,type:'CREDIT'},
-  {id:'s075',date:'2026-06-08',desc:'TED - ALELO S.A. (alimentação funcionários)',amt:1007.15,type:'CREDIT'},
-  {id:'s076',date:'2026-06-05',desc:'AMORTIZACAO CONTRATO (empréstimo)',amt:-1455.50,type:'DEBIT'},
-  {id:'s077',date:'2026-06-05',desc:'AMORTIZACAO CONTRATO (empréstimo)',amt:-168.80,type:'DEBIT'},
-  {id:'s078',date:'2026-06-05',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:-4051.00,type:'DEBIT'},
-  {id:'s079',date:'2026-06-05',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:1177.91,type:'CREDIT'},
-  {id:'s080',date:'2026-06-05',desc:'AMORTIZACAO CONTRATO (empréstimo)',amt:-48.82,type:'DEBIT'},
-  {id:'s081',date:'2026-06-03',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:-966.84,type:'DEBIT'},
-  {id:'s082',date:'2026-06-03',desc:'PAGAMENTO PIX - NORDESTAO (supermercado)',amt:-60.46,type:'DEBIT'},
-  {id:'s083',date:'2026-06-03',desc:'PAGAMENTO PIX - AMORIM CIA LTDA (material escritório)',amt:-63.35,type:'DEBIT'},
-  {id:'s084',date:'2026-06-02',desc:'AMORTIZACAO CONTRATO (empréstimo)',amt:-769.90,type:'DEBIT'},
-  {id:'s085',date:'2026-06-02',desc:'AMORTIZACAO CONTRATO (empréstimo)',amt:-428.16,type:'DEBIT'},
-  {id:'s086',date:'2026-06-02',desc:'AMORTIZACAO CONTRATO (empréstimo)',amt:-728.67,type:'DEBIT'},
-  {id:'s087',date:'2026-06-02',desc:'PAGAMENTO PIX - BANCO SANTANDER (empréstimo)',amt:-740.00,type:'DEBIT'},
-  {id:'s088',date:'2026-06-02',desc:'PAGAMENTO PIX - ZOOP BRASIL (sistema pagamentos)',amt:-400.00,type:'DEBIT'},
-  {id:'s089',date:'2026-06-02',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA LTDA',amt:2000.00,type:'CREDIT'},
-  {id:'s090',date:'2026-06-01',desc:'RECEB. COB HIBRIDA SICREDI (cobrança)',amt:617.75,type:'CREDIT'},
-  {id:'s091',date:'2026-06-01',desc:'LIQUIDACAO DE PARCELA (empréstimo)',amt:-1190.63,type:'DEBIT'},
-  {id:'s092',date:'2026-06-01',desc:'TED - ALELO S.A. (alimentação)',amt:178.97,type:'CREDIT'},
-  {id:'s093',date:'2026-06-01',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:-632.00,type:'DEBIT'},
-  {id:'s094',date:'2026-06-01',desc:'PAGAMENTO PIX - ZN ACESSORIOS MOTO PECAS',amt:-62.00,type:'DEBIT'},
-  {id:'s095',date:'2026-06-01',desc:'AMORTIZACAO CONTRATO (empréstimo)',amt:-159.80,type:'DEBIT'},
+// ════════════════════════════════
+// DADOS — SOMENTE HOJE 04/07/2026
+// ════════════════════════════════
+const RAW = [
+  {id:'09a0d606',date:'2026-07-04',hora:'20:04',desc:'RECEBIMENTO PIX - Jefferson Nascimento da Costa',amt:97.00,type:'CREDIT'},
+  {id:'1c086000',date:'2026-07-04',hora:'17:57',desc:'RECEBIMENTO PIX - Laricia Paulina Silva da Mota',amt:20.00,type:'CREDIT'},
+  {id:'ba6a262f',date:'2026-07-04',hora:'15:49',desc:'RECEBIMENTO PIX - Dhfit Nutricao Esportiva',amt:15.00,type:'CREDIT'},
+  {id:'7cbc6156',date:'2026-07-04',hora:'15:48',desc:'RECEBIMENTO PIX - Dhfit Nutricao Esportiva',amt:0.01,type:'CREDIT'},
+  {id:'dd254320',date:'2026-07-04',hora:'15:36',desc:'RECEBIMENTO PIX - FRANCISCO MAXWELL GOMES',amt:95.00,type:'CREDIT'},
+  {id:'09311983',date:'2026-07-04',hora:'14:10',desc:'RECEBIMENTO PIX - Rayla Kelly dos Santos',amt:92.00,type:'CREDIT'},
+  {id:'f47e93e7',date:'2026-07-04',hora:'12:46',desc:'RECEBIMENTO PIX - Suzana Suerda Pinheiro De Oliveira',amt:8.00,type:'CREDIT'},
+  {id:'75a48b7f',date:'2026-07-04',hora:'12:13',desc:'RECEBIMENTO PIX - SIDNEY LOPES DE FREITAS',amt:104.90,type:'CREDIT'},
+  {id:'b64c8ac8',date:'2026-07-04',hora:'01:20',desc:'RECEBIMENTO PIX - Poliana Vanessa Silva de Oliveira',amt:20.00,type:'CREDIT'},
+  {id:'504708b6',date:'2026-07-04',hora:'00:03',desc:'RECEBIMENTO PIX - DHFIT NUTRICAO ESPORTIVA',amt:1700.34,type:'CREDIT'},
+  {id:'e35566ee',date:'2026-07-04',hora:'01:24',desc:'PAGAMENTO PIX - DHFIT DISTRIBUIDORA LTDA',amt:3694.00,type:'DEBIT'},
+  {id:'8c31407e',date:'2026-07-04',hora:'00:17',desc:'PAGAMENTO PIX - WENDELL ALEXANDRE FIRMINO DA SILVA',amt:144.00,type:'DEBIT'},
 ];
 
-// Montar TX com auto-categorização + edições salvas
-function buildTX() {
-  TX = RAW_TXS.map(r => {
-    const ed = EDITED[r.id] || {};
-    const cat = ed.cat || autoCategoria(r.desc, r.type);
-    const catInfo = getCatByCode(cat);
+// Estado
+let TX = [];
+let EDITED = {};
+let openId = null;
+let filtro = 'todos';
+let busca = '';
+let tipoModal = 'entrada';
+let cfExp = {};
+let PAGE = 'dash';
+let timeOpen = false;
+
+// Carregar edições do localStorage
+try{ EDITED = JSON.parse(localStorage.getItem('yf_ed')||'{}'); }catch(e){}
+
+function saveEd(id, data){
+  EDITED[id] = {...(EDITED[id]||{}), ...data};
+  try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){}
+}
+
+function buildTX(){
+  TX = RAW.map(r=>{
+    const ed = EDITED[r.id]||{};
+    const c = ed.cat || autocat(r.desc, r.type);
     return {
       ...r,
-      cat,
-      catInfo,
+      cat: c,
+      catInfo: cat(c),
       desc: ed.desc || r.desc,
       cli: ed.cli || '',
       obs: ed.obs || '',
-      status: ed.status || 'pendente', // pendente | conciliado | ignorado
+      meio: ed.meio || 'PIX',
+      status: ed.status || 'pendente',
       editado: !!EDITED[r.id],
     };
+  });
+  // adicionar manuais
+  Object.entries(EDITED).forEach(([id,ed])=>{
+    if(ed.manual && !TX.find(t=>t.id===id)){
+      const c = ed.cat||'OUT';
+      TX.unshift({id,date:ed.date||'2026-07-04',hora:ed.hora||'--:--',desc:ed.desc||'',
+        amt:Math.abs(ed.amt||0),type:ed.type||'CREDIT',cat:c,catInfo:cat(c),
+        cli:ed.cli||'',obs:ed.obs||'',meio:ed.meio||'PIX',status:ed.status||'conciliado',editado:true});
+    }
   });
 }
 buildTX();
 
-// ═══════════════════════════════════════
-// NAVEGAÇÃO
-// ═══════════════════════════════════════
-let PAGE = 'dashboard';
-let sbCol = false;
-let timeOpen = false;
-let expandedTx = null;
-let filterStatus = 'todos';
-let searchQ = '';
-
-function go(p, el) {
-  PAGE = p;
+// ════════════════════════════════
+// NAV
+// ════════════════════════════════
+function go(p, el){
+  PAGE=p; openId=null; filtro='todos'; busca='';
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
   if(el) el.classList.add('act');
-  const titles = {
-    dashboard:['Painel','Visão geral · Sicredi Empresas'],
-    conciliacao:['Conciliação','Revise e confirme cada lançamento'],
-    journal:['Livro Diário','Todos os lançamentos registrados'],
-    cashflow:['Fluxo de Caixa','Jan–Jun 2026'],
-    goals:['Metas e Ações','Acompanhe seus objetivos financeiros'],
-  };
-  const t = titles[p] || ['',''];
-  document.getElementById('pt').textContent = t[0];
-  document.getElementById('ps').textContent = t[1];
-  expandedTx = null;
-  filterStatus = 'todos';
-  searchQ = '';
+  const T={dash:['Painel','Visão geral · Sicredi · 04/07/2026'],conc:['Conciliação','Revise e confirme cada lançamento do dia'],jour:['Livro Diário','Todos os lançamentos de hoje'],cf:['Fluxo de Caixa','Jan–Jun 2026'],metas:['Metas e Ações','Acompanhe seus objetivos']};
+  const t=T[p]||['',''];
+  document.getElementById('pt').textContent=t[0];
+  document.getElementById('ps').textContent=t[1];
   render();
 }
 
-function updateBadge() {
-  const pend = TX.filter(t=>t.status==='pendente').length;
-  document.getElementById('nb-pend').textContent = pend;
+function fmtR(v){return'R$ '+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtD(s){return s?s.split('-').reverse().join('/'):'—';}
+
+function updateBadge(){
+  document.getElementById('badge-pend').textContent=TX.filter(t=>t.status==='pendente').length;
 }
 
-// ═══════════════════════════════════════
-// RENDER PRINCIPAL
-// ═══════════════════════════════════════
-function render() {
-  updateBadge();
-  const el = document.getElementById('ct');
-  if(PAGE==='dashboard') el.innerHTML = renderDashboard();
-  else if(PAGE==='conciliacao') el.innerHTML = renderConciliacao();
-  else if(PAGE==='journal') el.innerHTML = renderJournal();
-  else if(PAGE==='cashflow') el.innerHTML = renderCashflow();
-  else if(PAGE==='goals') el.innerHTML = renderGoals();
-  attachEvents();
+// ════════════════════════════════
+// RENDER
+// ════════════════════════════════
+function render(){
+  buildTX(); updateBadge();
+  const ct=document.getElementById('ct');
+  // Preencher select do modal
+  document.getElementById('m-cat').innerHTML=catOpts();
+  if(PAGE==='conc') ct.outerHTML='<div id="ct"></div>'; // reset scroll trick
+  document.getElementById('ct').innerHTML = PAGE==='dash'?renderDash():PAGE==='conc'?renderConc():PAGE==='jour'?renderJour():PAGE==='cf'?renderCF():renderMetas();
 }
 
-function fmtBRL(v) {
-  return 'R$ '+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-function fmtData(s) { return s.split('-').reverse().join('/'); }
-
-// ═══════════════════════════════════════
-// DASHBOARD
-// ═══════════════════════════════════════
-function renderDashboard() {
-  const conc = TX.filter(t=>t.status==='conciliado').length;
-  const pend = TX.filter(t=>t.status==='pendente').length;
-  const entJun = TX.filter(t=>t.type==='CREDIT'&&t.status!=='ignorado').reduce((s,t)=>s+t.amt,0);
-  const saiJun = TX.filter(t=>t.type==='DEBIT'&&t.status!=='ignorado').reduce((s,t)=>s+Math.abs(t.amt),0);
-  const ult = [...TX].slice(0,6);
-  const hoje = TX.filter(t=>t.date==='2026-06-29');
-  const entHoje = hoje.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
-  const saiHoje = hoje.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+Math.abs(t.amt),0);
-
+// ════════════════════════════════
+// PAINEL
+// ════════════════════════════════
+function renderDash(){
+  const ent=TX.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
+  const sai=TX.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
+  const conc=TX.filter(t=>t.status==='conciliado').length;
+  const pend=TX.filter(t=>t.status==='pendente').length;
   return `
-  <div class="kgrid">
-    <div class="kc"><div class="kl">Saldo Sicredi</div><div class="kv n">R$ 596,23</div><div class="ks">Conta corrente</div></div>
-    <div class="kc"><div class="kl">Entradas Jun</div><div class="kv g">${fmtBRL(entJun)}</div><div class="ks">${TX.filter(t=>t.type==='CREDIT').length} lançamentos</div></div>
-    <div class="kc"><div class="kl">Saídas Jun</div><div class="kv r">${fmtBRL(saiJun)}</div><div class="ks">${TX.filter(t=>t.type==='DEBIT').length} lançamentos</div></div>
-    <div class="kc"><div class="kl">Conciliação</div><div class="kv n">${conc}/${TX.length}</div><div class="ks" style="color:${pend>0?'var(--yel)':'var(--grn)'}">⚠ ${pend} pendentes</div></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+    <div class="kpi"><div class="kl">Saldo Sicredi</div><div class="kv n">R$ 432,06</div><div class="ks">Conta corrente</div></div>
+    <div class="kpi"><div class="kl">Entradas hoje</div><div class="kv g">${fmtR(ent)}</div><div class="ks">${TX.filter(t=>t.type==='CREDIT').length} lançamentos</div></div>
+    <div class="kpi"><div class="kl">Saídas hoje</div><div class="kv r">${fmtR(sai)}</div><div class="ks">${TX.filter(t=>t.type==='DEBIT').length} lançamentos</div></div>
+    <div class="kpi"><div class="kl">Conciliação</div><div class="kv n">${conc}/${TX.length}</div><div class="ks" style="color:${pend>0?'var(--yel)':'var(--grn)'}">${pend} pendentes</div></div>
   </div>
-
-  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:12px;margin-bottom:12px">
-    <div class="kc">
-      <div style="font-size:13px;font-weight:700;margin-bottom:12px">Hoje — 29/06/2026 <span style="font-size:11px;color:var(--tx3)">(${hoje.length} lançamentos)</span></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
-        <div><div class="kl">Entradas</div><div style="font-size:15px;font-weight:700;color:var(--grn)">${fmtBRL(entHoje)}</div></div>
-        <div><div class="kl">Saídas</div><div style="font-size:15px;font-weight:700;color:var(--red)">${fmtBRL(saiHoje)}</div></div>
-        <div><div class="kl">Líquido</div><div style="font-size:15px;font-weight:700;color:${entHoje-saiHoje>=0?'var(--grn)':'var(--red)'}">${fmtBRL(entHoje-saiHoje)}</div></div>
-      </div>
-      ${hoje.slice(0,5).map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bor)">
-        <div style="width:7px;height:7px;border-radius:50%;background:${t.catInfo.cor};flex-shrink:0"></div>
-        <div style="flex:1;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.desc}</div>
-        <div style="font-size:12px;font-weight:600;color:${t.type==='CREDIT'?'var(--grn)':'var(--red)'}">${t.type==='CREDIT'?'+':'−'}${fmtBRL(t.amt)}</div>
-        <span style="font-size:9px;padding:1px 6px;border-radius:6px;background:${t.status==='conciliado'?'var(--gbg)':'var(--ybg)'};color:${t.status==='conciliado'?'var(--grn)':'var(--yel)'}">${t.status}</span>
-      </div>`).join('')}
-      ${hoje.length>5?`<div style="text-align:center;margin-top:8px"><button class="btn" onclick="go('conciliacao',document.getElementById('ni-conciliacao'))">Ver todos →</button></div>`:''}
+  <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:12px">
+    <div class="card cp">
+      <div class="sec">Lançamentos de hoje — 04/07/2026</div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Hora</th><th>Descrição</th><th>Categoria</th><th>Entrada</th><th>Saída</th><th>Status</th></tr></thead>
+        <tbody>${TX.map(t=>`<tr style="cursor:pointer" onclick="go('conc',document.getElementById('ni-conc'));setTimeout(()=>{openId='${t.id}';render()},80)">
+          <td style="color:var(--tx3)">${t.hora}</td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${t.desc}</td>
+          <td><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${t.catInfo.cor}22;color:${t.catInfo.cor};font-weight:600">${t.catInfo.code}</span></td>
+          <td style="color:var(--grn);font-weight:600">${t.type==='CREDIT'?fmtR(t.amt):'—'}</td>
+          <td style="color:var(--red);font-weight:600">${t.type==='DEBIT'?fmtR(t.amt):'—'}</td>
+          <td><span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend'}">${t.status}</span></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
     </div>
-    <div class="kc">
-      <div style="font-size:13px;font-weight:700;margin-bottom:12px">Status da conciliação</div>
-      ${[
-        ['Conciliados',conc,'var(--grn)','var(--gbg)'],
-        ['Pendentes',pend,'var(--yel)','var(--ybg)'],
-        ['Ignorados',TX.filter(t=>t.status==='ignorado').length,'var(--tx3)','var(--sur2)'],
-      ].map(([l,v,c,bg])=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;background:${bg};margin-bottom:6px">
-        <span style="font-size:12px;font-weight:600;color:${c};flex:1">${l}</span>
-        <span style="font-size:18px;font-weight:700;color:${c}">${v}</span>
-      </div>`).join('')}
-      <button class="btn pri" style="width:100%;justify-content:center;margin-top:8px" onclick="go('conciliacao',document.getElementById('ni-conciliacao'))">
+    <div class="card cp">
+      <div class="sec">Status da conciliação</div>
+      ${[['Conciliados',TX.filter(t=>t.status==='conciliado').length,'var(--grn)','var(--gbg)'],
+         ['Pendentes',TX.filter(t=>t.status==='pendente').length,'var(--yel)','var(--ybg)'],
+         ['Ignorados',TX.filter(t=>t.status==='ignorado').length,'var(--tx3)','var(--sur2)']
+        ].map(([l,v,c,bg])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:6px;background:${bg};margin-bottom:6px">
+          <span style="font-size:12px;font-weight:600;color:${c}">${l}</span>
+          <span style="font-size:18px;font-weight:700;color:${c}">${v}</span>
+        </div>`).join('')}
+      <button class="btn pri" style="width:100%;justify-content:center;margin-top:8px" onclick="go('conc',document.getElementById('ni-conc'))">
         Ir para Conciliação →
       </button>
     </div>
-  </div>
-
-  <div class="kc">
-    <div style="font-size:13px;font-weight:700;margin-bottom:10px">Últimos lançamentos</div>
-    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:600px">
-      <thead><tr>${['Data','Descrição','Categoria','Entrada','Saída','Status'].map(h=>`<th style="padding:7px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">${h}</th>`).join('')}</tr></thead>
-      <tbody>${ult.map(t=>`<tr style="border-bottom:1px solid var(--bor)">
-        <td style="padding:7px 10px;font-size:11px;color:var(--tx3)">${fmtData(t.date)}</td>
-        <td style="padding:7px 10px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.desc}</td>
-        <td style="padding:7px 10px"><span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${t.catInfo.cor}22;color:${t.catInfo.cor};font-weight:600">${t.catInfo.code}</span></td>
-        <td style="padding:7px 10px;font-size:12px;font-weight:600;color:var(--grn)">${t.type==='CREDIT'?fmtBRL(t.amt):'—'}</td>
-        <td style="padding:7px 10px;font-size:12px;font-weight:600;color:var(--red)">${t.type==='DEBIT'?fmtBRL(t.amt):'—'}</td>
-        <td style="padding:7px 10px"><span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:${t.status==='conciliado'?'var(--gbg)':t.status==='ignorado'?'var(--sur2)':'var(--ybg)'};color:${t.status==='conciliado'?'var(--grn)':t.status==='ignorado'?'var(--tx3)':'var(--yel)'}">${t.status}</span></td>
-      </tr>`).join('')}</tbody>
-    </table></div>
   </div>`;
 }
 
-// ═══════════════════════════════════════
-// CONCILIAÇÃO
-// ═══════════════════════════════════════
-function renderConciliacao() {
-  const conc = TX.filter(t=>t.status==='conciliado').length;
-  const pend = TX.filter(t=>t.status==='pendente').length;
-  const ig   = TX.filter(t=>t.status==='ignorado').length;
-
-  const entradas = TX.filter(t=>t.type==='CREDIT');
-  const saidas   = TX.filter(t=>t.type==='DEBIT');
-
-  const filtrar = (lista) => lista.filter(t=>{
-    const matchF = filterStatus==='todos' || t.status===filterStatus;
-    const matchS = !searchQ || t.desc.toLowerCase().includes(searchQ.toLowerCase()) || (t.cli||'').toLowerCase().includes(searchQ.toLowerCase());
-    return matchF && matchS;
+// ════════════════════════════════
+// CONCILIAÇÃO — TELA CHEIA
+// ════════════════════════════════
+function renderConc(){
+  const ents=TX.filter(t=>t.type==='CREDIT');
+  const sais=TX.filter(t=>t.type==='DEBIT');
+  const fil=list=>list.filter(t=>{
+    const mf=filtro==='todos'||t.status===filtro;
+    const ms=!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase());
+    return mf&&ms;
   });
+  const ef=fil(ents), sf=fil(sais);
+  const conc=TX.filter(t=>t.status==='conciliado').length;
+  const pend=TX.filter(t=>t.status==='pendente').length;
+  const tE=ents.reduce((s,t)=>s+t.amt,0);
+  const tS=sais.reduce((s,t)=>s+t.amt,0);
+  const pct=TX.length?Math.round(conc/TX.length*100):0;
 
-  const entF = filtrar(entradas);
-  const saiF = filtrar(saidas);
-  const totalE = entradas.reduce((s,t)=>s+t.amt,0);
-  const totalS = saidas.reduce((s,t)=>s+Math.abs(t.amt),0);
-  const pendE = entradas.filter(t=>t.status==='pendente').length;
-  const pendS = saidas.filter(t=>t.status==='pendente').length;
-  const concE = entradas.filter(t=>t.status==='conciliado').length;
-  const concS = saidas.filter(t=>t.status==='conciliado').length;
-
-  const kpis = [
-    ['Saldo Sicredi','R$ 596,23','n'],
-    ['Total Entradas',fmtBRL(totalE),'g'],
-    ['Total Saídas',fmtBRL(totalS),'r'],
-    ['Conciliados',conc+'/'+TX.length,'n'],
-    ['Pendentes',pend,'y'],
-    ['Progresso',Math.round(conc/TX.length*100)+'%','n'],
-  ];
-
-  return `
-  <div style="display:flex;flex-direction:column;gap:10px;height:calc(100vh - 90px)">
-
-    <!-- KPIs + FILTROS -->
-    <div style="background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);box-shadow:var(--sh1);flex-shrink:0">
-      <div style="display:grid;grid-template-columns:repeat(6,1fr)">
-        ${kpis.map(([l,v,c],i)=>`<div style="padding:10px 14px;${i<5?'border-right:1px solid var(--bor)':''}">
-          <div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;font-weight:600;margin-bottom:3px">${l}</div>
-          <div style="font-size:16px;font-weight:700;color:${c==='g'?'var(--grn)':c==='r'?'var(--red)':c==='y'?'var(--yel)':'var(--txt)'}">${v}</div>
-        </div>`).join('')}
-      </div>
-      <div style="display:flex;align-items:center;gap:7px;padding:8px 12px;border-top:1px solid var(--bor);flex-wrap:wrap">
-        <div style="display:flex;gap:4px">
-          <button class="fchip ${filterStatus==='todos'?'on':''}" onclick="setFilter('todos')">Todos</button>
-          <button class="fchip ${filterStatus==='pendente'?'on':''}" onclick="setFilter('pendente')" style="${filterStatus!=='pendente'?'border-color:var(--yel);color:var(--yel)':''}">⏳ Pendentes</button>
-          <button class="fchip ${filterStatus==='conciliado'?'on':''}" onclick="setFilter('conciliado')" style="${filterStatus!=='conciliado'?'border-color:var(--grn);color:var(--grn)':''}">✓ Conciliados</button>
-          <button class="fchip ${filterStatus==='ignorado'?'on':''}" onclick="setFilter('ignorado')">Ignorados</button>
-        </div>
-        <input class="search-in" placeholder="Buscar descrição ou cliente..." value="${searchQ}" oninput="searchQ=this.value;render()" style="flex:1;min-width:180px">
-        <button class="btn grn" onclick="conciliarTodos()">✓ Conciliar todos</button>
-        <button class="btn pri" onclick="openModal()">+ Lançamento</button>
+  return `<div class="conc-page">
+    <!-- KPIs -->
+    <div class="conc-kpis">
+      <div class="kpi"><div class="kl">Saldo Sicredi</div><div class="kv n">R$ 432,06</div></div>
+      <div class="kpi"><div class="kl">Entradas hoje</div><div class="kv g">${fmtR(tE)}</div><div class="ks">${ents.length} lançamentos</div></div>
+      <div class="kpi"><div class="kl">Saídas hoje</div><div class="kv r">${fmtR(tS)}</div><div class="ks">${sais.length} lançamentos</div></div>
+      <div class="kpi"><div class="kl">Pendentes</div><div class="kv y">${pend}</div><div class="ks">${conc} conciliados</div></div>
+      <div class="kpi"><div class="kl">Progresso</div><div class="kv n">${pct}%</div>
+        <div style="height:4px;background:var(--bor);border-radius:2px;margin-top:5px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${pct===100?'var(--grn)':'var(--sacc)'};border-radius:2px"></div></div>
       </div>
     </div>
-
-    <!-- COLUNAS ENTRADAS | SAÍDAS -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-height:0">
-
-      <!-- ENTRADAS -->
-      <div style="display:flex;flex-direction:column;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh1)">
-        <div style="padding:10px 14px;border-bottom:1px solid var(--bor);background:var(--gbg);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-          <div>
-            <span style="font-size:13px;font-weight:700;color:var(--grn)">↑ Entradas</span>
-            <span style="font-size:11px;color:var(--tx3);margin-left:6px">${entF.length} registros</span>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:15px;font-weight:700;color:var(--grn)">${fmtBRL(totalE)}</div>
-            <div style="font-size:10px;color:var(--tx3)">${concE} conciliadas · ${pendE} pendentes</div>
-          </div>
-        </div>
-        <div style="flex:1;overflow-y:auto">
-          ${entF.length===0?'<div class="empty">Nenhuma entrada encontrada</div>':
-            entF.map(t=>renderTxItem(t)).join('')}
-        </div>
-      </div>
-
-      <!-- SAÍDAS -->
-      <div style="display:flex;flex-direction:column;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh1)">
-        <div style="padding:10px 14px;border-bottom:1px solid var(--bor);background:var(--rbg);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-          <div>
-            <span style="font-size:13px;font-weight:700;color:var(--red)">↓ Saídas</span>
-            <span style="font-size:11px;color:var(--tx3);margin-left:6px">${saiF.length} registros</span>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:15px;font-weight:700;color:var(--red)">${fmtBRL(totalS)}</div>
-            <div style="font-size:10px;color:var(--tx3)">${concS} conciliadas · ${pendS} pendentes</div>
-          </div>
-        </div>
-        <div style="flex:1;overflow-y:auto">
-          ${saiF.length===0?'<div class="empty">Nenhuma saída encontrada</div>':
-            saiF.map(t=>renderTxItem(t)).join('')}
-        </div>
-      </div>
-
-    </div>
-  </div>`;
-}
-
-
-// ═══════════════════════════════════════
-// JOURNAL
-// ═══════════════════════════════════════
-function renderJournal() {
-  const filtered = TX.filter(t=>
-    !searchQ||t.desc.toLowerCase().includes(searchQ.toLowerCase())||(t.cli||'').toLowerCase().includes(searchQ.toLowerCase())
-  );
-  const entradas = filtered.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
-  const saidas = filtered.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+Math.abs(t.amt),0);
-  return `
-  <div class="conc-wrap">
-    <div class="conc-head">
-      <div class="conc-title">Todos os Lançamentos — Sicredi Jun/2026</div>
-      <input class="search-in" placeholder="Buscar..." value="${searchQ}" oninput="searchQ=this.value;render()">
+    <!-- TOOLBAR -->
+    <div class="conc-toolbar">
+      <button class="fchip${filtro==='todos'?' on':''}" onclick="filtro='todos';render()">Todos (${TX.length})</button>
+      <button class="fchip${filtro==='pendente'?' on':''}" onclick="filtro='pendente';render()" style="${filtro!=='pendente'?'border-color:var(--yel);color:var(--yel)':''}">⏳ Pendentes (${pend})</button>
+      <button class="fchip${filtro==='conciliado'?' on':''}" onclick="filtro='conciliado';render()" style="${filtro!=='conciliado'?'border-color:var(--grn);color:var(--grn)':''}">✓ Conciliados (${conc})</button>
+      <button class="fchip${filtro==='ignorado'?' on':''}" onclick="filtro='ignorado';render()">Ignorados</button>
+      <input class="srch" placeholder="Buscar descrição ou cliente..." value="${busca}" oninput="busca=this.value;render()">
+      <button class="btn grn" onclick="concTodos()">✓ Conciliar todos</button>
       <button class="btn pri" onclick="openModal()">+ Lançamento</button>
     </div>
-    <div class="conc-stats">
-      <span class="cstat g">↑ ${fmtBRL(entradas)}</span>
-      <span class="cstat r">↓ ${fmtBRL(saidas)}</span>
-      <span class="cstat n">${filtered.length} registros</span>
+    <!-- COLUNAS -->
+    <div class="conc-cols">
+      <!-- ENTRADAS -->
+      <div class="col-box">
+        <div class="col-head" style="background:var(--gbg);border-bottom-color:var(--gbr)">
+          <div>
+            <div class="col-title" style="color:var(--grn)">↑ Entradas</div>
+            <div class="col-sub">${ef.length} de ${ents.length} registros · ${ents.filter(t=>t.status==='conciliado').length} conciliados</div>
+          </div>
+          <div style="text-align:right">
+            <div class="col-total" style="color:var(--grn)">${fmtR(tE)}</div>
+            <div class="col-sub">${ents.filter(t=>t.status==='pendente').length} pendentes</div>
+          </div>
+        </div>
+        <div class="col-list">
+          ${ef.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma entrada</div>':ef.map(t=>txItem(t)).join('')}
+        </div>
+      </div>
+      <!-- SAÍDAS -->
+      <div class="col-box">
+        <div class="col-head" style="background:var(--rbg);border-bottom-color:var(--rbr)">
+          <div>
+            <div class="col-title" style="color:var(--red)">↓ Saídas</div>
+            <div class="col-sub">${sf.length} de ${sais.length} registros · ${sais.filter(t=>t.status==='conciliado').length} conciliadas</div>
+          </div>
+          <div style="text-align:right">
+            <div class="col-total" style="color:var(--red)">${fmtR(tS)}</div>
+            <div class="col-sub">${sais.filter(t=>t.status==='pendente').length} pendentes</div>
+          </div>
+        </div>
+        <div class="col-list">
+          ${sf.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma saída</div>':sf.map(t=>txItem(t)).join('')}
+        </div>
+      </div>
     </div>
-    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:800px">
-      <thead><tr>${['Data','Descrição','Categoria','Entrada','Saída','Status','Concil.','Cliente'].map(h=>`<th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap">${h}</th>`).join('')}</tr></thead>
-      <tbody>${filtered.map(t=>`<tr style="border-bottom:1px solid var(--bor);cursor:pointer" onclick="go('conciliacao',document.getElementById('ni-conciliacao'));setTimeout(()=>{expandedTx='${t.id}';render()},100)">
-        <td style="padding:7px 10px;font-size:11px;color:var(--tx3);white-space:nowrap">${fmtData(t.date)}</td>
-        <td style="padding:7px 10px;font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.desc}</td>
-        <td style="padding:7px 10px"><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${t.catInfo.cor}22;color:${t.catInfo.cor};font-weight:600;white-space:nowrap">${t.catInfo.code}</span></td>
-        <td style="padding:7px 10px;font-size:12px;font-weight:600;color:var(--grn)">${t.type==='CREDIT'?fmtBRL(t.amt):'—'}</td>
-        <td style="padding:7px 10px;font-size:12px;font-weight:600;color:var(--red)">${t.type==='DEBIT'?fmtBRL(t.amt):'—'}</td>
-        <td style="padding:7px 10px"><span style="font-size:10px;padding:2px 6px;border-radius:6px;font-weight:600;background:${t.status==='conciliado'?'var(--gbg)':t.status==='ignorado'?'var(--sur2)':'var(--ybg)'};color:${t.status==='conciliado'?'var(--grn)':t.status==='ignorado'?'var(--tx3)':'var(--yel)'}">${t.status}</span></td>
-        <td style="padding:7px 10px;text-align:center;color:${t.status==='conciliado'?'var(--grn)':'var(--tx3)'}">${t.status==='conciliado'?'✓':'—'}</td>
-        <td style="padding:7px 10px;font-size:11px;color:var(--tx2);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.cli||'—'}</td>
-      </tr>`).join('')}</tbody>
-    </table></div>
-    <div style="padding:8px 14px;background:var(--sur2);border-top:1px solid var(--bor);font-size:11px;color:var(--tx3)">${filtered.length} registros · Sicredi Empresas · 38.364.354/0001-98</div>
   </div>`;
 }
 
-// ═══════════════════════════════════════
+function txItem(t){
+  const isOpen = openId===t.id;
+  const ed = EDITED[t.id]||{};
+  const semCat = t.cat==='OUT';
+  const ckClass = t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend';
+  const ckLabel = t.status==='conciliado'?'✓':t.status==='ignorado'?'—':'';
+  return `<div class="tx${isOpen?' open':''}" id="txi-${t.id}">
+    <div class="tx-row" onclick="toggleOpen('${t.id}')">
+      <div class="tx-ck ${ckClass}" onclick="event.stopPropagation();ckClick('${t.id}')">${ckLabel}</div>
+      <div class="tx-dot" style="background:${t.status==='conciliado'?'var(--grn)':t.status==='ignorado'?'var(--tx3)':'var(--yel)'}"></div>
+      <div class="tx-body">
+        <div class="tx-desc">${t.desc}${semCat?'<span class="no-cat">⚠ classificar</span>':''}</div>
+        <div class="tx-meta">
+          <span>${t.hora}</span>
+          ${t.cli?`<span>· ${t.cli}</span>`:''}
+          ${t.obs?`<span>· 📝 ${t.obs}</span>`:''}
+          ${t.editado?`<span style="color:var(--sacc)">· editado</span>`:''}
+        </div>
+      </div>
+      <span class="tx-cat" style="background:${t.catInfo.cor}22;color:${t.catInfo.cor}">${t.catInfo.code}</span>
+      <div class="tx-amt ${t.type==='CREDIT'?'g':'r'}">${t.type==='CREDIT'?'+':'−'}${fmtR(t.amt)}</div>
+      <span class="tx-arr">▼</span>
+    </div>
+    ${isOpen?`<div class="tx-edit">
+      <div class="edit-row edit-3">
+        <div class="eg"><label>Descrição</label><input type="text" value="${t.desc.replace(/"/g,'&quot;')}" onchange="upd('${t.id}','desc',this.value)"></div>
+        <div class="eg"><label>Cliente / Fornecedor</label><input type="text" value="${(t.cli||'').replace(/"/g,'&quot;')}" placeholder="Nome ou CNPJ" onchange="upd('${t.id}','cli',this.value)"></div>
+        <div class="eg"><label>Observação</label><input type="text" value="${(t.obs||'').replace(/"/g,'&quot;')}" placeholder="Nota interna" onchange="upd('${t.id}','obs',this.value)"></div>
+      </div>
+      <div class="edit-row edit-2">
+        <div class="eg"><label>Plano de Conta (Categoria)</label>
+          <select onchange="upd('${t.id}','cat',this.value)">${catOpts(t.cat)}</select>
+        </div>
+        <div class="eg"><label>Meio de Pagamento</label>
+          <select onchange="upd('${t.id}','meio',this.value)">
+            ${['PIX','Boleto','TED','Cartão','Débito Automático','Dinheiro','Outro'].map(m=>`<option${(t.meio||'PIX')===m?' selected':''}>${m}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="edit-btns">
+        ${t.status!=='conciliado'?`<button class="eb ok" onclick="conc('${t.id}')">✓ Conciliar</button>`:`<button class="eb undo" onclick="desconc('${t.id}')">↩ Desfazer</button>`}
+        ${t.status!=='ignorado'?`<button class="eb skip" onclick="ign('${t.id}')">✕ Ignorar</button>`:''}
+        <span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend'}" style="margin-left:4px">${t.status}</span>
+        <span style="font-size:10px;color:var(--tx3);margin-left:auto">04/07/2026 · Sicredi · ${t.type==='CREDIT'?'Entrada':'Saída'}</span>
+      </div>
+    </div>`:''}
+  </div>`;
+}
+
+// ════════════════════════════════
+// AÇÕES
+// ════════════════════════════════
+function toggleOpen(id){ openId = openId===id?null:id; render(); }
+
+function ckClick(id){
+  const t=TX.find(x=>x.id===id);
+  if(!t) return;
+  if(t.status==='conciliado') desconc(id);
+  else conc(id);
+}
+
+function upd(id, field, value){
+  const t=TX.find(x=>x.id===id);
+  if(!t) return;
+  t[field]=value;
+  if(field==='cat') t.catInfo=cat(value);
+  t.editado=true;
+  saveEd(id,{[field]:value});
+  // re-render só o item
+  const el=document.getElementById('txi-'+id);
+  if(el) el.outerHTML=txItem(t);
+}
+
+function conc(id){
+  const t=TX.find(x=>x.id===id);
+  if(!t) return;
+  if(t.cat==='OUT'){ toast('⚠ Defina a categoria antes de conciliar!','warn'); return; }
+  t.status='conciliado';
+  saveEd(id,{status:'conciliado'});
+  toast('✓ Conciliado!','ok');
+  // avança para próximo pendente
+  const prox=TX.filter(x=>x.status==='pendente'&&x.type===t.type);
+  openId=prox.length?prox[0].id:null;
+  render();
+}
+
+function desconc(id){
+  const t=TX.find(x=>x.id===id);
+  if(!t) return;
+  t.status='pendente';
+  saveEd(id,{status:'pendente'});
+  toast('↩ Desfeito');
+  render();
+}
+
+function ign(id){
+  const t=TX.find(x=>x.id===id);
+  if(!t) return;
+  t.status='ignorado';
+  openId=null;
+  saveEd(id,{status:'ignorado'});
+  toast('Ignorado');
+  render();
+}
+
+function concTodos(){
+  const semCat=TX.filter(t=>t.status==='pendente'&&t.cat==='OUT');
+  if(semCat.length){ toast(`⚠ ${semCat.length} sem categoria — classifique antes`,'warn'); openId=semCat[0].id; filtro='pendente'; render(); return; }
+  TX.filter(t=>t.status==='pendente').forEach(t=>{ t.status='conciliado'; saveEd(t.id,{status:'conciliado'}); });
+  toast('✓ Todos conciliados!','ok');
+  render();
+}
+
+// ════════════════════════════════
+// JOURNAL
+// ════════════════════════════════
+function renderJour(){
+  const fil=TX.filter(t=>!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase()));
+  return `<div class="card">
+    <div class="cp" style="border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px">
+      <span class="sec" style="margin:0;flex:1">Lançamentos — Sicredi · 04/07/2026</span>
+      <input class="srch" placeholder="Buscar..." value="${busca}" oninput="busca=this.value;render()" style="width:200px">
+      <button class="btn pri" onclick="openModal()">+ Lançamento</button>
+    </div>
+    <div style="padding:6px 14px;background:var(--sur2);border-bottom:1px solid var(--bor);display:flex;gap:14px">
+      <span style="font-size:11px;font-weight:600;color:var(--grn)">↑ ${fmtR(TX.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0))}</span>
+      <span style="font-size:11px;font-weight:600;color:var(--red)">↓ ${fmtR(TX.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0))}</span>
+      <span style="font-size:11px;color:var(--tx3)">${fil.length} registros</span>
+    </div>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Hora</th><th>Descrição</th><th>Categoria</th><th>Entrada</th><th>Saída</th><th>Status</th><th>Concil.</th><th>Cliente</th></tr></thead>
+      <tbody>${fil.map(t=>`<tr style="cursor:pointer" onclick="go('conc',document.getElementById('ni-conc'));setTimeout(()=>{openId='${t.id}';render()},80)">
+        <td style="color:var(--tx3)">${t.hora}</td>
+        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">${t.desc}</td>
+        <td><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${t.catInfo.cor}22;color:${t.catInfo.cor};font-weight:600">${t.catInfo.code}</span></td>
+        <td style="color:var(--grn);font-weight:600">${t.type==='CREDIT'?'+'+fmtR(t.amt):'—'}</td>
+        <td style="color:var(--red);font-weight:600">${t.type==='DEBIT'?'−'+fmtR(t.amt):'—'}</td>
+        <td><span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend'}">${t.status}</span></td>
+        <td style="text-align:center;color:${t.status==='conciliado'?'var(--grn)':'var(--tx3)'}">${t.status==='conciliado'?'✓':'—'}</td>
+        <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis">${t.cli||'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`;
+}
+
+// ════════════════════════════════
 // CASH FLOW
-// ═══════════════════════════════════════
-let cfExp = {};
-function renderCashflow() {
-  const M = ['Jan','Fev','Mar','Abr','Mai','Jun'];
-  const REC  = [338850,269581,286382,273646,257708,193762];
-  const FORN = [220218, 99813,228764,210365,153216,114047];
-  const TRIB = [ 17418, 24298,  2270, 27643,  6159,  6906];
-  const VEND = [  4647,  4401,  3022,  4589,  3259,  2415];
-  const MOTO = [  3194,  2268,  3675,  3290,  4540,  1590];
-  const ADM  = [ 17378, 16153, 17512, 19883, 10180, 11290];
-  const PES  = [ 40280, 28979, 25800, 36600, 23065, 23050];
-  const TRAF = [  9402,  6815, 14904, 10735, 10736,  6500];
-  const INV  = [ 14563, 12014,  7229, 11189,  6263,  2193];
-  const NOIN = [  1998,  1496, 22084, 35734,  5821,  1950];
-  const NOUT = [ 21836, 29553, 32711,  7559, 24644, 49297];
-  const RES  = [ -8325, 43139,-30475,-22657, 19786,-18447];
-  const SF   = [ 15227, 58167, 27692,  5040, 19448,  1000];
-
-  const cv = M.map((_,i)=>-(FORN[i]+TRIB[i]+VEND[i]+MOTO[i]));
-  const mc = M.map((_,i)=>REC[i]+cv[i]);
-  const df = M.map((_,i)=>-(ADM[i]+PES[i]+TRAF[i]));
-  const lai = M.map((_,i)=>mc[i]+df[i]-INV[i]);
-  const no = M.map((_,i)=>NOIN[i]-NOUT[i]);
-
-  function row(vals) {
-    const tot = vals.reduce((s,v)=>s+v,0);
-    return vals.map(v=>`<td class="${v>0?'vp':v<0?'vn':'vz'}">${v!==0?fmtBRL(v):'—'}</td>`).join('')
-      +`<td class="${tot>0?'vp':tot<0?'vn':'vz'}" style="font-weight:700">${fmtBRL(tot)}</td>`;
-  }
-
-  return `
-  <div style="overflow:auto;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);box-shadow:var(--sh1)">
-    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;gap:8px;align-items:center">
+// ════════════════════════════════
+function renderCF(){
+  const M=['Jan','Fev','Mar','Abr','Mai','Jun'];
+  const REC=[338850,269581,286382,273646,257708,193762];
+  const FORN=[220218,99813,228764,210365,153216,114047];
+  const TRIB=[17418,24298,2270,27643,6159,6906];
+  const VEND=[4647,4401,3022,4589,3259,2415];
+  const MOTO=[3194,2268,3675,3290,4540,1590];
+  const ADM=[17378,16153,17512,19883,10180,11290];
+  const PES=[40280,28979,25800,36600,23065,23050];
+  const TRAF=[9402,6815,14904,10735,10736,6500];
+  const INV=[14563,12014,7229,11189,6263,2193];
+  const NOIN=[1998,1496,22084,35734,5821,1950];
+  const NOUT=[21836,29553,32711,7559,24644,49297];
+  const RES=[-8325,43139,-30475,-22657,19786,-18447];
+  const SF=[15227,58167,27692,5040,19448,1000];
+  const cv=M.map((_,i)=>-(FORN[i]+TRIB[i]+VEND[i]+MOTO[i]));
+  const mc=M.map((_,i)=>REC[i]+cv[i]);
+  const df=M.map((_,i)=>-(ADM[i]+PES[i]+TRAF[i]));
+  const lai=M.map((_,i)=>mc[i]+df[i]-INV[i]);
+  const no=M.map((_,i)=>NOIN[i]-NOUT[i]);
+  function row(vals){const tot=vals.reduce((s,v)=>s+v,0);return vals.map(v=>`<td class="${v>0?'vp':v<0?'vn':''}">${v?fmtR(v):'—'}</td>`).join('')+`<td class="${tot>0?'vp':tot<0?'vn':''}" style="font-weight:700">${fmtR(tot)}</td>`;}
+  return `<div class="card" style="overflow:auto">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px">
       <span style="font-size:13px;font-weight:700">Fluxo de Caixa — Jan/Jun 2026</span>
-      <span style="font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:3px 9px">● Sicredi conectado</span>
+      <span style="font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:2px 9px">● Sicredi</span>
     </div>
     <div style="overflow-x:auto"><table class="cft">
-      <thead><tr>
-        <th>Macro contas</th>
-        ${M.map(m=>`<th>${m}/26</th>`).join('')}
-        <th>Total</th>
-      </tr></thead>
+      <thead><tr><th>Macro contas</th>${M.map(m=>`<th>${m}/26</th>`).join('')}<th>Total</th></tr></thead>
       <tbody>
-        <tr class="rg"><td><button class="xb" onclick="cfExp.rec=!cfExp.rec;render()">${cfExp.rec?'▼':'▶'}</button>Receita/Faturamento</td>${row(REC)}</tr>
-        ${cfExp.rec?`<tr class="rs"><td>3.1.8 — Receita de Vendas</td>${row(REC)}</tr>`:''}
-        <tr class="rg"><td><button class="xb" onclick="cfExp.cv=!cfExp.cv;render()">${cfExp.cv?'▼':'▶'}</button>Custos Variáveis</td>${row(cv)}</tr>
-        ${cfExp.cv?`
-          <tr class="rs"><td>4.1 — Custos Tributários</td>${row(TRIB.map(v=>-v))}</tr>
-          <tr class="rs"><td>4.2 — Fornecedores</td>${row(FORN.map(v=>-v))}</tr>
-          <tr class="rs"><td>4.4 — Custo com Vendas</td>${row(VEND.map(v=>-v))}</tr>
-          <tr class="rs"><td>4.6 — Custos com Motos</td>${row(MOTO.map(v=>-v))}</tr>`:''}
+        <tr class="rg"><td><button class="xb" onclick="cfExp.r=!cfExp.r;render()">${cfExp.r?'▼':'▶'}</button>Receita/Faturamento</td>${row(REC)}</tr>
+        ${cfExp.r?`<tr class="rs"><td>3.1.8 — Receita de Vendas</td>${row(REC)}</tr>`:''}
+        <tr class="rg"><td><button class="xb" onclick="cfExp.c=!cfExp.c;render()">${cfExp.c?'▼':'▶'}</button>Custos Variáveis</td>${row(cv)}</tr>
+        ${cfExp.c?`<tr class="rs"><td>4.1 — Custos Tributários</td>${row(TRIB.map(v=>-v))}</tr><tr class="rs"><td>4.2 — Fornecedores</td>${row(FORN.map(v=>-v))}</tr><tr class="rs"><td>4.4 — Custo com Vendas</td>${row(VEND.map(v=>-v))}</tr><tr class="rs"><td>4.6 — Custos com Motos</td>${row(MOTO.map(v=>-v))}</tr>`:''}
         <tr class="rr"><td>Margem de Contribuição</td>${row(mc)}</tr>
-        <tr class="rg"><td><button class="xb" onclick="cfExp.df=!cfExp.df;render()">${cfExp.df?'▼':'▶'}</button>Despesas Fixas</td>${row(df)}</tr>
-        ${cfExp.df?`
-          <tr class="rs"><td>5.2 — Desp. Administrativas</td>${row(ADM.map(v=>-v))}</tr>
-          <tr class="rs"><td>5.3 — Desp. com Pessoal</td>${row(PES.map(v=>-v))}</tr>
-          <tr class="rs"><td>5.8 — Tráfego Pago</td>${row(TRAF.map(v=>-v))}</tr>`:''}
+        <tr class="rg"><td><button class="xb" onclick="cfExp.d=!cfExp.d;render()">${cfExp.d?'▼':'▶'}</button>Despesas Fixas</td>${row(df)}</tr>
+        ${cfExp.d?`<tr class="rs"><td>5.2 — Desp. Administrativas</td>${row(ADM.map(v=>-v))}</tr><tr class="rs"><td>5.3 — Desp. com Pessoal</td>${row(PES.map(v=>-v))}</tr><tr class="rs"><td>5.8 — Tráfego Pago</td>${row(TRAF.map(v=>-v))}</tr>`:''}
         <tr class="rr"><td>Lucro Op. Antes Investimentos</td>${row(lai)}</tr>
-        <tr class="rg"><td><button class="xb" onclick="cfExp.inv=!cfExp.inv;render()">${cfExp.inv?'▼':'▶'}</button>Investimentos DHFIT</td>${row(INV.map(v=>-v))}</tr>
-        <tr class="rg"><td><button class="xb" onclick="cfExp.no=!cfExp.no;render()">${cfExp.no?'▼':'▶'}</button>Movimentações Não Operacionais</td>${row(no)}</tr>
-        ${cfExp.no?`
-          <tr class="rs"><td>7.1 — Entradas não operacionais</td>${row(NOIN)}</tr>
-          <tr class="rs"><td>7.2 — Saídas não operacionais</td>${row(NOUT.map(v=>-v))}</tr>`:''}
+        <tr class="rg"><td><button class="xb" onclick="cfExp.i=!cfExp.i;render()">${cfExp.i?'▼':'▶'}</button>Investimentos DHFIT</td>${row(INV.map(v=>-v))}</tr>
+        <tr class="rg"><td><button class="xb" onclick="cfExp.n=!cfExp.n;render()">${cfExp.n?'▼':'▶'}</button>Movimentações Não Operacionais</td>${row(no)}</tr>
+        ${cfExp.n?`<tr class="rs"><td>7.1 — Entradas não operacionais</td>${row(NOIN)}</tr><tr class="rs"><td>7.2 — Saídas não operacionais</td>${row(NOUT.map(v=>-v))}</tr>`:''}
         <tr class="rl"><td>Resultado Líquido</td>${row(RES)}</tr>
         <tr class="rr"><td>Saldo Final Sicredi</td>${row(SF)}</tr>
       </tbody>
@@ -942,196 +823,88 @@ function renderCashflow() {
   </div>`;
 }
 
-// ═══════════════════════════════════════
+// ════════════════════════════════
 // METAS
-// ═══════════════════════════════════════
-function renderGoals() {
-  const metas = [
-    {t:'Receita Mensal',meta:280000,atual:193762,st:'bad'},
-    {t:'Fornecedores ≤ R$ 100k',meta:100000,atual:114047,st:'warn'},
-    {t:'Conciliação 100%',meta:TX.length,atual:TX.filter(t=>t.status==='conciliado').length,st:TX.filter(t=>t.status==='conciliado').length===TX.length?'ok':'warn'},
-    {t:'Tráfego Pago ≤ R$ 5k',meta:5000,atual:6500,st:'warn'},
-    {t:'Resultado Positivo',meta:10000,atual:0,st:'bad'},
-    {t:'Saldo Sicredi ≥ R$ 50k',meta:50000,atual:596,st:'bad'},
+// ════════════════════════════════
+function renderMetas(){
+  const metas=[
+    {t:'Receita Diária',meta:5000,atual:TX.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0),st:''},
+    {t:'Controle de Saídas',meta:3000,atual:TX.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0),inv:true,st:''},
+    {t:'Conciliação 100%',meta:TX.length,atual:TX.filter(t=>t.status==='conciliado').length,st:''},
+    {t:'Saldo Sicredi ≥ R$ 5k',meta:5000,atual:432.06,st:''},
   ];
-  return `
-  <div class="gg">${metas.map(g=>{
-    const pct = Math.min(100,Math.round(g.atual/g.meta*100));
-    const cor = g.st==='ok'?'#10b981':g.st==='warn'?'#f59e0b':'#ef4444';
-    const label = g.st==='ok'?'✓ Atingida':g.st==='warn'?'⚠ Atenção':'✗ Abaixo';
-    return `<div class="gc">
-      <div class="gch"><div class="gct">${g.t}</div><span class="gcs" style="background:${cor}22;color:${cor}">${label}</span></div>
+  return `<div class="gg">${metas.map(g=>{
+    const pct=Math.min(100,Math.round(g.atual/g.meta*100));
+    const ok=g.inv?g.atual<=g.meta:pct>=100;
+    const warn=g.inv?g.atual>g.meta*0.8:pct>=70;
+    const cor=ok?'#10b981':warn?'#f59e0b':'#ef4444';
+    return`<div class="gc">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:12px;font-weight:700">${g.t}</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:8px;background:${cor}22;color:${cor};font-weight:600">${ok?'✓ Atingida':warn?'⚠ Atenção':'✗ Abaixo'}</span>
+      </div>
       <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3)">
-        <span>Atual: <strong style="color:var(--txt)">${fmtBRL(g.atual)}</strong></span>
-        <span>Meta: <strong style="color:var(--txt)">${fmtBRL(g.meta)}</strong></span>
+        <span>Atual: <strong style="color:var(--txt)">${fmtR(g.atual)}</strong></span>
+        <span>Meta: <strong style="color:var(--txt)">${fmtR(g.meta)}</strong></span>
       </div>
       <div class="gb"><div class="gf" style="width:${pct}%;background:${cor}"></div></div>
-      <div class="gn"><span>${pct}% concluído</span><span>${100-pct}% restante</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx3)"><span>${pct}%</span><span>${100-pct}% restante</span></div>
     </div>`;
   }).join('')}</div>`;
 }
 
-// ═══════════════════════════════════════
-// AÇÕES DE CONCILIAÇÃO
-// ═══════════════════════════════════════
-function toggleTx(id) {
-  expandedTx = expandedTx===id ? null : id;
-  render();
-}
+// ════════════════════════════════
+// MODAL
+// ════════════════════════════════
+function openModal(){ document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function selTipo(el,t){ tipoModal=t; document.querySelectorAll('.tipo-b').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); }
 
-function toggleConc(id) {
-  const t = TX.find(x=>x.id===id);
-  if(!t) return;
-  if(t.status==='conciliado') desconciliar(id);
-  else conciliar(id);
-}
-
-function conciliar(id) {
-  const t = TX.find(x=>x.id===id);
-  if(!t) return;
-  if(t.cat==='OUT') { toast('⚠ Defina a categoria antes de conciliar!','warn'); return; }
-  t.status = 'conciliado';
-  saveLocal(id, {status:'conciliado', cat:t.cat});
-  toast('✓ Lançamento conciliado!','ok');
-  // avança para próximo pendente
-  const prox = TX.find(x=>x.status==='pendente');
-  expandedTx = prox?.id || null;
-  render();
-}
-
-function desconciliar(id) {
-  const t = TX.find(x=>x.id===id);
-  if(!t) return;
-  t.status = 'pendente';
-  saveLocal(id, {status:'pendente'});
-  toast('↩ Conciliação desfeita');
-  render();
-}
-
-function ignorar(id) {
-  const t = TX.find(x=>x.id===id);
-  if(!t) return;
-  t.status = 'ignorado';
-  saveLocal(id, {status:'ignorado'});
-  toast('Lançamento ignorado');
-  const prox = TX.find(x=>x.status==='pendente');
-  expandedTx = prox?.id || null;
-  render();
-}
-
-function conciliarTodos() {
-  const semCat = TX.filter(t=>t.status==='pendente'&&t.cat==='OUT');
-  if(semCat.length>0) {
-    toast(`⚠ ${semCat.length} lançamento(s) sem categoria. Classifique antes.`,'warn');
-    expandedTx = semCat[0].id;
-    filterStatus='pendente';
-    render();
-    return;
-  }
-  TX.filter(t=>t.status==='pendente').forEach(t=>{
-    t.status='conciliado';
-    saveLocal(t.id, {status:'conciliado', cat:t.cat});
-  });
-  toast(`✓ Todos conciliados!`,'ok');
-  render();
-}
-
-function editTx(id, field, value) {
-  const t = TX.find(x=>x.id===id);
-  if(!t) return;
-  t[field] = value;
-  if(field==='cat') t.catInfo = getCatByCode(value);
-  t.editado = true;
-  saveLocal(id, {[field]:value});
-  // re-render só o item sem fechar
-  const el = document.getElementById('txi-'+id);
-  if(el) el.outerHTML = renderTxItem(t);
-  attachEvents();
-}
-
-function setFilter(f) {
-  filterStatus = f;
-  render();
-}
-
-// ═══════════════════════════════════════
-// MODAL LANÇAMENTO MANUAL
-// ═══════════════════════════════════════
-let tipoModal = 'entrada';
-function selTipo(el, t) {
-  tipoModal = t;
-  document.querySelectorAll('.tipo-b').forEach(b=>b.classList.remove('sel'));
-  el.classList.add('sel');
-}
-function openModal() { document.getElementById('modal').classList.add('open'); }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-
-function salvarManual() {
-  const data = document.getElementById('m-data').value;
-  const valor = parseFloat(document.getElementById('m-valor').value)||0;
-  const desc = document.getElementById('m-desc').value.trim();
-  const cat = document.getElementById('m-cat').value;
-  const cli = document.getElementById('m-cli').value.trim();
-  if(!desc||!valor) { toast('Preencha descrição e valor!','err'); return; }
-  const isCredit = tipoModal==='entrada';
-  const newTx = {
-    id:'m'+Date.now(),
-    date:data,
-    desc,
-    amt: isCredit?valor:-valor,
-    type: isCredit?'CREDIT':'DEBIT',
-    cat,
-    catInfo: getCatByCode(cat),
-    cli,
-    obs:'',
-    status:'conciliado',
-    editado:true,
-  };
-  TX.unshift(newTx);
-  saveLocal(newTx.id, {desc,cat,cli,status:'conciliado',manual:true,amt:newTx.amt,date:data});
+function salvarManual(){
+  const data=document.getElementById('m-data').value;
+  const valor=parseFloat(document.getElementById('m-valor').value)||0;
+  const desc=document.getElementById('m-desc').value.trim();
+  const c=document.getElementById('m-cat').value;
+  const cli=document.getElementById('m-cli').value.trim();
+  const meio=document.getElementById('m-meio').value;
+  if(!desc||!valor){ toast('Preencha descrição e valor!','err'); return; }
+  const isC=tipoModal==='entrada';
+  const id='m'+Date.now();
+  const novo={id,date:data,hora:new Date().toTimeString().slice(0,5),desc,amt:valor,type:isC?'CREDIT':'DEBIT',cat:c,catInfo:cat(c),cli,obs:'',meio,status:'conciliado',editado:true};
+  TX.unshift(novo);
+  saveEd(id,{manual:true,date:data,desc,amt:valor,type:novo.type,cat:c,cli,meio,status:'conciliado'});
   closeModal();
   toast('✓ Lançamento salvo!','ok');
   render();
 }
 
-// ═══════════════════════════════════════
-// SYNC SICREDI
-// ═══════════════════════════════════════
-async function syncSicredi() {
-  const btn = document.getElementById('sync-btn');
-  const st = document.getElementById('sync-st');
-  btn.disabled=true; btn.textContent='↻ Sincronizando...';
-  st.innerHTML='<span style="width:6px;height:6px;border-radius:50%;background:var(--yel);display:inline-block;animation:pulse 1s infinite"></span> Buscando...';
-  await new Promise(r=>setTimeout(r,1800));
+// ════════════════════════════════
+// SYNC
+// ════════════════════════════════
+async function syncSicredi(){
+  const btn=document.getElementById('sync-btn');
+  const badge=document.getElementById('sync-badge');
+  btn.disabled=true; btn.textContent='↻ Buscando...';
+  badge.innerHTML='<span style="width:6px;height:6px;border-radius:50%;background:var(--yel);display:inline-block;animation:pulse 1s infinite"></span> Sincronizando...';
+  await new Promise(r=>setTimeout(r,1500));
   btn.disabled=false; btn.textContent='↻ Sincronizar';
-  const now = new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-  st.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span> Sicredi · ${now}`;
-  toast('✓ Sicredi sincronizado! Novos lançamentos verificados.','ok');
+  const now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  badge.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span> Sicredi · ${now}`;
+  toast('✓ Dados atualizados — 04/07/2026','ok');
 }
 
-// ═══════════════════════════════════════
-// UI HELPERS
-// ═══════════════════════════════════════
-function toggleSB() {
-  sbCol=!sbCol;
-  document.getElementById('sb').classList.toggle('col',sbCol);
-  document.getElementById('main').classList.toggle('exp',sbCol);
-  document.getElementById('col-ic').style.transform=sbCol?'rotate(180deg)':'';
-}
-function toggleTime() {
-  timeOpen=!timeOpen;
-  document.getElementById('time-p').classList.toggle('open',timeOpen);
-}
-
-function toast(msg, type='') {
-  const el = document.getElementById('toast');
+// ════════════════════════════════
+// TOAST / UI
+// ════════════════════════════════
+function toast(msg,type=''){
+  const el=document.getElementById('toast');
   el.textContent=msg;
-  el.className='toast '+(type==='ok'?'ok':type==='err'?'err':type==='warn'?'':'')+' show';
+  el.className='toast '+(type||'')+' show';
   setTimeout(()=>el.classList.remove('show'),3000);
 }
-
-function attachEvents() {
-  // não precisa — eventos inline funcionam
+function toggleTime(){
+  timeOpen=!timeOpen;
+  document.getElementById('time-p').classList.toggle('open',timeOpen);
 }
 
 // INIT
