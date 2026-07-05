@@ -1024,6 +1024,12 @@ function renderConc(){
   </div>`;
 }
 
+function btnAcao(t){
+  if(t.status==='previsto') return `<button class="eb ok" onclick="conc('${t.id}')">✓ Confirmar Pagamento</button><button class="eb skip" onclick="ign('${t.id}')">✕ Cancelar Previsão</button>`;
+  if(t.status==='conciliado') return `<button class="eb undo" onclick="desconc('${t.id}')">↩ Desfazer</button>`;
+  return `<button class="eb ok" onclick="conc('${t.id}')">✓ Conciliar</button><button class="eb skip" onclick="ign('${t.id}')">✕ Ignorar</button>`;
+}
+
 function txItem(t){
   const isOpen = openId===t.id;
   const ed = EDITED[t.id]||{};
