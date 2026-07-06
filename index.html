@@ -1448,210 +1448,279 @@ function mudarDia(delta){
 // CASH FLOW
 // ════════════════════════════════
 function renderCF(){
-  // ════════════════════════════════════════════════════
-  // FLUXO DINÂMICO — lê TX (real + previstos) + DRE histórico
-  // ════════════════════════════════════════════════════
+  // ── Histórico Jan-Jun (Esperado = meta/orçado, Realizado = DRE real) ──
+  const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun'];
+  const MESES_ISO = ['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'];
 
-  // Histórico Jan-Jun (DRE Yampa PDF)
+  // Dados históricos reais (DRE Yampa)
   const HIST = {
-    Jan:{rec:338850,forn:220218,trib:17418,vend:4647,moto:3194,adm:17378,pes:40280,traf:9402,inv:14563,noin:1998,nout:21836,res:-8325,sf:15227},
-    Fev:{rec:269581,forn:99813, trib:24298,vend:4401,moto:2268,adm:16153,pes:28979,traf:6815, inv:12014,noin:1496, nout:29553,res:43139, sf:58167},
-    Mar:{rec:286382,forn:228764,trib:2270, vend:3022,moto:3675,adm:17512,pes:25800,traf:14904,inv:7229, noin:22084,nout:32711,res:-30475,sf:27692},
-    Abr:{rec:273646,forn:210365,trib:27643,vend:4589,moto:3290,adm:19883,pes:36600,traf:10735,inv:11189,noin:35734,nout:7559, res:-22657,sf:5040},
-    Mai:{rec:257708,forn:153216,trib:6159, vend:3259,moto:4540,adm:10180,pes:23065,traf:10736,inv:6263, noin:5821, nout:24644,res:19786, sf:19448},
-    Jun:{rec:193762,forn:114047,trib:6906, vend:2415,moto:1590,adm:11290,pes:23050,traf:6500, inv:2193, noin:1950, nout:49297,res:-18447,sf:1000},
+    rec:  [338850,269581,286382,273646,257708,193762],
+    forn: [220218, 99813,228764,210365,153216,114047],
+    trib: [ 17418, 24298,  2270, 27643,  6159,  6906],
+    vend: [  4647,  4401,  3022,  4589,  3259,  2415],
+    moto: [  3194,  2268,  3675,  3290,  4540,  1590],
+    adm:  [ 17378, 16153, 17512, 19883, 10180, 11290],
+    pes:  [ 40280, 28979, 25800, 36600, 23065, 23050],
+    traf: [  9402,  6815, 14904, 10735, 10736,  6500],
+    inv:  [ 14563, 12014,  7229, 11189,  6263,  2193],
+    noin: [  1998,  1496, 22084, 35734,  5821,  1950],
+    nout: [ 21836, 29553, 32711,  7559, 24644, 49297],
   };
 
-  // ─── Calcular Jul em diante a partir das TXs ───
-  function somarTxPorMes(mesISO, catCodes, tipo){
+  // Esperado histórico (meta mensal — pode ser ajustado)
+  // Usando média dos realizados como proxy de "esperado"
+  const ESP = {
+    rec:  [300000,300000,300000,300000,300000,280000],
+    forn: [150000,150000,150000,150000,150000,150000],
+    trib: [ 15000, 15000, 15000, 15000, 15000, 15000],
+    vend: [  5000,  5000,  5000,  5000,  5000,  5000],
+    moto: [  3000,  3000,  3000,  3000,  3000,  3000],
+    adm:  [ 15000, 15000, 15000, 15000, 15000, 15000],
+    pes:  [ 35000, 35000, 35000, 35000, 35000, 35000],
+    traf: [ 10000, 10000, 10000, 10000, 10000, 10000],
+    inv:  [ 10000, 10000, 10000, 10000, 10000, 10000],
+    noin: [  5000,  5000,  5000,  5000,  5000,  5000],
+    nout: [ 20000, 20000, 20000, 20000, 20000, 20000],
+  };
+
+  // Meses futuros (Jul em diante) — puxar do TX
+  const MESES_FUT = ['2026-07','2026-08','2026-09'];
+  const LABELS_FUT = ['Jul','Ago','Set'];
+
+  function txMes(mesISO, cats, tipo){
     return TX.filter(t=>{
-      const m = t.date.substring(0,7); // "2026-07"
+      const mesOk = t.date.startsWith(mesISO);
+      const catOk = !cats || cats.includes(t.cat);
       const tipoOk = !tipo || t.type===tipo;
-      const catOk = !catCodes || catCodes.includes(t.cat);
-      const statusOk = t.status!=='ignorado';
-      return m===mesISO && tipoOk && catOk && statusOk;
+      return mesOk && catOk && tipoOk && t.status!=='ignorado';
     }).reduce((s,t)=>s+t.amt,0);
   }
 
-  // Meses futuros a calcular
-  const MESES_FUTUROS = ['2026-07','2026-08','2026-09'];
-  const LABELS = ['Jan','Fev','Mar','Abr','Mai','Jun',...MESES_FUTUROS.map(m=>{
-    const [y,mo] = m.split('-');
-    return ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][+mo]+'*';
-  })];
-
-  // Construir arrays dinamicamente
-  const KEYS = ['Jan','Fev','Mar','Abr','Mai','Jun'];
-
-  // Calcular cada mês futuro
-  const futData = MESES_FUTUROS.map(m=>({
-    mes: m,
-    rec:   somarTxPorMes(m, null, 'CREDIT'),
-    forn:  Math.abs(somarTxPorMes(m, ['4.2.1','4.2.4'], 'DEBIT')),
-    trib:  Math.abs(somarTxPorMes(m, ['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'], 'DEBIT')),
-    vend:  Math.abs(somarTxPorMes(m, ['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'], 'DEBIT')),
-    moto:  Math.abs(somarTxPorMes(m, ['4.6.1','4.6.2','4.6.3'], 'DEBIT')),
-    adm:   Math.abs(somarTxPorMes(m, ['5.1.1','5.1.99','5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'], 'DEBIT')),
-    pes:   Math.abs(somarTxPorMes(m, ['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'], 'DEBIT')),
-    traf:  Math.abs(somarTxPorMes(m, ['5.8.1','5.8.2'], 'DEBIT')),
-    inv:   Math.abs(somarTxPorMes(m, ['6.4.1','6.4.2'], 'DEBIT')),
-    noin:  somarTxPorMes(m, ['7.1.4','7.1.6','7.1.7','7.1.99'], 'CREDIT'),
-    nout:  Math.abs(somarTxPorMes(m, ['7.2.1','7.2.13','7.2.99'], 'DEBIT')),
+  // Calcular futuros
+  const futReal = MESES_FUT.map(m=>({
+    rec:  txMes(m,null,'CREDIT'),
+    forn: Math.abs(txMes(m,['4.2.1','4.2.4'],'DEBIT')),
+    trib: Math.abs(txMes(m,['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'],'DEBIT')),
+    vend: Math.abs(txMes(m,['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'],'DEBIT')),
+    moto: Math.abs(txMes(m,['4.6.1','4.6.2','4.6.3'],'DEBIT')),
+    adm:  Math.abs(txMes(m,['5.1.1','5.1.99','5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'],'DEBIT')),
+    pes:  Math.abs(txMes(m,['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],'DEBIT')),
+    traf: Math.abs(txMes(m,['5.8.1','5.8.2'],'DEBIT')),
+    inv:  Math.abs(txMes(m,['6.4.1','6.4.2'],'DEBIT')),
+    noin: txMes(m,['7.1.4','7.1.6','7.1.7','7.1.99'],'CREDIT'),
+    nout: Math.abs(txMes(m,['7.2.1','7.2.13','7.2.99'],'DEBIT')),
   }));
 
-  // Montar arrays finais (hist + futuro)
-  const meses = [...KEYS, ...MESES_FUTUROS.map(m=>{
-    const mo = +m.split('-')[1];
-    return ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mo]+'*';
-  })];
-  const N = meses.length;
+  // Esperado futuro = meta mensal
+  const futEsp = MESES_FUT.map(()=>({
+    rec:280000, forn:150000, trib:15000, vend:5000, moto:3000,
+    adm:15000,  pes:35000,   traf:10000, inv:10000, noin:5000, nout:20000
+  }));
 
-  function arr(key){ return [...KEYS.map(k=>HIST[k][key]||0), ...futData.map(d=>d[key]||0)]; }
+  // Mês selecionado para detalhar (null = todos)
+  const mesSel = window._cfMesSel || null;
 
-  const REC  = arr('rec');
-  const FORN = arr('forn');
-  const TRIB = arr('trib');
-  const VEND = arr('vend');
-  const MOTO = arr('moto');
-  const ADM  = arr('adm');
-  const PES  = arr('pes');
-  const TRAF = arr('traf');
-  const INV  = arr('inv');
-  const NOIN = arr('noin');
-  const NOUT = arr('nout');
-
-  const cv   = meses.map((_,i)=>-(FORN[i]+TRIB[i]+VEND[i]+MOTO[i]));
-  const mc   = meses.map((_,i)=>REC[i]+cv[i]);
-  const df   = meses.map((_,i)=>-(ADM[i]+PES[i]+TRAF[i]));
-  const lai  = meses.map((_,i)=>mc[i]+df[i]-INV[i]);
-  const no   = meses.map((_,i)=>NOIN[i]-NOUT[i]);
-  const RES  = meses.map((_,i)=>lai[i]-INV[i]+no[i]);
-
-  // Saldo acumulado
-  const SF = [HIST.Jan.sf];
-  for(let i=1;i<N;i++) SF.push(SF[i-1]+(RES[i]||0));
-  SF[5] = HIST.Jun.sf; // fix junho real
-
-  // Total fornecedores próximos meses
-  const fornFut = futData.reduce((s,d)=>s+d.forn,0);
-  const fornTotal = FORN.reduce((s,v)=>s+v,0);
-
-  // Mapeamento mês → data ISO para filtro do livro diário
-  const MES_ISO = {
-    'Jan':'2026-01','Fev':'2026-02','Mar':'2026-03','Abr':'2026-04',
-    'Mai':'2026-05','Jun':'2026-06','Jul*':'2026-07','Ago*':'2026-08','Set*':'2026-09'
-  };
-
-  function row(vals, isFut, catCodes, tipo){
-    const tot = vals.reduce((s,v)=>s+v,0);
-    return vals.map((v,i)=>{
-      if(v===0) return '<td style="color:var(--tx3)">—</td>';
-      const fut = i >= KEYS.length;
-      const mesLabel = meses[i];
-      const mesISO = MES_ISO[mesLabel]||'';
-      const color = fut
-        ? (v>0?'#059669':v<0?'#dc2626':'#9aa5b4')
-        : (v>0?'var(--grn)':v<0?'var(--red)':'var(--txt)');
-      // SEMPRE clicável se tem mesISO
-      const cats = catCodes ? catCodes.join(',') : '';
-      const tp = tipo||'';
-      const onClick = mesISO ? `onclick="abrirDiario('${mesISO}','${cats}','${tp}')"` : '';
-      return `<td style="color:${color};${fut?'font-style:italic':''}cursor:pointer;text-decoration:underline dotted" ${onClick} title="Ver lançamentos · ${mesLabel}">${fmtR(v)}</td>`;
-    }).join('') + `<td onclick="abrirDiario('','${catCodes?catCodes.join(','):''}','${tipo||''}')" style="font-weight:700;cursor:pointer;text-decoration:underline dotted;${tot>0?'color:var(--grn)':tot<0?'color:var(--red)':''}" title="Ver todos os lançamentos desta linha">${fmtR(tot)}</td>`;
+  // Função para formatar valores
+  function fv(v){ return v>0?fmtR(v):'—'; }
+  function av(esp,real){
+    if(!esp||!real) return '—';
+    const pct = Math.round(real/esp*100);
+    const c = pct>=100?'var(--grn)':pct>=70?'var(--yel)':'var(--red)';
+    return `<span style="color:${c};font-weight:600">${pct}%</span>`;
   }
 
-  const heads = meses.map((m,i)=>`<th style="text-align:right;white-space:nowrap;${i>=KEYS.length?'color:#0369a1;font-style:italic':''}">${m}/26</th>`).join('');
+  // Construir linhas da tabela
+  // Cada linha tem: label, key (para buscar hist/fut), tipo (+/-)
+  const linhas = [
+    {label:'Receita/Faturamento', key:'rec', tipo:'+', nivel:1, cat:null, creditType:'CREDIT'},
+    {label:'Custos Variáveis',    key:'cv',  tipo:'-', nivel:1, calc:true},
+    {label:'4.1 — Custos Tributários', key:'trib', tipo:'-', nivel:2},
+    {label:'4.2 — Fornecedores',       key:'forn', tipo:'-', nivel:2, destaque:true},
+    {label:'4.4 — Custo com Vendas',   key:'vend', tipo:'-', nivel:2},
+    {label:'4.6 — Custos com Motos',   key:'moto', tipo:'-', nivel:2},
+    {label:'Margem de Contribuição',   key:'mc',   tipo:'=', nivel:1, calc:true},
+    {label:'Despesas Fixas',           key:'df',   tipo:'-', nivel:1, calc:true},
+    {label:'5.1+5.2 — Desp. Adm.',     key:'adm',  tipo:'-', nivel:2},
+    {label:'5.3 — Desp. com Pessoal',  key:'pes',  tipo:'-', nivel:2},
+    {label:'5.8 — Tráfego Pago',       key:'traf', tipo:'-', nivel:2},
+    {label:'Lucro Op. Antes Inv.',     key:'lai',  tipo:'=', nivel:1, calc:true},
+    {label:'Investimentos DHFIT',      key:'inv',  tipo:'-', nivel:1},
+    {label:'Mov. Não Operacionais',    key:'no',   tipo:'±', nivel:1, calc:true},
+    {label:'7.1 — Entradas n/op.',     key:'noin', tipo:'+', nivel:2},
+    {label:'7.2 — Saídas n/op.',       key:'nout', tipo:'-', nivel:2},
+    {label:'Resultado Líquido',        key:'res',  tipo:'=', nivel:1, calc:true, destaque:true},
+    {label:'Saldo Final Sicredi',      key:'sf',   tipo:'=', nivel:1, calc:true},
+  ];
+
+  // Calcular valores por mês
+  function calcMes(d){
+    const cv   = d.forn+d.trib+d.vend+d.moto;
+    const mc   = d.rec - cv;
+    const df   = d.adm+d.pes+d.traf;
+    const lai  = mc - df;
+    const no   = d.noin - d.nout;
+    const res  = lai - d.inv + no;
+    return {...d, cv, mc, df, lai, no, res, sf:res};
+  }
+
+  // Todos os meses
+  const allMeses = [...MESES.map((_,i)=>({
+    lbl: MESES[i], iso: MESES_ISO[i], isFut: false,
+    esp: calcMes({rec:ESP.rec[i],forn:ESP.forn[i],trib:ESP.trib[i],vend:ESP.vend[i],moto:ESP.moto[i],adm:ESP.adm[i],pes:ESP.pes[i],traf:ESP.traf[i],inv:ESP.inv[i],noin:ESP.noin[i],nout:ESP.nout[i]}),
+    real: calcMes({rec:HIST.rec[i],forn:HIST.forn[i],trib:HIST.trib[i],vend:HIST.vend[i],moto:HIST.moto[i],adm:HIST.adm[i],pes:HIST.pes[i],traf:HIST.traf[i],inv:HIST.inv[i],noin:HIST.noin[i],nout:HIST.nout[i]}),
+  })), ...MESES_FUT.map((iso,i)=>({
+    lbl: LABELS_FUT[i]+'*', iso, isFut: true,
+    esp: calcMes(futEsp[i]),
+    real: calcMes(futReal[i]),
+  }))];
+
+  // Meses a exibir
+  const mesesExib = mesSel ? allMeses.filter(m=>m.iso===mesSel) : allMeses;
+
+  // Totais
+  function totalCol(key, campo){
+    return allMeses.reduce((s,m)=>s+(m[campo][key]||0),0);
+  }
+
+  // Renderizar célula
+  function celEsp(m, key){
+    const v = m.esp[key]||0;
+    if(!v) return '<td style="text-align:right;color:var(--tx3);font-size:11px">—</td>';
+    return `<td style="text-align:right;font-size:11px;color:var(--tx2);cursor:pointer" onclick="abrirDiario('${m.iso}','','','')" title="Esperado ${m.lbl}">${fmtR(v)}</td>`;
+  }
+  function celReal(m, key, isFut){
+    const v = m.real[key]||0;
+    if(!v && !isFut) return '<td style="text-align:right;color:var(--tx3);font-size:11px">—</td>';
+    const c = isFut ? '#0369a1' : (v > (m.esp[key]||0)*1.1 ? 'var(--red)' : v > 0 ? 'var(--txt)' : 'var(--tx3)');
+    const style = `text-align:right;font-size:11px;font-weight:${isFut?'400':'500'};color:${c};${isFut?'font-style:italic':''}`;
+    return `<td style="${style};cursor:pointer" onclick="abrirDiario('${m.iso}','','','')" title="Realizado ${m.lbl}">${v?fmtR(v):'—'}</td>`;
+  }
+  function celAV(m, key){
+    const esp = m.esp[key]||0;
+    const real = m.real[key]||0;
+    if(!esp||!real) return '<td style="text-align:center;font-size:10px;color:var(--tx3)">—</td>';
+    const pct = Math.round(real/esp*100);
+    const c = pct>=95?'var(--grn)':pct>=70?'var(--yel)':'var(--red)';
+    return `<td style="text-align:center;font-size:10px;color:${c};font-weight:600">${pct}%</td>`;
+  }
+
+  // Estilo por nível
+  function rowStyle(l){
+    if(l.key==='res') return 'background:#0d1f35!important';
+    if(l.key==='sf') return 'background:#1a3050!important';
+    if(l.key==='mc'||l.key==='lai') return 'background:#e8f0fe!important';
+    if(l.nivel===1) return 'background:#f5f8ff!important;font-weight:700';
+    return '';
+  }
+  function labelStyle(l){
+    if(l.key==='res') return 'color:#60a5fa!important;font-weight:700';
+    if(l.key==='sf') return 'color:#93c5fd!important;font-weight:700';
+    if(l.key==='mc'||l.key==='lai') return 'color:var(--sacc);font-weight:700';
+    if(l.destaque&&l.nivel===2) return 'color:var(--red);font-weight:700';
+    if(l.nivel===2) return 'padding-left:22px;color:var(--tx2)';
+    return 'font-weight:700';
+  }
+
+  // Cabeçalho das colunas
+  let thHead = `<th style="text-align:left;min-width:180px;padding:8px 10px;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;position:sticky;left:0;z-index:3">Contas</th>`;
+  mesesExib.forEach(m=>{
+    const bg = m.isFut ? '#f0f7ff' : 'var(--sur2)';
+    const c = m.isFut ? '#0369a1' : 'var(--tx2)';
+    thHead += `<th colspan="3" style="text-align:center;padding:6px 8px;background:${bg};border-bottom:1px solid var(--bor);border-left:2px solid var(--bor2);font-size:12px;font-weight:700;color:${c}">${m.lbl}/26</th>`;
+  });
+  // Total
+  thHead += `<th colspan="2" style="text-align:center;padding:6px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);border-left:2px solid var(--bor2);font-size:12px;font-weight:700;color:var(--txt)">Total</th>`;
+
+  // Sub-cabeçalho
+  let thSub = `<th style="padding:5px 10px;background:var(--sur2);border-bottom:1px solid var(--bor);position:sticky;left:0;z-index:3"></th>`;
+  mesesExib.forEach(m=>{
+    const bg = m.isFut ? '#f0f7ff' : 'var(--sur2)';
+    thSub += `<th style="padding:5px 6px;text-align:right;background:${bg};border-bottom:1px solid var(--bor);border-left:2px solid var(--bor2);font-size:9px;font-weight:600;color:var(--tx3);text-transform:uppercase">Esperado</th>`;
+    thSub += `<th style="padding:5px 6px;text-align:right;background:${bg};border-bottom:1px solid var(--bor);font-size:9px;font-weight:600;color:var(--tx3);text-transform:uppercase">Realizado</th>`;
+    thSub += `<th style="padding:5px 6px;text-align:center;background:${bg};border-bottom:1px solid var(--bor);font-size:9px;font-weight:600;color:var(--tx3);text-transform:uppercase">AV%</th>`;
+  });
+  thSub += `<th style="padding:5px 6px;text-align:right;background:var(--sur2);border-bottom:1px solid var(--bor);border-left:2px solid var(--bor2);font-size:9px;font-weight:600;color:var(--tx3);text-transform:uppercase">Esperado</th>`;
+  thSub += `<th style="padding:5px 6px;text-align:right;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:9px;font-weight:600;color:var(--tx3);text-transform:uppercase">Realizado</th>`;
+
+  // Linhas
+  let rows = '';
+  let showSub = cfExp.c || cfExp.d || cfExp.n;
+
+  linhas.forEach(l=>{
+    // Skip sub-linhas se não expandido
+    if(l.nivel===2){
+      if((l.key==='trib'||l.key==='forn'||l.key==='vend'||l.key==='moto') && !cfExp.c) return;
+      if((l.key==='adm'||l.key==='pes'||l.key==='traf') && !cfExp.d) return;
+      if((l.key==='noin'||l.key==='nout') && !cfExp.n) return;
+    }
+
+    const rs = rowStyle(l);
+    const ls = labelStyle(l);
+    const isExpandable = l.key==='cv'||l.key==='df'||l.key==='no';
+    const expKey = l.key==='cv'?'c':l.key==='df'?'d':l.key==='no'?'n':null;
+    const expIcon = expKey ? `<button class="xb" onclick="cfExp.${expKey}=!cfExp.${expKey};render()">${cfExp[expKey]?'▼':'▶'}</button>` : '<span style="display:inline-block;width:14px"></span>';
+
+    let tds = '';
+    mesesExib.forEach(m=>{
+      tds += `<td style="border-left:2px solid var(--bor2)"></td>`;
+      tds = tds.slice(0,-5); // remove last td
+      tds += `<td style="border-left:2px solid var(--bor2);padding:0"></td>`;
+      tds = tds.slice(0,-5);
+      // Esperado
+      tds += celEsp(m, l.key).replace('<td','<td style="border-left:2px solid var(--bor2);');
+      // Realizado
+      tds += celReal(m, l.key, m.isFut);
+      // AV%
+      tds += celAV(m, l.key);
+    });
+    // Total
+    const totEsp = allMeses.reduce((s,m)=>s+(m.esp[l.key]||0),0);
+    const totReal = allMeses.reduce((s,m)=>s+(m.real[l.key]||0),0);
+    const totPct = totEsp?Math.round(totReal/totEsp*100):0;
+    const totC = totPct>=95?'var(--grn)':totPct>=70?'var(--yel)':'var(--red)';
+    tds += `<td style="border-left:2px solid var(--bor2);text-align:right;font-size:11px;font-weight:600;padding:7px 8px">${totEsp?fmtR(totEsp):'—'}</td>`;
+    tds += `<td style="text-align:right;font-size:11px;font-weight:700;padding:7px 8px;color:${l.key==='res'?'#60a5fa':l.tipo==='-'?'var(--red)':'var(--grn)'}">${totReal?fmtR(totReal):'—'}</td>`;
+
+    rows += `<tr style="${rs}">
+      <td style="padding:7px 10px;${ls};white-space:nowrap;position:sticky;left:0;z-index:1;${rs}">
+        ${expIcon}${l.label}
+      </td>
+      ${tds}
+    </tr>`;
+  });
 
   return `<div style="display:flex;flex-direction:column;gap:10px">
 
-    <!-- ALERTA FORNECEDORES -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-      <div class="kpi" style="border-left:3px solid var(--red)">
-        <div class="kl">Fornecedores Jul-Set</div>
-        <div class="kv r">${fmtR(fornFut)}</div>
-        <div class="ks">previstos próximos meses</div>
-      </div>
-      <div class="kpi" style="border-left:3px solid #0369a1">
-        <div class="kl">BRG NF 260.129</div>
-        <div class="kv" style="color:#0369a1">${fmtR(8356.64*12+8356.59)}</div>
-        <div class="ks">13 parcelas Jul–Set</div>
-      </div>
-      <div class="kpi" style="border-left:3px solid var(--grn)">
-        <div class="kl">Total Fornecedores Ano</div>
-        <div class="kv r">${fmtR(fornTotal)}</div>
-        <div class="ks">Jan–Set acumulado</div>
-      </div>
-      <div class="kpi" style="border-left:3px solid var(--yel)">
-        <div class="kl">Saldo Sicredi Atual</div>
-        <div class="kv n">R$ 432,06</div>
-        <div class="ks">vs R$ ${fmtR(fornFut)} previstos</div>
+    <!-- CONTROLES -->
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span style="font-size:15px;font-weight:700">Fluxo de Caixa — Jan/Set 2026</span>
+      <span style="font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:2px 9px">● Sicredi</span>
+      <span style="font-size:11px;color:#0369a1;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:20px;padding:2px 9px">📅 Provisionado</span>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        ${mesSel?`<button class="btn" onclick="window._cfMesSel=null;render()">← Todos os meses</button>`:''}
+        <button class="btn${cfExp.lvl===1?' pri':''}" onclick="cfExp.lvl=1;cfExp.c=false;cfExp.d=false;cfExp.n=false;render()">N1</button>
+        <button class="btn${cfExp.lvl!==1?' pri':''}" onclick="cfExp.lvl=2;cfExp.c=true;cfExp.d=true;cfExp.n=true;render()">N2</button>
       </div>
     </div>
 
-    <!-- LEGENDA -->
-    <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:var(--r);font-size:12px;color:#0369a1">
-      <span>📅</span>
-      <span><strong>Colunas em itálico azul</strong> = dados provisionados (lançamentos futuros já cadastrados no sistema)</span>
-      <span style="margin-left:auto;font-size:10px">Atualiza automaticamente ao adicionar lançamentos</span>
-    </div>
-
+    <!-- TABELA -->
     <div class="card" style="overflow:hidden">
-      <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px">
-        <span style="font-size:13px;font-weight:700">Fluxo de Caixa — Jan/Set 2026</span>
-        <span style="font-size:11px;color:var(--grn);background:var(--gbg);border:1px solid var(--gbr);border-radius:20px;padding:2px 9px">● Sicredi</span>
-        <span style="font-size:11px;color:#0369a1;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:20px;padding:2px 9px">📅 Provisionado</span>
-        <div class="level-btns" style="margin-left:auto">
-          <button class="level-btn ${cfExp.lvl===1?'active':''}" onclick="cfExp.lvl=1;render()">N1</button>
-          <button class="level-btn ${cfExp.lvl!==1?'active':''}" onclick="cfExp.lvl=2;render()">N2</button>
-        </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:${mesSel?400:900}px">
+          <thead>
+            <tr>${thHead}</tr>
+            <tr>${thSub}</tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
       </div>
-      <div style="overflow-x:auto"><table class="cft">
-        <thead><tr>
-          <th style="text-align:left;min-width:220px;position:sticky;left:0;background:var(--sur2)">Macro contas</th>
-          ${heads}
-          <th style="text-align:right">Total</th>
-        </tr></thead>
-        <tbody>
-          <!-- RECEITA -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.r=!cfExp.r;render()">${cfExp.r?'▼':'▶'}</button>Receita/Faturamento</td>${row(REC, false, null, 'CREDIT')}</tr>
-          ${cfExp.r&&cfExp.lvl!==1?`<tr class="rs"><td>3.1.8 — Receita de Vendas</td>${row(REC, false, null, 'CREDIT')}</tr>`:''}
-
-          <!-- CUSTOS VARIÁVEIS -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.c=!cfExp.c;render()">${cfExp.c?'▼':'▶'}</button>Custos Variáveis</td>${row(cv, false, null, 'DEBIT')}</tr>
-          ${cfExp.c&&cfExp.lvl!==1?`
-            <tr class="rs"><td>4.1 — Custos Tributários</td>${row(TRIB.map(v=>-v), false, ['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'], 'DEBIT')}</tr>
-            <tr class="rs" style="background:#fff5f5"><td style="padding-left:26px;font-weight:700;color:var(--red)">4.2 — Fornecedores</td>${row(FORN.map(v=>-v), false, ['4.2.1','4.2.4'], 'DEBIT')}</tr>
-            <tr class="rs"><td>4.4 — Custo com Vendas</td>${row(VEND.map(v=>-v), false, ['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'], 'DEBIT')}</tr>
-            <tr class="rs"><td>4.6 — Custos com Motos</td>${row(MOTO.map(v=>-v), false, ['4.6.1','4.6.2','4.6.3'], 'DEBIT')}</tr>`:''}
-
-          <tr class="rr"><td>Margem de Contribuição</td>${row(mc, false, null, null)}</tr>
-
-          <!-- DESPESAS FIXAS -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.d=!cfExp.d;render()">${cfExp.d?'▼':'▶'}</button>Despesas Fixas</td>${row(df, false, null, 'DEBIT')}</tr>
-          ${cfExp.d&&cfExp.lvl!==1?`
-            <tr class="rs"><td>5.1+5.2 — Desp. Administrativas</td>${row(ADM.map(v=>-v), false, ['5.1.1','5.1.99','5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'], 'DEBIT')}</tr>
-            <tr class="rs"><td>5.3 — Desp. com Pessoal</td>${row(PES.map(v=>-v), false, ['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'], 'DEBIT')}</tr>
-            <tr class="rs"><td>5.8 — Tráfego Pago</td>${row(TRAF.map(v=>-v), false, ['5.8.1','5.8.2'], 'DEBIT')}</tr>`:''}
-
-          <tr class="rr"><td>Lucro Op. Antes Investimentos</td>${row(lai, false, null, null)}</tr>
-
-          <!-- INVESTIMENTOS -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.i=!cfExp.i;render()">${cfExp.i?'▼':'▶'}</button>Investimentos DHFIT</td>${row(INV.map(v=>-v), false, ['6.4.1','6.4.2'], 'DEBIT')}</tr>
-
-          <!-- NÃO OPERACIONAL -->
-          <tr class="rg"><td><button class="xb" onclick="cfExp.n=!cfExp.n;render()">${cfExp.n?'▼':'▶'}</button>Movimentações Não Operacionais</td>${row(no, false, null, null)}</tr>
-          ${cfExp.n&&cfExp.lvl!==1?`
-            <tr class="rs"><td>7.1 — Entradas não operacionais</td>${row(NOIN, false, ['7.1.4','7.1.6','7.1.7','7.1.99'], 'CREDIT')}</tr>
-            <tr class="rs"><td>7.2 — Saídas não operacionais</td>${row(NOUT.map(v=>-v), false, ['7.2.1','7.2.13','7.2.99'], 'DEBIT')}</tr>`:''}
-
-          <!-- RESULTADO -->
-          <tr class="rl"><td>Resultado Líquido</td>${row(RES, false, null, null)}</tr>
-          <tr class="rr"><td>Saldo Final Sicredi</td>${row(SF, false, null, null)}</tr>
-        </tbody>
-      </table></div>
+      <div style="padding:8px 14px;background:var(--sur2);border-top:1px solid var(--bor);font-size:11px;color:var(--tx3)">
+        * Colunas em azul itálico = dados provisionados futuros · Clique em qualquer valor para ver lançamentos
+      </div>
     </div>
   </div>`;
 }
+
 
 
 // ════════════════════════════════
