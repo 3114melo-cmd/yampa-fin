@@ -247,8 +247,13 @@ tr:hover td{background:var(--sur2)}
   </div>
   <div class="sc-live">
     <div class="sc-dot"></div>
-    <span class="sc-txt">Sicredi · 01-04/07/2026</span>
-    <span class="sc-saldo" id="sb-saldo">R$ 432,06</span>
+    <span class="sc-txt">Sicredi Matriz · 38.364.354</span>
+    <span class="sc-saldo">R$ 432,06</span>
+  </div>
+  <div class="sc-live" style="margin-top:3px;background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.18)">
+    <div class="sc-dot"></div>
+    <span class="sc-txt">Sicredi Distrib. · 55.656.085</span>
+    <span class="sc-saldo">R$ 0,00</span>
   </div>
   <nav class="snav">
     <div class="ng">Controle</div>
@@ -783,105 +788,110 @@ function renderDash(){
   const txHoje = TX.filter(t=>t.date===hoje);
   const entHoje = txHoje.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
   const saiHoje = txHoje.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
+  const aReceberHoje = txHoje.filter(t=>t.type==='CREDIT'&&t.status==='pendente').reduce((s,t)=>s+t.amt,0);
+  const aPagarHoje   = txHoje.filter(t=>t.type==='DEBIT'&&(t.status==='pendente'||t.status==='previsto')).reduce((s,t)=>s+t.amt,0);
+  const atrasados    = TX.filter(t=>t.type==='DEBIT'&&t.status==='pendente'&&t.date<hoje).reduce((s,t)=>s+t.amt,0);
+  const totalAtras   = atrasados;
 
-  const atrasados = TX.filter(t=>t.type==='DEBIT'&&t.status==='pendente'&&t.date<hoje);
-  const totalAtrasados = atrasados.reduce((s,t)=>s+t.amt,0);
-  const aReceberHoje = TX.filter(t=>t.type==='CREDIT'&&t.status==='pendente'&&t.date===hoje).reduce((s,t)=>s+t.amt,0);
-  const aPagarHoje = TX.filter(t=>t.type==='DEBIT'&&(t.status==='pendente'||t.status==='previsto')&&t.date===hoje).reduce((s,t)=>s+t.amt,0);
-  const saldoMatriz = 432.06;
-  const saldoDist = 0.00;
-  const saldoAtual = saldoMatriz + saldoDist;
-  const saldoPrevisto = saldoAtual - aPagarHoje + aReceberHoje;
+  // Saldos por conta
+  const contas = [
+    {nome:'1. MATRIZ',       icon:'🏦', saldo:432.06, cor:'#059669', conta:'Sicredi Matriz'},
+    {nome:'3. DISTRIBUIDORA',icon:'🏦', saldo:0.00,   cor:'#0369a1', conta:'Sicredi Distribuidora'},
+    {nome:'Caixa (Dinheiro)',icon:'💵', saldo:0.00,   cor:'#16a34a', conta:'Caixa'},
+  ];
+  const saldoTotal = contas.reduce((s,c)=>s+c.saldo,0);
+  const saldoPrevisto = saldoTotal - aPagarHoje + aReceberHoje;
+
   const conc = TX.filter(t=>t.status==='conciliado').length;
   const pend = TX.filter(t=>t.status==='pendente').length;
-  const totalE = TX.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
-  const totalS = TX.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
+  const totalE = TX.filter(t=>t.type==='CREDIT'&&t.status!=='ignorado').reduce((s,t)=>s+t.amt,0);
+  const totalS = TX.filter(t=>t.type==='DEBIT'&&t.status!=='ignorado').reduce((s,t)=>s+t.amt,0);
 
-  // Função helper — navega para livro com filtro
-  function irDiario(mesISO, cats, tipo, data){
-    return `onclick="abrirDiarioData('${mesISO||''}','${cats||''}','${tipo||''}','${data||''}')"`;
+  function irD(mes,cats,tipo,data){
+    return 'onclick="abrirDiarioData(\''+mes+'\',\''+cats+'\',\''+tipo+'\',\''+data+'\')"';
   }
 
   return `
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+  <!-- TÍTULO -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
     <div>
-      <div style="font-size:18px;font-weight:700">Painel</div>
-      <div style="font-size:12px;color:var(--tx3);margin-top:2px">Visão geral · Sicredi · 04/07/2026</div>
+      <div style="font-size:16px;font-weight:700">Painel <span style="font-size:12px;color:var(--tx3);font-weight:400">ⓘ</span></div>
+      <div style="font-size:12px;color:var(--tx3)">Visão geral do seu negócio</div>
     </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn">Feedback</button>
-      <button class="btn pri" style="background:#1e3d62;border-color:#1e3d62">✦ Customizar</button>
+    <div style="display:flex;gap:7px">
+      <button class="btn">📣 Feedback</button>
+      <button class="btn pri" style="background:#1e3d62;border-color:#1e3d62">✦ + BETA Customizar</button>
     </div>
   </div>
 
-  <!-- CARD PAGAMENTOS E RECEBIMENTOS -->
-  <div class="card" style="margin-bottom:14px">
+  <!-- PAGAMENTOS E RECEBIMENTOS -->
+  <div class="card" style="margin-bottom:12px">
     <div style="padding:14px 20px;border-bottom:1px solid var(--bor)">
       <div style="font-size:14px;font-weight:700">Pagamentos e recebimentos</div>
     </div>
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse">
         <thead><tr>
-          <th style="padding:10px 20px;text-align:left;font-size:12px;color:var(--tx3);font-weight:400;width:200px"></th>
-          <th style="padding:10px 16px;text-align:center;border-left:1px solid var(--bor)">
-            <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border:1px solid var(--bor2);border-radius:20px;font-size:12px;font-weight:500;color:var(--txt)">Hoje ▼</div>
+          <th style="padding:10px 20px;text-align:left;font-size:12px;color:var(--tx3);font-weight:400;width:180px;border-bottom:1px solid var(--bor)"></th>
+          <th style="padding:10px 16px;text-align:center;border-left:1px solid var(--bor);border-bottom:1px solid var(--bor)">
+            <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border:1px solid var(--bor2);border-radius:20px;font-size:12px;font-weight:500;cursor:pointer">Hoje ▼</div>
           </th>
-          <th style="padding:10px 16px;text-align:center;border-left:1px solid var(--bor)">
+          <th style="padding:10px 16px;text-align:center;border-left:1px solid var(--bor);border-bottom:1px solid var(--bor)">
             <div style="font-size:12px;font-weight:600;color:var(--txt)">Atrasados</div>
           </th>
-          <th style="padding:10px 16px;text-align:center;border-left:1px solid var(--bor)">
+          <th style="padding:10px 16px;text-align:center;border-left:1px solid var(--bor);border-bottom:1px solid var(--bor)">
             <div style="font-size:12px;font-weight:600">TOTAL</div>
-            <div style="font-size:10px;color:var(--tx3)">com atrasados</div>
+            <div style="font-size:10px;color:var(--tx3);font-weight:400">com atrasados</div>
           </th>
         </tr></thead>
         <tbody>
-          <tr style="border-top:1px solid var(--bor)">
-            <td style="padding:14px 20px;font-size:12px;font-weight:600;color:var(--tx2)">A RECEBER</td>
-            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
-              <span ${irDiario('2026-07','','CREDIT',hoje)} style="font-size:13px;font-weight:600;color:${aReceberHoje>0?'var(--grn)':'var(--tx3)'};cursor:pointer;text-decoration:underline dotted" title="Ver recebimentos de hoje">
+          <tr>
+            <td style="padding:14px 20px;font-size:12px;font-weight:600;color:var(--tx2);border-bottom:1px solid var(--bor)">A RECEBER</td>
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor);border-bottom:1px solid var(--bor)">
+              <span ${irD('2026-07','','CREDIT',hoje)} style="font-size:13px;font-weight:600;color:${aReceberHoje>0?'var(--grn)':'var(--tx3)'};cursor:pointer;text-decoration:underline dotted">
                 ${aReceberHoje>0?'+ '+fmtR(aReceberHoje):'R$ 0,00'}
               </span>
             </td>
-            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor);border-bottom:1px solid var(--bor)">
               <span style="font-size:13px;color:var(--tx3)">R$ 0,00</span>
             </td>
-            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor);border-bottom:1px solid var(--bor)">
               <span style="font-size:13px;color:var(--tx3)">R$ 0,00</span>
             </td>
           </tr>
-          <tr style="border-top:1px solid var(--bor)">
-            <td style="padding:14px 20px;font-size:12px;font-weight:600;color:var(--tx2)">A PAGAR</td>
-            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
-              <span ${irDiario('2026-07','','DEBIT',hoje)} style="font-size:13px;font-weight:600;color:${aPagarHoje>0?'var(--red)':'var(--tx3)'};cursor:pointer;text-decoration:underline dotted" title="Ver pagamentos de hoje">
+          <tr>
+            <td style="padding:14px 20px;font-size:12px;font-weight:600;color:var(--tx2);border-bottom:1px solid var(--bor)">A PAGAR</td>
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor);border-bottom:1px solid var(--bor)">
+              <span ${irD('2026-07','','DEBIT',hoje)} style="font-size:13px;font-weight:600;color:${aPagarHoje>0?'var(--red)':'var(--tx3)'};cursor:pointer;text-decoration:underline dotted">
                 ${aPagarHoje>0?'— '+fmtR(aPagarHoje):'R$ 0,00'}
               </span>
             </td>
-            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
-              <span ${irDiario('','','DEBIT','')} style="font-size:13px;font-weight:600;color:${totalAtrasados>0?'var(--red)':'var(--tx3)'};cursor:pointer;text-decoration:underline dotted" title="Ver pagamentos atrasados">
-                ${totalAtrasados>0?'— '+fmtR(totalAtrasados):'R$ 0,00'}
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor);border-bottom:1px solid var(--bor)">
+              <span ${irD('','','DEBIT','')} style="font-size:13px;font-weight:600;color:${totalAtras>0?'var(--red)':'var(--tx3)'};cursor:pointer;text-decoration:underline dotted">
+                ${totalAtras>0?'— '+fmtR(totalAtras):'R$ 0,00'}
               </span>
             </td>
-            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor)">
-              <span ${irDiario('','','DEBIT','')} style="font-size:13px;font-weight:600;color:${(aPagarHoje+totalAtrasados)>0?'var(--red)':'var(--tx3)'};cursor:pointer;text-decoration:underline dotted" title="Ver todos os pagamentos">
-                ${(aPagarHoje+totalAtrasados)>0?'— '+fmtR(aPagarHoje+totalAtrasados):'R$ 0,00'}
+            <td style="padding:14px 16px;text-align:center;border-left:1px solid var(--bor);border-bottom:1px solid var(--bor)">
+              <span style="font-size:13px;font-weight:600;color:${(aPagarHoje+totalAtras)>0?'var(--red)':'var(--tx3)'}">
+                ${(aPagarHoje+totalAtras)>0?'— '+fmtR(aPagarHoje+totalAtras):'R$ 0,00'}
               </span>
             </td>
           </tr>
-          <tr style="border-top:1px solid var(--bor);background:var(--sur2)">
+          <tr style="background:var(--sur2)">
             <td style="padding:12px 20px;font-size:12px;font-weight:700">TOTAL</td>
             <td style="padding:12px 16px;text-align:center;border-left:1px solid var(--bor)">
-              <span ${irDiario('2026-07','',null,hoje)} style="font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline dotted;color:${(aReceberHoje-aPagarHoje)>=0?'var(--grn)':'var(--red)'}" title="Ver todos os lançamentos de hoje">
-                ${(aReceberHoje-aPagarHoje)>=0?'+ ':' — '}${fmtR(Math.abs(aReceberHoje-aPagarHoje))}
+              <span ${irD('2026-07','',null,hoje)} style="font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline dotted;color:${(aReceberHoje-aPagarHoje)>=0?'var(--grn)':'var(--red)'}">
+                ${(aReceberHoje-aPagarHoje)===0?'R$ 0,00':(aReceberHoje-aPagarHoje)>0?'+ '+fmtR(aReceberHoje-aPagarHoje):'— '+fmtR(Math.abs(aReceberHoje-aPagarHoje))}
               </span>
             </td>
             <td style="padding:12px 16px;text-align:center;border-left:1px solid var(--bor)">
-              <span style="font-size:13px;font-weight:700;color:${totalAtrasados>0?'var(--red)':'var(--tx3)'}">
-                ${totalAtrasados>0?'— '+fmtR(totalAtrasados):'R$ 0,00'}
+              <span style="font-size:13px;font-weight:700;color:${totalAtras>0?'var(--red)':'var(--tx3)'}">
+                ${totalAtras>0?'— '+fmtR(totalAtras):'R$ 0,00'}
               </span>
             </td>
             <td style="padding:12px 16px;text-align:center;border-left:1px solid var(--bor)">
-              <span style="font-size:13px;font-weight:700;color:${(aPagarHoje+totalAtrasados)>0?'var(--red)':'var(--tx3)'}">
-                ${(aPagarHoje+totalAtrasados)>0?'— '+fmtR(aPagarHoje+totalAtrasados):'R$ 0,00'}
+              <span style="font-size:13px;font-weight:700;color:${(aPagarHoje+totalAtras)>0?'var(--red)':'var(--tx3)'}">
+                ${(aPagarHoje+totalAtras)>0?'— '+fmtR(aPagarHoje+totalAtras):'R$ 0,00'}
               </span>
             </td>
           </tr>
@@ -890,23 +900,23 @@ function renderDash(){
     </div>
     <!-- SALDO RODAPÉ -->
     <div style="padding:0 20px 4px">
-      <div ${irDiario('2026-07','','CREDIT',hoje)} style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bor);cursor:pointer" title="Ver entradas de hoje">
+      <div ${irD('2026-07','','CREDIT',hoje)} style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bor);cursor:pointer">
         <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tx2)">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
           Saldo hoje
         </div>
-        <span style="font-size:13px;font-weight:700;color:${saldoAtual>=0?'var(--grn)':'var(--red)'}">+ ${fmtR(saldoAtual)}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--grn)">+ ${fmtR(saldoTotal)}</span>
       </div>
-      <div ${irDiario('2026-07','','DEBIT',hoje)} style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bor);cursor:pointer" title="Ver pagamentos de hoje">
+      <div ${irD('2026-07','','DEBIT',hoje)} style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bor);cursor:pointer">
         <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tx2)">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Movimentações previstas de hoje
         </div>
         <span style="font-size:13px;font-weight:700;color:${aPagarHoje>0?'var(--red)':'var(--tx3)'}">
-          ${aPagarHoje>0?'— '+fmtR(aPagarHoje):fmtR(0)}
+          ${aPagarHoje>0?'— '+fmtR(aPagarHoje):'R$ 0,00'}
         </span>
       </div>
-      <div ${irDiario('2026-07','',null,hoje)} style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bor);cursor:pointer" title="Ver todos os lançamentos de hoje">
+      <div ${irD('2026-07','',null,hoje)} style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--bor);cursor:pointer">
         <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tx2)">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           Saldo previsto de hoje
@@ -921,59 +931,79 @@ function renderDash(){
     </div>
   </div>
 
-  <!-- KPIs SICREDI -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
-    <div class="kpi" style="border-left:3px solid var(--grn);cursor:pointer" ${irDiario('2026-07','',null,'')} title="Ver todos os lançamentos de julho">
-      <div class="kl">Saldo Sicredi</div>
-      <div class="kv g">${fmtR(saldoAtual)}</div>
-      <div class="ks">Conta corrente</div>
+  <!-- SALDOS POR CONTA (estilo Yampa) -->
+  <div class="card" style="margin-bottom:12px">
+    <div style="padding:12px 20px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:14px;font-weight:700">Saldos</div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px;color:var(--tx2);cursor:pointer">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        05/07/2026
+      </div>
     </div>
-    <div class="kpi" style="border-left:3px solid var(--grn);cursor:pointer" ${irDiario('2026-07','','CREDIT','')} title="Ver todas as entradas de julho">
+    ${contas.map((c,i)=>`<div style="display:flex;align-items:center;padding:13px 20px;border-bottom:1px solid var(--bor);${i===contas.length-1?'border-bottom:none':''}">
+      <div style="width:28px;height:28px;border-radius:50%;background:${c.cor}22;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-right:10px">${c.icon}</div>
+      <div style="font-size:13px;font-weight:600;color:var(--txt);flex:1">${c.nome}</div>
+      <div style="font-size:14px;font-weight:700;color:${c.saldo>0?'var(--txt)':'var(--tx3)'}">
+        ${c.saldo>0?fmtR(c.saldo):'R$ 0,00'}
+      </div>
+    </div>`).join('')}
+    <div style="display:flex;align-items:center;padding:12px 20px;background:var(--sur2);border-top:2px solid var(--bor)">
+      <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;flex:1;color:var(--tx2)">TOTAL</span>
+      <span style="font-size:16px;font-weight:700;color:var(--sacc)">R$ ${saldoTotal.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.').replace(/,(\d{2})$/,',$1')}</span>
+    </div>
+  </div>
+
+  <!-- KPIs + PAINEL INFERIOR -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px">
+    <div class="kpi" style="border-left:3px solid var(--grn);cursor:pointer" ${irD('2026-07','',null,'')}>
       <div class="kl">Entradas Jul (01-04)</div>
       <div class="kv g">${fmtR(totalE)}</div>
-      <div class="ks">${TX.filter(t=>t.type==='CREDIT').length} lançamentos ↗</div>
+      <div class="ks">${TX.filter(t=>t.type==='CREDIT'&&t.status!=='ignorado').length} lançamentos ↗</div>
     </div>
-    <div class="kpi" style="border-left:3px solid var(--red);cursor:pointer" ${irDiario('2026-07','','DEBIT','')} title="Ver todas as saídas de julho">
+    <div class="kpi" style="border-left:3px solid var(--red);cursor:pointer" ${irD('2026-07','','DEBIT','')}>
       <div class="kl">Saídas Jul (01-04)</div>
       <div class="kv r">${fmtR(totalS)}</div>
-      <div class="ks">${TX.filter(t=>t.type==='DEBIT').length} lançamentos ↗</div>
+      <div class="ks">${TX.filter(t=>t.type==='DEBIT'&&t.status!=='ignorado').length} lançamentos ↗</div>
     </div>
-    <div class="kpi" style="border-left:3px solid ${pend>0?'var(--yel)':'var(--grn)'};cursor:pointer" onclick="go('conc',document.getElementById('ni-conc'))" title="Ir para Conciliação">
+    <div class="kpi" style="border-left:3px solid ${pend>0?'var(--yel)':'var(--grn)'};cursor:pointer" onclick="go('conc',document.getElementById('ni-conc'))">
       <div class="kl">Conciliação</div>
       <div class="kv n">${conc}/${TX.length}</div>
       <div class="ks" style="color:${pend>0?'var(--yel)':'var(--grn)'}">
         ${pend>0?pend+' pendentes ↗':'✓ Em dia'}
       </div>
     </div>
+    <div class="kpi" style="border-left:3px solid #0369a1;cursor:pointer" onclick="go('forn',document.getElementById('ni-forn'))">
+      <div class="kl">Fornecedores Jul-Set</div>
+      <div class="kv" style="font-size:15px;font-weight:700;color:var(--red)">${fmtR(TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT').reduce((s,t)=>s+t.amt,0))}</div>
+      <div class="ks" style="color:var(--red)">+ BRG provisionado ↗</div>
+    </div>
   </div>
 
-  <!-- DOIS PAINÉIS -->
+  <!-- LANÇAMENTOS DE HOJE + STATUS CONCILIAÇÃO -->
   <div style="display:grid;grid-template-columns:1.7fr 1fr;gap:12px">
     <div class="card cp">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700">Lançamentos de hoje — 04/07/2026</div>
+        <div style="font-size:13px;font-weight:700">Lançamentos de hoje — 05/07/2026</div>
         <div style="display:flex;gap:10px;font-size:11px">
-          <span ${irDiario('2026-07','','CREDIT',hoje)} style="color:var(--grn);font-weight:600;cursor:pointer;text-decoration:underline dotted" title="Ver entradas de hoje">↑ ${fmtR(entHoje)}</span>
-          <span ${irDiario('2026-07','','DEBIT',hoje)} style="color:var(--red);font-weight:600;cursor:pointer;text-decoration:underline dotted" title="Ver pagamentos de hoje">↓ ${fmtR(saiHoje)}</span>
+          <span ${irD('2026-07','','CREDIT',hoje)} style="color:var(--grn);font-weight:600;cursor:pointer;text-decoration:underline dotted">↑ ${fmtR(entHoje)}</span>
+          <span ${irD('2026-07','','DEBIT',hoje)} style="color:var(--red);font-weight:600;cursor:pointer;text-decoration:underline dotted">↓ ${fmtR(saiHoje)}</span>
         </div>
       </div>
-      ${txHoje.length===0?'<div style="text-align:center;padding:20px;color:var(--tx3);font-size:12px">Nenhum lançamento hoje</div>':
-        txHoje.map(t=>`<div ${irDiario('2026-07',t.cat,t.type,hoje)} style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bor);cursor:pointer" title="Ver lançamentos de ${t.catInfo.nome}">
-          <span style="font-size:10px;color:var(--tx3);min-width:38px">${t.hora}</span>
-          <div style="width:7px;height:7px;border-radius:50%;background:${t.catInfo.cor};flex-shrink:0"></div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.desc.replace('RECEBIMENTO PIX - ','').replace('PAGAMENTO PIX - ','')}</div>
-            <div style="font-size:10px;color:${t.catInfo.cor};margin-top:1px">${t.catInfo.code} — ${t.catInfo.nome}</div>
-          </div>
-          <span style="font-size:12px;font-weight:700;color:${t.type==='CREDIT'?'var(--grn)':'var(--red)'};white-space:nowrap">
-            ${t.type==='CREDIT'?'+':'-'}${fmtR(t.amt)}
-          </span>
-          <span style="font-size:10px;padding:1px 6px;border-radius:8px;background:${t.status==='conciliado'?'var(--gbg)':'var(--ybg)'};color:${t.status==='conciliado'?'var(--grn)':'var(--yel)'}">
-            ${t.status}
-          </span>
-        </div>`).join('')}
+      ${txHoje.length===0?
+        '<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhum lançamento hoje<br><span style="font-size:11px">Os dados são de 01-04/07. Sincronize para ver hoje.</span></div>':
+        txHoje.map(t=>'<div '+irD('2026-07',t.cat,t.type,hoje)+' style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bor);cursor:pointer">'
+          +'<span style="font-size:10px;color:var(--tx3);min-width:38px">'+t.hora+'</span>'
+          +'<div style="width:7px;height:7px;border-radius:50%;background:'+t.catInfo.cor+';flex-shrink:0"></div>'
+          +'<div style="flex:1;min-width:0">'
+            +'<div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+t.desc.replace('RECEBIMENTO PIX \\d+ ','').replace('PAGAMENTO PIX \\d+ ','').substring(0,55)+'</div>'
+            +'<div style="font-size:10px;color:'+t.catInfo.cor+';margin-top:1px">'+t.catInfo.code+' · '+(t.conta||'Sicredi')+'</div>'
+          +'</div>'
+          +'<span style="font-size:12px;font-weight:700;color:'+(t.type==='CREDIT'?'var(--grn)':'var(--red)')+';white-space:nowrap">'+(t.type==='CREDIT'?'+':'-')+fmtR(t.amt)+'</span>'
+          +'<span style="font-size:10px;padding:1px 6px;border-radius:8px;background:'+(t.status==='conciliado'?'var(--gbg)':'var(--ybg)')+';color:'+(t.status==='conciliado'?'var(--grn)':'var(--yel)')+'">'+t.status+'</span>'
+          +'</div>').join('')
+      }
       <div style="text-align:center;margin-top:10px">
-        <button class="btn" ${irDiario('2026-07','',null,hoje)}>Ver todos os lançamentos de hoje →</button>
+        <button class="btn" ${irD('2026-07','',null,hoje)}>Ver todos os lançamentos de hoje →</button>
       </div>
     </div>
     <div class="card cp">
@@ -983,12 +1013,12 @@ function renderDash(){
         ['Pendentes',TX.filter(t=>t.status==='pendente').length,'var(--yel)','var(--ybg)','⏳','pendente'],
         ['Previstos',TX.filter(t=>t.status==='previsto').length,'#0369a1','#e0f2fe','📅','previsto'],
         ['Ignorados',TX.filter(t=>t.status==='ignorado').length,'var(--tx3)','var(--sur2)','—','ignorado'],
-      ].map(([l,v,c,bg,ic,st])=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:${bg};margin-bottom:6px;cursor:pointer" onclick="filtro='${st}';go('conc',document.getElementById('ni-conc'))" title="Ver ${l.toLowerCase()} na conciliação">
-        <span style="font-size:16px">${ic}</span>
-        <span style="font-size:12px;font-weight:600;color:${c};flex:1">${l}</span>
-        <span style="font-size:20px;font-weight:700;color:${c}">${v}</span>
-        <span style="font-size:10px;color:${c};opacity:.6">↗</span>
-      </div>`).join('')}
+      ].map(([l,v,c,bg,ic,st])=>'<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:'+bg+';margin-bottom:6px;cursor:pointer" onclick="filtro=\''+st+'\';go(\'conc\',document.getElementById(\'ni-conc\'))" title="Ver '+l.toLowerCase()+'">'
+        +'<span style="font-size:16px">'+ic+'</span>'
+        +'<span style="font-size:12px;font-weight:600;color:'+c+';flex:1">'+l+'</span>'
+        +'<span style="font-size:20px;font-weight:700;color:'+c+'">'+v+'</span>'
+        +'<span style="font-size:10px;color:'+c+';opacity:.6">↗</span>'
+        +'</div>').join('')}
       <button class="btn pri" style="width:100%;justify-content:center;margin-top:8px" onclick="go('conc',document.getElementById('ni-conc'))">
         Ir para Conciliação →
       </button>
@@ -1056,7 +1086,7 @@ function renderConc(){
         <div class="col-head" style="background:var(--gbg);border-bottom-color:var(--gbr)">
           <div>
             <div class="col-title" style="color:var(--grn)">↑ Entradas</div>
-            <div class="col-sub">${ef.length} de ${ents.length} registros · ${ents.filter(t=>t.status==='conciliado').length} conciliados</div>
+            <div class="col-sub">${ef.length} de ${ents.length} registros · ${ents.filter(t=>t.status==='conciliado').length} conciliados · Matriz + Distribuidora</div>
           </div>
           <div style="text-align:right">
             <div class="col-total" style="color:var(--grn)">${fmtR(tE)}</div>
@@ -1189,7 +1219,7 @@ function txItem(t){
     +'<div class="tx-dot" style="background:'+dotColor+'"></div>'
     +'<div class="tx-body">'
     +'<div class="tx-desc">'+t.desc+(semCat?'<span class="no-cat">⚠ classificar</span>':'')+'</div>'
-    +'<div class="tx-meta"><span>'+t.hora+'</span>'+metaSpans+'</div>'
+    +'<div class="tx-meta"><span>'+t.hora+'</span><span style="color:'+(t.conta&&t.conta.includes('Distribuidora')?'#0369a1':'#059669')+';font-weight:600">'+( t.conta||'Sicredi')+'</span>'+metaSpans+'</div>'
     +'</div>'
     +'<span class="tx-cat" style="background:'+t.catInfo.cor+'22;color:'+t.catInfo.cor+'">'+t.catInfo.code+'</span>'
     +'<div class="tx-amt '+amtClass+'">'+amtSign+fmtR(t.amt)+'</div>'
