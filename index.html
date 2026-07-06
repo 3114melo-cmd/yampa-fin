@@ -2011,30 +2011,34 @@ function salvarMetaForn(val){
 
 function renderForn(){
   const cores=['#dc2626','#ea580c','#d97706','#16a34a','#0284c7','#7c3aed','#db2777','#0891b2','#65a30d','#059669'];
-
-  // ── Montar meses disponíveis ──
-  const todosMeses = [...new Set(TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT').map(t=>t.date.substring(0,7)))].sort();
+  const mesHoje = '2026-07';
   const hoje = '2026-07-05';
-  const mesHoje = hoje.substring(0,7);
-  const mesesFuturos = ['2026-07','2026-08','2026-09','2026-10'];
-  const todosPeriodos = [...new Set([...todosMeses,...mesesFuturos])].sort();
 
-  // Período selecionado: 'mes' | 'panorama' | '2026-07' etc
-  const periodoSel = window._fornPeriodo || 'mes';
-  const metaBase = metaForn; // meta mensal quando período = mes
+  // Período selecionado
+  const periodoSel = window._fornPeriodo || 'panorama';
 
-  // ── Filtrar TX pelo período ──
+  // Meses para panorama: mês atual + 6 meses à frente
+  const MESES_PANORAMA = ['2026-07','2026-08','2026-09','2026-10','2026-11','2026-12','2027-01'];
+
+  // Todos os meses com dados
+  const todosMeses = [...new Set([
+    ...TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT').map(t=>t.date.substring(0,7)),
+    ...MESES_PANORAMA
+  ])].sort();
+
+  // Filtrar TX pelo período
   function txDoPeriodo(){
     if(periodoSel==='mes') return TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.date.startsWith(mesHoje));
     if(periodoSel==='panorama') return TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT');
     return TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.date.startsWith(periodoSel));
   }
 
-  // ── Agrupar por fornecedor ──
+  // Agrupar por fornecedor
   function agruparForn(txs){
     const g={};
     txs.forEach(t=>{
-      const nome = t.cli&&t.cli.length>2 ? t.cli : t.desc.replace(/PAGAMENTO PIX - |BOLETO NF \d+ - /g,'').split(' - ')[0].trim().substring(0,40);
+      const nome = t.cli&&t.cli.length>2 ? t.cli
+        : t.desc.replace(/PAGAMENTO PIX \d+ /g,'').replace(/BOLETO NF \d+\.\d+ - /g,'').split(' - ')[0].trim().substring(0,40);
       if(!g[nome]) g[nome]={nome,realizado:0,previsto:0,txs:[]};
       if(t.status==='previsto') g[nome].previsto+=t.amt;
       else g[nome].realizado+=t.amt;
@@ -2048,81 +2052,109 @@ function renderForn(){
   const totalReal = lista.reduce((s,g)=>s+g.realizado,0);
   const totalPrev = lista.reduce((s,g)=>s+g.previsto,0);
   const totalGeral = totalReal+totalPrev;
-  const meta = periodoSel==='panorama' ? metaBase*6 : metaBase;
-  const pct = meta>0?Math.min(150,Math.round(totalGeral/meta*100)):0;
+  const meta = metaForn;
+  const pct = meta>0?Math.min(200,Math.round(totalGeral/meta*100)):0;
   const sobra = meta-totalGeral;
 
-  // ── Dados por mês para gráfico panorama ──
+  // Dados por mês para gráfico panorama (mês atual + 6 à frente)
   function dadosPorMes(){
-    return todosPeriodos.map(m=>{
+    return MESES_PANORAMA.map(m=>{
       const txm = TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.date.startsWith(m));
       const real = txm.filter(t=>t.status!=='previsto').reduce((s,t)=>s+t.amt,0);
       const prev = txm.filter(t=>t.status==='previsto').reduce((s,t)=>s+t.amt,0);
-      const lbl = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][+m.split('-')[1]];
-      return {mes:m,lbl,real,prev,total:real+prev};
+      const mo = +m.split('-')[1];
+      const lbl = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mo];
+      const isFut = m > mesHoje;
+      return {mes:m,lbl,real,prev,total:real+prev,isFut};
     });
   }
   const porMes = dadosPorMes();
-  const maxMes = Math.max(...porMes.map(m=>m.total), meta);
+  const maxVal = Math.max(...porMes.map(m=>m.total), meta, 1);
 
-  // ── SVG DONUT ──
+  // SVG DONUT
   function donut(lista, total){
-    if(total<=0) return '<text x="70" y="75" text-anchor="middle" font-size="11" fill="var(--tx3)" font-family="sans-serif">Sem dados</text>';
-    let svgs=''; let startAngle=-Math.PI/2;
+    if(total<=0) return '<text x="70" y="75" text-anchor="middle" font-size="10" fill="var(--tx3)" font-family="sans-serif">Sem dados</text>';
+    let svgs=''; let ang=-Math.PI/2;
     const cx=70,cy=70,r=56,ri=38;
     lista.slice(0,10).forEach((g,i)=>{
-      const v=g.realizado+g.previsto;
-      if(v<=0) return;
-      const angle=(v/total)*2*Math.PI;
-      const endAngle=startAngle+angle;
-      const x1=cx+r*Math.cos(startAngle),y1=cy+r*Math.sin(startAngle);
-      const x2=cx+r*Math.cos(endAngle),y2=cy+r*Math.sin(endAngle);
-      const xi1=cx+ri*Math.cos(startAngle),yi1=cy+ri*Math.sin(startAngle);
-      const xi2=cx+ri*Math.cos(endAngle),yi2=cy+ri*Math.sin(endAngle);
-      const large=angle>Math.PI?1:0;
-      const cor=cores[i%cores.length];
-      // realizado opaco, previsto mais claro
-      svgs+=`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${xi2.toFixed(1)} ${yi2.toFixed(1)} A${ri} ${ri} 0 ${large} 0 ${xi1.toFixed(1)} ${yi1.toFixed(1)} Z" fill="${cor}" opacity="${g.previsto>0&&g.realizado===0?'0.4':'0.9'}"/>`;
-      startAngle=endAngle;
+      const v=g.realizado+g.previsto; if(v<=0) return;
+      const a=(v/total)*2*Math.PI, ea=ang+a;
+      const x1=cx+r*Math.cos(ang),y1=cy+r*Math.sin(ang);
+      const x2=cx+r*Math.cos(ea),y2=cy+r*Math.sin(ea);
+      const xi1=cx+ri*Math.cos(ang),yi1=cy+ri*Math.sin(ang);
+      const xi2=cx+ri*Math.cos(ea),yi2=cy+ri*Math.sin(ea);
+      const lg=a>Math.PI?1:0;
+      svgs+=`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${lg} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${xi2.toFixed(1)} ${yi2.toFixed(1)} A${ri} ${ri} 0 ${lg} 0 ${xi1.toFixed(1)} ${yi1.toFixed(1)} Z" fill="${cores[i%cores.length]}" opacity="${g.realizado===0&&g.previsto>0?'0.45':'0.9'}"/>`;
+      ang=ea;
     });
-    const valorCentro = fmtR(total).replace('R$ ','');
+    const vC=fmtR(total).replace('R$ ','');
     svgs+=`<circle cx="70" cy="70" r="33" fill="var(--sur)"/>
       <text x="70" y="64" text-anchor="middle" font-size="8" fill="var(--tx3)" font-family="sans-serif">TOTAL</text>
-      <text x="70" y="76" text-anchor="middle" font-size="${valorCentro.length>8?'9':'11'}" fill="var(--txt)" font-weight="700" font-family="sans-serif">R$${valorCentro}</text>
-      <text x="70" y="88" text-anchor="middle" font-size="8" fill="${pct>100?'#dc2626':'var(--tx3)'}" font-family="sans-serif">${pct}% meta</text>`;
+      <text x="70" y="77" text-anchor="middle" font-size="${vC.length>8?'9':'11'}" fill="var(--txt)" font-weight="700" font-family="sans-serif">R$${vC}</text>
+      <text x="70" y="89" text-anchor="middle" font-size="8" fill="${pct>100?'#dc2626':'var(--tx3)'}" font-family="sans-serif">${pct}% meta</text>`;
     return svgs;
   }
 
-  // ── SVG BARRAS PANORAMA ──
+  // SVG BARRAS PANORAMA
   function barrasMeses(){
-    const W=480,H=160,pad=40,barW=Math.floor((W-pad*2)/porMes.length)-4;
-    const escala=v=>Math.round((v/maxMes)*(H-30));
-    let svg=`<svg width="100%" viewBox="0 0 ${W} ${H+40}" font-family="sans-serif">`;
-    // Linha da meta
-    const yMeta=H-escala(meta);
-    svg+=`<line x1="${pad}" y1="${yMeta}" x2="${W-10}" y2="${yMeta}" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.7"/>
-      <text x="${W-12}" y="${yMeta-4}" font-size="9" fill="#dc2626" text-anchor="end">Meta</text>`;
+    const W=560, H=180, padL=48, padR=20, padB=36;
+    const barW = Math.floor((W-padL-padR)/porMes.length)-6;
+    const escala = v => v>0 ? Math.round((v/maxVal)*(H-padB-10)) : 0;
+
+    let svg=`<svg width="100%" viewBox="0 0 ${W} ${H}" font-family="sans-serif" style="overflow:visible">`;
+
+    // Linhas de grade
+    [0.25,0.5,0.75,1].forEach(f=>{
+      const y=H-padB-Math.round(f*(H-padB-10));
+      const v=maxVal*f;
+      svg+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--bor)" stroke-width="1"/>`;
+      svg+=`<text x="${padL-4}" y="${y+4}" text-anchor="end" font-size="8" fill="var(--tx3)">${fmtR(v).replace('R$ ','')}</text>`;
+    });
+
+    // Linha da meta mensal
+    const yMeta = H-padB-escala(meta);
+    svg+=`<line x1="${padL}" y1="${yMeta}" x2="${W-padR}" y2="${yMeta}" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.8"/>`;
+    svg+=`<text x="${W-padR+2}" y="${yMeta+4}" font-size="9" fill="#dc2626" font-weight="600">Meta</text>`;
+
     porMes.forEach((m,i)=>{
-      const x=pad+i*(barW+4);
-      const hReal=escala(m.real);
-      const hPrev=escala(m.prev);
-      const hTotal=hReal+hPrev;
+      const x = padL + i*(barW+6);
+      const hReal = escala(m.real);
+      const hPrev = escala(m.prev);
       const isSel = periodoSel===m.mes;
+      const opacity = isSel?'1':'0.8';
+
       // Barra realizado
-      if(m.real>0) svg+=`<rect x="${x}" y="${H-hReal}" width="${barW}" height="${hReal}" fill="#dc2626" opacity="${isSel?'1':'0.7'}" rx="2" onclick="window._fornPeriodo='${m.mes}';render()" style="cursor:pointer"/>`;
-      // Barra previsto
-      if(m.prev>0) svg+=`<rect x="${x}" y="${H-hReal-hPrev}" width="${barW}" height="${hPrev}" fill="#fca5a5" opacity="${isSel?'1':'0.7'}" rx="2" onclick="window._fornPeriodo='${m.mes}';render()" style="cursor:pointer"/>`;
+      if(m.real>0){
+        svg+=`<rect x="${x}" y="${H-padB-hReal}" width="${barW}" height="${hReal}" fill="#dc2626" opacity="${opacity}" rx="3" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
+      }
+      // Barra previsto (acima do realizado)
+      if(m.prev>0){
+        svg+=`<rect x="${x}" y="${H-padB-hReal-hPrev}" width="${barW}" height="${hPrev}" fill="#fca5a5" opacity="${opacity}" rx="3" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
+      }
+      // Barra vazia (placeholder se zero)
+      if(m.total===0){
+        svg+=`<rect x="${x}" y="${H-padB-4}" width="${barW}" height="4" fill="var(--bor)" rx="2" opacity="0.5"/>`;
+      }
+
       // Label mês
-      svg+=`<text x="${x+barW/2}" y="${H+14}" text-anchor="middle" font-size="9" fill="${isSel?'var(--sacc)':'var(--tx3)'}" font-weight="${isSel?'700':'400'}">${m.lbl}</text>`;
-      // Valor total se >0
+      const labelColor = isSel?'var(--sacc)':m.isFut?'#0369a1':'var(--tx3)';
+      const labelWeight = isSel?'700':'400';
+      svg+=`<text x="${x+barW/2}" y="${H-6}" text-anchor="middle" font-size="10" fill="${labelColor}" font-weight="${labelWeight}" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()">${m.lbl}${m.isFut?"*":""}</text>`;
+
+      // Valor no topo da barra se > 0
       if(m.total>0){
-        const yVal=H-hTotal-5;
-        svg+=`<text x="${x+barW/2}" y="${yVal<8?8:yVal}" text-anchor="middle" font-size="8" fill="${m.total>meta?'#dc2626':'var(--tx2)'}">${fmtR(m.total).replace('R$ ','')}</text>`;
+        const yVal = H-padB-hReal-hPrev-6;
+        const valTxt = fmtR(m.total).replace('R$ ','R$');
+        svg+=`<text x="${x+barW/2}" y="${yVal<12?12:yVal}" text-anchor="middle" font-size="8" fill="${m.total>meta?'#dc2626':'var(--tx2)'}" font-weight="600">${valTxt}</text>`;
       }
     });
-    svg+='</svg>';
+
+    svg+=`</svg>`;
     return svg;
   }
+
+  const labelPeriodo = periodoSel==='mes'?'Mês Atual (Jul)':periodoSel==='panorama'?'Panorama (Jul–Jan/27)':
+    (['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][+periodoSel.split('-')[1]]||periodoSel)+'/'+periodoSel.split('-')[0].slice(2);
 
   return `
   <!-- HEADER -->
@@ -2132,14 +2164,16 @@ function renderForn(){
       <div style="font-size:12px;color:var(--tx3)">Monitore gastos, metas e panorama futuro</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <!-- SELETOR DE PERÍODO -->
-      <div style="display:flex;border:1px solid var(--bor2);border-radius:var(--r);overflow:hidden">
-        <button class="level-btn${periodoSel==='mes'?' active':''}" onclick="window._fornPeriodo='mes';render()">Mês Atual</button>
-        ${todosPeriodos.map(m=>{
-          const lbl=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][+m.split('-')[1]];
-          return`<button class="level-btn${periodoSel===m?' active':''}" onclick="window._fornPeriodo='${m}';render()">${lbl}</button>`;
+      <!-- PERÍODO -->
+      <div style="display:flex;border:1px solid var(--bor2);border-radius:var(--r);overflow:hidden;font-size:11px">
+        <button style="padding:5px 10px;border:none;background:${periodoSel==='mes'?'var(--sacc)':'var(--sur)'};color:${periodoSel==='mes'?'#fff':'var(--tx2)'};cursor:pointer;font-size:11px;font-weight:${periodoSel==='mes'?'700':'400'}" onclick="window._fornPeriodo='mes';render()">Mês Atual</button>
+        ${MESES_PANORAMA.map(m=>{
+          const mo=+m.split('-')[1];
+          const lbl=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mo];
+          const sel=periodoSel===m;
+          return`<button style="padding:5px 10px;border:none;border-left:1px solid var(--bor2);background:${sel?'var(--sacc)':'var(--sur)'};color:${sel?'#fff':m>mesHoje?'#0369a1':'var(--tx2)'};cursor:pointer;font-size:11px;font-weight:${sel?'700':'400'}" onclick="window._fornPeriodo='${m}';render()">${lbl}</button>`;
         }).join('')}
-        <button class="level-btn${periodoSel==='panorama'?' active':''}" onclick="window._fornPeriodo='panorama';render()">Panorama</button>
+        <button style="padding:5px 10px;border:none;border-left:1px solid var(--bor2);background:${periodoSel==='panorama'?'var(--sacc)':'var(--sur)'};color:${periodoSel==='panorama'?'#fff':'var(--tx2)'};cursor:pointer;font-size:11px;font-weight:${periodoSel==='panorama'?'700':'400'}" onclick="window._fornPeriodo='panorama';render()">Panorama</button>
       </div>
       <!-- META -->
       ${editandoMeta?`
@@ -2149,17 +2183,17 @@ function renderForn(){
       `:`
         <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--sur);border:1px solid var(--bor2);border-radius:var(--r)">
           <span style="font-size:11px;color:var(--tx3)">Meta mensal:</span>
-          <span style="font-size:14px;font-weight:700;color:var(--txt)">${fmtR(metaForn)}</span>
+          <span style="font-size:14px;font-weight:700">${fmtR(metaForn)}</span>
           <button class="btn" style="padding:3px 8px;font-size:11px" onclick="editandoMeta=true;render()">✏</button>
         </div>
       `}
     </div>
   </div>
 
-  <!-- KPIs DO PERÍODO -->
+  <!-- KPIs -->
   <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px">
     <div class="kpi" style="border-left:3px solid var(--red)">
-      <div class="kl">Realizado ${periodoSel==='mes'?'('+mesHoje+')':periodoSel==='panorama'?'(Total)':'('+periodoSel+')'}</div>
+      <div class="kl">Realizado ${periodoSel==='panorama'?'(Total)':periodoSel==='mes'?'(Jul)':labelPeriodo}</div>
       <div class="kv r">${fmtR(totalReal)}</div>
       <div class="ks">${txSel.filter(t=>t.status!=='previsto').length} lançamentos</div>
     </div>
@@ -2171,12 +2205,12 @@ function renderForn(){
     <div class="kpi" style="border-left:3px solid var(--yel)">
       <div class="kl">Total Geral</div>
       <div class="kv" style="font-size:16px;font-weight:700;color:var(--yel)">${fmtR(totalGeral)}</div>
-      <div class="ks">${pct}% da meta</div>
+      <div class="ks">${pct}% da meta${periodoSel==='panorama'?' acumulada':''}</div>
     </div>
     <div class="kpi" style="border-left:3px solid ${sobra<0?'var(--red)':'var(--grn)'}">
       <div class="kl">${sobra>=0?'Disponível':'Estourou'}</div>
       <div class="kv" style="font-size:16px;font-weight:700;color:${sobra<0?'var(--red)':'var(--grn)'}">${fmtR(Math.abs(sobra))}</div>
-      <div class="ks">Meta: ${fmtR(meta)}</div>
+      <div class="ks">Meta: ${fmtR(meta)}${periodoSel==='panorama'?'/mês':''}</div>
     </div>
     <div class="kpi" style="border-left:3px solid var(--sacc)">
       <div class="kl">Fornecedores</div>
@@ -2188,166 +2222,157 @@ function renderForn(){
   <!-- BARRA GERAL -->
   <div class="card cp" style="margin-bottom:14px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-size:13px;font-weight:700">Utilização da Meta${periodoSel==='panorama'?' (Acumulado)':''}</span>
-      <span style="font-size:12px;font-weight:600;color:${pct>100?'var(--red)':pct>80?'var(--yel)':'var(--grn)'}">${pct}%${pct>100?' ⚠ ESTOUROU!':''}</span>
+      <span style="font-size:13px;font-weight:700">Utilização da Meta ${periodoSel==='panorama'?'(Acumulado Jul–Jan/27)':periodoSel==='mes'?'(Mês Atual)':'('+labelPeriodo+')'}</span>
+      <span style="font-size:12px;font-weight:700;color:${pct>100?'var(--red)':pct>80?'var(--yel)':'var(--grn)'}">${pct}%${pct>100?' ⚠ ESTOUROU!':''}</span>
     </div>
-    <div style="height:18px;background:var(--bor);border-radius:9px;overflow:hidden;position:relative">
-      <div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(100,Math.round(totalReal/meta*100))}%;background:var(--red);border-radius:9px;transition:width .5s"></div>
+    <div style="height:16px;background:var(--bor);border-radius:8px;overflow:hidden;position:relative">
+      <div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(100,Math.round(totalReal/meta*100))}%;background:var(--red);border-radius:8px;transition:width .5s"></div>
       <div style="position:absolute;left:${Math.min(100,Math.round(totalReal/meta*100))}%;top:0;height:100%;width:${Math.min(100-Math.round(totalReal/meta*100),Math.round(totalPrev/meta*100))}%;background:#fca5a5"></div>
-      ${pct>100?`<div style="position:absolute;right:0;top:0;height:100%;width:${Math.min(30,(pct-100)/2)}%;background:#7f1d1d;border-radius:0 9px 9px 0"></div>`:''}
     </div>
     <div style="display:flex;gap:16px;margin-top:7px;font-size:11px;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--red)"></div>Realizado: ${fmtR(totalReal)}</div>
       <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>Previsto: ${fmtR(totalPrev)}</div>
       <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--bor)"></div>Disponível: ${fmtR(Math.max(0,sobra))}</div>
+      ${periodoSel==='panorama'?'<span style="font-size:10px;color:#0369a1;margin-left:auto">* Meses em azul = previsão futura</span>':''}
     </div>
   </div>
 
-  <!-- GRÁFICOS -->
-  <div style="display:grid;grid-template-columns:${periodoSel==='panorama'?'1fr':'300px 1fr'};gap:14px;margin-bottom:14px">
-
-    ${periodoSel!=='panorama'?`
-    <!-- DONUT -->
-    <div class="card cp">
-      <div style="font-size:13px;font-weight:700;margin-bottom:12px">Por Fornecedor</div>
-      <div style="display:flex;align-items:center;gap:16px">
-        <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink:0">
-          ${donut(lista,totalGeral)}
-        </svg>
-        <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
-          ${lista.slice(0,8).map((g,i)=>{
-            const tot=g.realizado+g.previsto;
-            const p=totalGeral>0?Math.round(tot/totalGeral*100):0;
-            return`<div style="display:flex;align-items:center;gap:6px;cursor:pointer" onclick="abrirDiarioData('${periodoSel==='mes'?mesHoje:periodoSel}','4.2.1','DEBIT','')">
-              <div style="width:9px;height:9px;border-radius:2px;background:${cores[i%cores.length]};flex-shrink:0"></div>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${g.nome}">${g.nome.substring(0,22)}</div>
-                <div style="font-size:9px;color:var(--tx3)">${p}% · ${fmtR(tot)}</div>
-              </div>
-            </div>`;
-          }).join('')}
-          ${lista.length>8?`<div style="font-size:10px;color:var(--tx3)">+${lista.length-8} outros</div>`:''}
-        </div>
+  <!-- CONTEÚDO PRINCIPAL: PANORAMA ou MÊS -->
+  ${periodoSel==='panorama'?`
+    <!-- PANORAMA: GRÁFICO DE BARRAS MENSAIS -->
+    <div class="card cp" style="margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px">
+        Gastos mensais com Fornecedores — Jul/2026 a Jan/2027
+        <span style="font-size:11px;color:var(--tx3);font-weight:400;margin-left:8px">Clique no mês para detalhar · * = previsto</span>
       </div>
-    </div>`:''}
-
-    <!-- BARRAS POR MÊS (panorama) ou BARRAS POR FORNECEDOR (mês) -->
-    <div class="card cp">
-      <div style="font-size:13px;font-weight:700;margin-bottom:12px">
-        ${periodoSel==='panorama'?'Gastos mensais com Fornecedores (clique no mês para detalhar)':'Detalhamento por Fornecedor'}
+      <div style="width:100%;overflow-x:auto">
+        ${barrasMeses()}
       </div>
-
-      ${periodoSel==='panorama'?`
-        <!-- GRÁFICO DE BARRAS MENSAIS -->
-        <div style="width:100%;overflow-x:auto">
-          ${barrasMeses()}
-        </div>
-        <div style="display:flex;gap:14px;margin-top:8px;font-size:11px">
-          <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626;opacity:.9"></div>Realizado</div>
-          <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>Previsto</div>
-          <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626;opacity:.3;border:1px dashed #dc2626"></div>Linha de meta mensal</div>
-        </div>
-
-        <!-- TABELA PANORAMA -->
-        <div style="margin-top:14px;border-top:1px solid var(--bor);padding-top:12px">
-          <div style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Resumo por Mês</div>
-          <table style="width:100%;border-collapse:collapse;font-size:11px">
-            <thead><tr>
-              <th style="text-align:left;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">Mês</th>
-              <th style="text-align:right;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">Realizado</th>
-              <th style="text-align:right;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">Previsto</th>
-              <th style="text-align:right;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">Total</th>
-              <th style="text-align:right;padding:5px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);color:var(--tx3)">vs Meta</th>
-            </tr></thead>
-            <tbody>
-              ${porMes.filter(m=>m.total>0).map(m=>{
-                const p=Math.round(m.total/metaForn*100);
-                const status=p>100?'var(--red)':p>80?'var(--yel)':'var(--grn)';
-                return`<tr style="border-bottom:1px solid var(--bor);cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()">
-                  <td style="padding:6px 8px;font-weight:600">${m.lbl}/26</td>
-                  <td style="padding:6px 8px;text-align:right;color:var(--red)">${m.real>0?fmtR(m.real):'—'}</td>
-                  <td style="padding:6px 8px;text-align:right;color:#dc2626;opacity:.7">${m.prev>0?fmtR(m.prev):'—'}</td>
-                  <td style="padding:6px 8px;text-align:right;font-weight:700;color:var(--red)">${fmtR(m.total)}</td>
-                  <td style="padding:6px 8px;text-align:right">
-                    <span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${status}22;color:${status};font-weight:700">${p}%</span>
-                  </td>
-                </tr>`;
-              }).join('')}
-              <tr style="background:var(--sur2);font-weight:700">
-                <td style="padding:6px 8px">TOTAL</td>
-                <td style="padding:6px 8px;text-align:right;color:var(--red)">${fmtR(porMes.reduce((s,m)=>s+m.real,0))}</td>
-                <td style="padding:6px 8px;text-align:right;color:#dc2626;opacity:.7">${fmtR(porMes.reduce((s,m)=>s+m.prev,0))}</td>
-                <td style="padding:6px 8px;text-align:right;color:var(--red)">${fmtR(porMes.reduce((s,m)=>s+m.total,0))}</td>
-                <td style="padding:6px 8px;text-align:right">
-                  <span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#dc262622;color:var(--red);font-weight:700">${Math.round(porMes.reduce((s,m)=>s+m.total,0)/metaForn/porMes.filter(m=>m.total>0).length*100)}%/mês</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      `:`
-        <!-- BARRAS POR FORNECEDOR -->
-        <div style="max-height:350px;overflow-y:auto">
-          ${lista.map((g,i)=>{
-            const tot=g.realizado+g.previsto;
-            const pctR=Math.round(g.realizado/meta*100);
-            const pctP=Math.min(100-pctR,Math.round(g.previsto/meta*100));
-            const cor=cores[i%cores.length];
-            return`<div style="margin-bottom:12px;cursor:pointer" onclick="abrirDiarioData('${periodoSel==='mes'?mesHoje:periodoSel}','4.2.1','DEBIT','')" title="Ver lançamentos de ${g.nome}">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-                <span style="font-size:12px;font-weight:600;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${g.nome}">${g.nome}</span>
-                <div style="text-align:right;flex-shrink:0">
-                  <span style="font-size:12px;font-weight:700;color:var(--red)">${fmtR(g.realizado)}</span>
-                  ${g.previsto>0?`<span style="font-size:10px;color:#dc2626;opacity:.6"> +${fmtR(g.previsto)}</span>`:''}
-                </div>
-              </div>
-              <div style="height:10px;background:var(--bor);border-radius:5px;overflow:hidden">
-                <div style="height:100%;width:${Math.min(100,pctR)}%;background:${cor};float:left;border-radius:5px 0 0 5px"></div>
-                ${g.previsto>0?`<div style="height:100%;width:${pctP}%;background:${cor};opacity:.35;float:left"></div>`:''}
-              </div>
-              <div style="font-size:9px;color:var(--tx3);margin-top:2px;display:flex;gap:8px">
-                <span>${Math.round(tot/meta*100)}% da meta</span>
-                <span>·</span>
-                <span>${g.txs.length} lançamento${g.txs.length!==1?'s':''}</span>
-                ${g.previsto>0?`<span>· <span style="color:#0369a1">${g.txs.filter(t=>t.status==='previsto').length} previstos</span></span>`:''}
-              </div>
-            </div>`;
-          }).join('')}
-        </div>
-      `}
+      <div style="display:flex;gap:14px;margin-top:10px;font-size:11px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626"></div>Realizado</div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>Previsto (BRG + outros)</div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:2px;height:10px;background:#dc2626;opacity:.6"></div><span style="border-top:1px dashed #dc2626;width:16px;display:inline-block;margin:0 2px"></span>Meta mensal</div>
+      </div>
     </div>
-  </div>
 
-  <!-- TABELA DETALHADA DOS LANÇAMENTOS -->
-  <div class="card" style="overflow:hidden">
-    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between">
-      <span style="font-size:13px;font-weight:700">Lançamentos ${periodoSel==='panorama'?'(Todos os períodos)':periodoSel==='mes'?'('+mesHoje+')':'('+periodoSel+')'}</span>
-      <span style="font-size:11px;color:var(--tx3)">${txSel.length} lançamentos · ${fmtR(totalGeral)}</span>
-    </div>
-    <div style="overflow-x:auto;max-height:300px">
+    <!-- TABELA RESUMO PANORAMA -->
+    <div class="card" style="overflow:hidden;margin-bottom:14px">
+      <div style="padding:10px 14px;border-bottom:1px solid var(--bor);font-size:13px;font-weight:700">Resumo por Mês</div>
       <table style="width:100%;border-collapse:collapse">
         <thead><tr>
-          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;position:sticky;top:0">Data</th>
-          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Fornecedor / Descrição</th>
-          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;position:sticky;top:0">Nota</th>
-          <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;position:sticky;top:0">Valor</th>
-          <th style="padding:7px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Status</th>
+          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Mês</th>
+          <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Realizado</th>
+          <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Previsto</th>
+          <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Total</th>
+          <th style="padding:7px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">vs Meta</th>
         </tr></thead>
         <tbody>
-          ${txSel.sort((a,b)=>a.date.localeCompare(b.date)).map(t=>{
-            const nf = t.desc.match(/NF[\s-]*(e\s*)?[Nº]*\s*([\d.]+)/i);
-            const nfNum = nf ? nf[2] : '—';
-            const nome = t.cli&&t.cli.length>2 ? t.cli : t.desc.replace(/PAGAMENTO PIX - |BOLETO /g,'').split(' - ')[0].substring(0,35);
-            return`<tr style="border-bottom:1px solid var(--bor);cursor:pointer" onclick="abrirDiarioData('${t.date.substring(0,7)}','4.2.1','DEBIT','${t.date}')" title="Ver no Livro Diário">
-              <td style="padding:7px 12px;font-size:11px;color:var(--tx3);white-space:nowrap">${fmtD(t.date)}</td>
-              <td style="padding:7px 12px;font-size:12px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.desc}">${nome}</td>
-              <td style="padding:7px 12px;font-size:11px;color:var(--tx3)">${nfNum}</td>
-              <td style="padding:7px 12px;text-align:right;font-size:12px;font-weight:700;color:var(--red)">−${fmtR(t.amt)}</td>
-              <td style="padding:7px 12px;text-align:center">
-                <span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:${t.status==='previsto'?'#e0f2fe':t.status==='conciliado'?'var(--gbg)':'var(--ybg)'};color:${t.status==='previsto'?'#0369a1':t.status==='conciliado'?'var(--grn)':'var(--yel)'}">${t.status}</span>
+          ${porMes.map(m=>{
+            const p=Math.round(m.total/metaForn*100);
+            const sc=p>100?'var(--red)':p>80?'var(--yel)':'var(--grn)';
+            return`<tr style="border-bottom:1px solid var(--bor);cursor:pointer${m.isFut?';background:#fafbff':''}" onclick="window._fornPeriodo='${m.mes}';render()">
+              <td style="padding:8px 12px;font-weight:600;color:${m.isFut?'#0369a1':'var(--txt)'}">${m.lbl}/26${m.isFut?' *':''}</td>
+              <td style="padding:8px 12px;text-align:right;color:var(--red)">${m.real>0?fmtR(m.real):'—'}</td>
+              <td style="padding:8px 12px;text-align:right;color:#dc2626;opacity:.7">${m.prev>0?fmtR(m.prev):'—'}</td>
+              <td style="padding:8px 12px;text-align:right;font-weight:700;color:var(--red)">${m.total>0?fmtR(m.total):'—'}</td>
+              <td style="padding:8px 12px;text-align:center">
+                ${m.total>0?`<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${sc}22;color:${sc};font-weight:700">${p}%</span>`:'<span style="color:var(--tx3);font-size:11px">—</span>'}
               </td>
             </tr>`;
           }).join('')}
+          <tr style="background:var(--sur2);font-weight:700;border-top:2px solid var(--bor)">
+            <td style="padding:8px 12px">TOTAL</td>
+            <td style="padding:8px 12px;text-align:right;color:var(--red)">${fmtR(porMes.reduce((s,m)=>s+m.real,0))}</td>
+            <td style="padding:8px 12px;text-align:right;color:#dc2626;opacity:.7">${fmtR(porMes.reduce((s,m)=>s+m.prev,0))}</td>
+            <td style="padding:8px 12px;text-align:right;color:var(--red)">${fmtR(porMes.reduce((s,m)=>s+m.total,0))}</td>
+            <td style="padding:8px 12px;text-align:center"><span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#dc262622;color:var(--red);font-weight:700">${Math.round(porMes.reduce((s,m)=>s+m.total,0)/metaForn/porMes.length*100)}%/mês</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `:`
+    <!-- MÊS ESPECÍFICO: DONUT + BARRAS -->
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:14px;margin-bottom:14px">
+      <div class="card cp">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px">Por Fornecedor</div>
+        <div style="display:flex;align-items:center;gap:16px">
+          <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink:0">
+            ${donut(lista,totalGeral)}
+          </svg>
+          <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
+            ${lista.slice(0,8).map((g,i)=>{
+              const tot=g.realizado+g.previsto;
+              const p=totalGeral>0?Math.round(tot/totalGeral*100):0;
+              return`<div style="display:flex;align-items:center;gap:6px">
+                <div style="width:9px;height:9px;border-radius:2px;background:${cores[i%cores.length]};flex-shrink:0"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.nome.substring(0,22)}</div>
+                  <div style="font-size:9px;color:var(--tx3)">${p}% · ${fmtR(tot)}</div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="card cp">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px">Detalhamento — ${labelPeriodo}</div>
+        <div style="max-height:300px;overflow-y:auto">
+          ${lista.length===0?'<div style="text-align:center;padding:30px;color:var(--tx3);font-size:12px">Nenhum lançamento neste período</div>':
+            lista.map((g,i)=>{
+              const tot=g.realizado+g.previsto;
+              const pctR=meta>0?Math.min(100,Math.round(g.realizado/meta*100)):0;
+              const pctP=meta>0?Math.min(100-pctR,Math.round(g.previsto/meta*100)):0;
+              const cor=cores[i%cores.length];
+              return`<div style="margin-bottom:12px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                  <span style="font-size:12px;font-weight:600;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.nome}</span>
+                  <div style="text-align:right;flex-shrink:0">
+                    <span style="font-size:12px;font-weight:700;color:var(--red)">${fmtR(g.realizado)}</span>
+                    ${g.previsto>0?`<span style="font-size:10px;color:#dc2626;opacity:.6"> +${fmtR(g.previsto)}</span>`:''}
+                  </div>
+                </div>
+                <div style="height:10px;background:var(--bor);border-radius:5px;overflow:hidden">
+                  <div style="height:100%;width:${pctR}%;background:${cor};float:left;border-radius:5px 0 0 5px"></div>
+                  ${g.previsto>0?`<div style="height:100%;width:${pctP}%;background:${cor};opacity:.35;float:left"></div>`:''}
+                </div>
+                <div style="font-size:9px;color:var(--tx3);margin-top:2px">${meta>0?Math.round(tot/meta*100):0}% da meta · ${g.txs.length} lançamento${g.txs.length!==1?'s':''}</div>
+              </div>`;
+            }).join('')}
+        </div>
+      </div>
+    </div>
+  `}
+
+  <!-- TABELA DE LANÇAMENTOS -->
+  <div class="card" style="overflow:hidden">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:13px;font-weight:700">Lançamentos — ${labelPeriodo}</span>
+      <span style="font-size:11px;color:var(--tx3)">${txSel.length} lançamentos · ${fmtR(totalGeral)}</span>
+    </div>
+    <div style="overflow-x:auto;max-height:320px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr>
+          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0;white-space:nowrap">Data</th>
+          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Fornecedor</th>
+          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Nota</th>
+          <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0;white-space:nowrap">Valor</th>
+          <th style="padding:7px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Status</th>
+        </tr></thead>
+        <tbody>
+          ${txSel.length===0?`<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--tx3)">Nenhum lançamento no período</td></tr>`:
+            txSel.sort((a,b)=>a.date.localeCompare(b.date)).map(t=>{
+              const nf=t.desc.match(/NF[\s\-e°º]*N?[°º]?\s*([\d.]+)/i);
+              const nome=t.cli&&t.cli.length>2?t.cli:t.desc.replace(/PAGAMENTO PIX \d+ |BOLETO /g,'').split(' - ')[0].substring(0,35);
+              return`<tr style="border-bottom:1px solid var(--bor);${t.status==='previsto'?'background:#fafbff':''}">
+                <td style="padding:7px 12px;font-size:11px;color:var(--tx3);white-space:nowrap">${fmtD(t.date)}</td>
+                <td style="padding:7px 12px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nome}</td>
+                <td style="padding:7px 12px;font-size:11px;color:var(--tx3)">${nf?nf[1]:'—'}</td>
+                <td style="padding:7px 12px;text-align:right;font-size:12px;font-weight:700;color:var(--red)">−${fmtR(t.amt)}</td>
+                <td style="padding:7px 12px;text-align:center">
+                  <span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:${t.status==='previsto'?'#e0f2fe':t.status==='conciliado'?'var(--gbg)':'var(--ybg)'};color:${t.status==='previsto'?'#0369a1':t.status==='conciliado'?'var(--grn)':'var(--yel)'}">${t.status}</span>
+                </td>
+              </tr>`;
+            }).join('')}
         </tbody>
       </table>
     </div>
@@ -2355,41 +2380,6 @@ function renderForn(){
 }
 
 
-
-// ════════════════════════════════
-// TRANSFERÊNCIAS ENTRE CONTAS
-// ════════════════════════════════
-// abrirTransf moved to data-attribute version above
-
-function setContaTransf(btn){
-  const id = btn.dataset.id;
-  const conta = btn.dataset.conta;
-  const t = TX.find(x=>x.id===id);
-  if(t){ t._contaTransf=conta; }
-  render();
-}
-
-function confirmarTransf(btn){
-  const id = btn.dataset.id;
-  const t = TX.find(x=>x.id===id);
-  if(!t||!t._contaTransf){ toast('Selecione a conta de origem/destino!','warn'); return; }
-  t.status='transferencia';
-  t._showTransf=false;
-  saveEd(id,{status:'transferencia',cat:'transf',contaTransf:t._contaTransf});
-  // Criar lançamento espelho na outra conta (opcional — apenas marca)
-  toast(`🔄 Transferência registrada: ${t._contaTransf} → ${t.conta||'Sicredi'}`, 'ok');
-  openId=null;
-  const prox=TX.find(x=>x.status==='pendente');
-  openId=prox?prox.id:null;
-  render();
-}
-
-function cancelarTransf(btn){
-  const id = btn.dataset.id;
-  const t = TX.find(x=>x.id===id);
-  if(t){ t._showTransf=false; t._contaTransf=null; }
-  render();
-}
 
 // ════════════════════════════════
 // TOAST / UI
