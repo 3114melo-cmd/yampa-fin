@@ -708,11 +708,15 @@ function saveEd(id, data){
 }
 
 function buildTX(){
+  // Preservar estado temporário (painel transferência) do TX anterior
+  const prevState = {};
+  TX.forEach(t=>{ if(t._showTransf||t._contaTransf) prevState[t.id]={_showTransf:t._showTransf,_contaTransf:t._contaTransf}; });
+
   TX = RAW.map(r=>{
     const ed = EDITED[r.id]||{};
     const c = ed.cat || r.cat || autocat(r.desc, r.type);
-    // Lançamentos previstos (boletos futuros) começam como 'previsto'
     const statusDefault = r.previsto ? 'previsto' : 'pendente';
+    const prev = prevState[r.id]||{};
     return {
       ...r,
       cat: c,
@@ -723,6 +727,8 @@ function buildTX(){
       meio: ed.meio || (r.previsto?'Boleto':'PIX'),
       status: ed.status || statusDefault,
       editado: !!EDITED[r.id],
+      _showTransf: prev._showTransf || false,
+      _contaTransf: prev._contaTransf || null,
     };
   });
   // adicionar manuais
