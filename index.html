@@ -1034,9 +1034,10 @@ function renderConc(){
   const ents=TX.filter(t=>t.type==='CREDIT');
   const sais=TX.filter(t=>t.type==='DEBIT');
   const fil=list=>list.filter(t=>{
+    // Sempre mostrar se está aberto ou com painel de transferência ativo
+    if(t.id===openId || t._showTransf) return true;
     let mf;
     if(filtrosStatus.length>0){
-      // Filtro por status múltiplo (estilo Yampa)
       mf = filtrosStatus.includes(getStatusTx(t));
     } else if(filtro==='pendente'){
       mf = t.status==='pendente';
@@ -1258,19 +1259,19 @@ function ckClick(el){
 
 function abrirTransf(el){
   const id = el.dataset ? el.dataset.id : el;
-  TX.forEach(t=>{ t._showTransf=false; });
+  // Fechar outros painéis de transferência
+  TX.forEach(t=>{ if(t.id!==id) t._showTransf=false; });
   const t = TX.find(x=>x.id===id);
-  if(t){
-    t._showTransf = true;
-    t._contaTransf = null;
-    openId = id; // garantir que o lançamento está expandido
-  }
+  if(!t) return;
+  // Toggle: se já está aberto, fecha; senão abre
+  const jaAberto = t._showTransf;
+  t._showTransf = !jaAberto;
+  t._contaTransf = null;
+  openId = id; // manter expandido
   render();
 }
 
-function abrirTransfEl(el){
-  abrirTransf(el);
-}
+function abrirTransfEl(el){ abrirTransf(el); }
 
 function upd(id, field, value){
   const t=TX.find(x=>x.id===id);
