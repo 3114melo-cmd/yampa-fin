@@ -2097,57 +2097,66 @@ function renderForn(){
 
   // SVG BARRAS PANORAMA
   function barrasMeses(){
-    const W=560, H=180, padL=48, padR=20, padB=36;
+    const W=560, H=220, padL=56, padR=50, padB=28, padT=24;
+    const areaH = H - padB - padT;
     const barW = Math.floor((W-padL-padR)/porMes.length)-6;
-    const escala = v => v>0 ? Math.round((v/maxVal)*(H-padB-10)) : 0;
+    const escala = v => v>0 ? Math.round((v/maxVal)*areaH) : 0;
+    const baseY = H - padB; // linha de base
 
     let svg=`<svg width="100%" viewBox="0 0 ${W} ${H}" font-family="sans-serif" style="overflow:visible">`;
 
     // Linhas de grade
     [0.25,0.5,0.75,1].forEach(f=>{
-      const y=H-padB-Math.round(f*(H-padB-10));
-      const v=maxVal*f;
-      svg+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--bor)" stroke-width="1"/>`;
-      svg+=`<text x="${padL-4}" y="${y+4}" text-anchor="end" font-size="8" fill="var(--tx3)">${fmtR(v).replace('R$ ','')}</text>`;
+      const y = baseY - Math.round(f*areaH);
+      const v = maxVal*f;
+      svg+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#e2e6eb" stroke-width="1"/>`;
+      svg+=`<text x="${padL-4}" y="${y+3}" text-anchor="end" font-size="8" fill="#9aa5b4">${(v/1000).toFixed(0)}k</text>`;
     });
 
     // Linha da meta mensal
-    const yMeta = H-padB-escala(meta);
+    const yMeta = baseY - escala(meta);
     svg+=`<line x1="${padL}" y1="${yMeta}" x2="${W-padR}" y2="${yMeta}" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.8"/>`;
-    svg+=`<text x="${W-padR+2}" y="${yMeta+4}" font-size="9" fill="#dc2626" font-weight="600">Meta</text>`;
+    svg+=`<text x="${W-padR+4}" y="${yMeta+4}" font-size="9" fill="#dc2626" font-weight="700">Meta</text>`;
 
     porMes.forEach((m,i)=>{
       const x = padL + i*(barW+6);
       const hReal = escala(m.real);
       const hPrev = escala(m.prev);
       const isSel = periodoSel===m.mes;
-      const opacity = isSel?'1':'0.8';
+      const op = isSel?'1':'0.85';
+
+      // Área clicável invisível (inclui label)
+      svg+=`<rect x="${x}" y="${padT}" width="${barW}" height="${H-padT}" fill="transparent" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
 
       // Barra realizado
       if(m.real>0){
-        svg+=`<rect x="${x}" y="${H-padB-hReal}" width="${barW}" height="${hReal}" fill="#dc2626" opacity="${opacity}" rx="3" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
+        svg+=`<rect x="${x}" y="${baseY-hReal}" width="${barW}" height="${hReal}" fill="#dc2626" opacity="${op}" rx="3 3 0 0" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
       }
       // Barra previsto (acima do realizado)
       if(m.prev>0){
-        svg+=`<rect x="${x}" y="${H-padB-hReal-hPrev}" width="${barW}" height="${hPrev}" fill="#fca5a5" opacity="${opacity}" rx="3" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
+        svg+=`<rect x="${x}" y="${baseY-hReal-hPrev}" width="${barW}" height="${hPrev}" fill="#fca5a5" opacity="${op}" rx="3 3 0 0" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
       }
-      // Barra vazia (placeholder se zero)
+      // Placeholder se zero
       if(m.total===0){
-        svg+=`<rect x="${x}" y="${H-padB-4}" width="${barW}" height="4" fill="var(--bor)" rx="2" opacity="0.5"/>`;
+        svg+=`<rect x="${x}" y="${baseY-3}" width="${barW}" height="3" fill="#e2e6eb" rx="2"/>`;
       }
 
-      // Label mês
-      const labelColor = isSel?'var(--sacc)':m.isFut?'#0369a1':'var(--tx3)';
-      const labelWeight = isSel?'700':'400';
-      svg+=`<text x="${x+barW/2}" y="${H-6}" text-anchor="middle" font-size="10" fill="${labelColor}" font-weight="${labelWeight}" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()">${m.lbl}${m.isFut?"*":""}</text>`;
+      // LABEL MÊS — sempre na base, nunca some
+      const isSel2 = periodoSel===m.mes;
+      const lblColor = isSel2?'#2563eb':m.isFut?'#0369a1':'#4a5568';
+      const lblWeight = isSel2?'700':'500';
+      svg+=`<text x="${x+barW/2}" y="${H-8}" text-anchor="middle" font-size="10" fill="${lblColor}" font-weight="${lblWeight}" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()">${m.lbl}${m.isFut?'*':''}</text>`;
 
-      // Valor no topo da barra se > 0
+      // Valor no topo da barra — acima das barras com margem
       if(m.total>0){
-        const yVal = H-padB-hReal-hPrev-6;
-        const valTxt = fmtR(m.total).replace('R$ ','R$');
-        svg+=`<text x="${x+barW/2}" y="${yVal<12?12:yVal}" text-anchor="middle" font-size="8" fill="${m.total>meta?'#dc2626':'var(--tx2)'}" font-weight="600">${valTxt}</text>`;
+        const yTopo = baseY - hReal - hPrev - 5;
+        const valTxt = (m.total/1000).toFixed(1)+'k';
+        svg+=`<text x="${x+barW/2}" y="${yTopo < padT+10 ? padT+10 : yTopo}" text-anchor="middle" font-size="8" fill="${m.total>meta?'#dc2626':'#4a5568'}" font-weight="600">${valTxt}</text>`;
       }
     });
+
+    // Linha de base
+    svg+=`<line x1="${padL}" y1="${baseY}" x2="${W-padR}" y2="${baseY}" stroke="#d0d5dd" stroke-width="1.5"/>`;
 
     svg+=`</svg>`;
     return svg;
