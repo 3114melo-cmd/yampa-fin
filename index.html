@@ -1217,14 +1217,14 @@ function renderDash(){
   function getSaldo(nomeConta){
     // Conciliado + Transferência contam como dinheiro real movimentado
     const txc = TX.filter(t=>t.conta===nomeConta && (t.status==='conciliado'||t.status==='transferencia'));
-    const ent = txc.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
-    const sai = txc.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
+    const entradas = txc.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
+    const saidas = txc.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
     return {
-      saldo: ent - sai,
-      ent, sai,
-      conc: TX.filter(t=>t.conta===nomeConta && t.status==='conciliado').length,
-      pend: TX.filter(t=>t.conta===nomeConta && t.status==='pendente').length,
-      prev: TX.filter(t=>t.conta===nomeConta && t.status==='previsto').length,
+      atual: entradas - saidas,
+      entradas, saidas,
+      conciliados: TX.filter(t=>t.conta===nomeConta && t.status==='conciliado').length,
+      pendentes: TX.filter(t=>t.conta===nomeConta && t.status==='pendente').length,
+      previstos: TX.filter(t=>t.conta===nomeConta && t.status==='previsto').length,
     };
   }
   const infoMatriz = getSaldo('Sicredi Matriz');
@@ -1235,7 +1235,7 @@ function renderDash(){
     {nome:'3. DISTRIBUIDORA',icon:'🏦', info:infoDist,   cor:'#0369a1', conta:'Sicredi Distribuidora'},
     {nome:'Caixa (Dinheiro)',icon:'💵', info:infoCaixa,  cor:'#16a34a', conta:'Caixa'},
   ];
-  const saldoTotal = contas.reduce((s,c)=>s+c.info.saldo,0);
+  const saldoTotal = contas.reduce((s,c)=>s+c.info.atual,0);
   const saldoPrevisto = saldoTotal - aPagarHoje + aReceberHoje;
 
   const conc = TX.filter(t=>t.status==='conciliado').length;
