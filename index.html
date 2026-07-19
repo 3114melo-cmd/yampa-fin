@@ -223,6 +223,10 @@ tr:hover td{background:var(--sur2)}
   .conc-cols{grid-template-columns:1fr}
   .conc-kpis{grid-template-columns:repeat(2,1fr)}
 }
+.cp-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px}
+.cp-item:hover{background:var(--acl)}
+.cp-code{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;min-width:44px;text-align:center;flex-shrink:0}
+.cp-grupo{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;padding:8px 10px 3px}
 </style>
 </head>
 <body>
@@ -1701,6 +1705,64 @@ function resetConciliacao(){
   location.reload();
 }
 
+let _catPickerTxId = null;
+
+function abrirCatPicker(id){
+  _catPickerTxId = id;
+  document.getElementById('catpicker-bg').classList.add('open');
+  const inp = document.getElementById('catpicker-busca');
+  inp.value = '';
+  setTimeout(()=>inp.focus(), 50);
+  filtrarCatPicker('');
+}
+
+function fecharCatPicker(){
+  document.getElementById('catpicker-bg').classList.remove('open');
+  _catPickerTxId = null;
+}
+
+function normalizarBusca(s){
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
+function filtrarCatPicker(termo){
+  const t = normalizarBusca(termo.trim());
+  const lista = document.getElementById('catpicker-lista');
+  const items = CATS.filter(c=>c.nivel===3||c.code==='OUT');
+  const filtrados = t ? items.filter(c=>normalizarBusca(c.nome).includes(t)||c.code.includes(t)||normalizarBusca(c.grupo).includes(t)) : items;
+
+  // Agrupar
+  const grupos = {};
+  filtrados.forEach(c=>{ if(!grupos[c.grupo]) grupos[c.grupo]=[]; grupos[c.grupo].push(c); });
+
+  if(filtrados.length===0){
+    lista.innerHTML = '<div style="text-align:center;padding:20px;color:var(--tx3);font-size:12px">Nenhuma categoria encontrada</div>';
+    return;
+  }
+
+  lista.innerHTML = Object.entries(grupos).map(([g,cats])=>
+    '<div class="cp-grupo">'+g+'</div>'+
+    cats.map(c=>'<div class="cp-item" onclick="selecionarCat(\''+c.code+'\')">'
+      +'<span class="cp-code" style="background:'+c.cor+'22;color:'+c.cor+'">'+c.code+'</span>'
+      +'<span>'+c.nome+'</span>'
+      +'</div>').join('')
+  ).join('');
+}
+
+function selecionarCat(code){
+  if(!_catPickerTxId) return;
+  const t = TX.find(x=>x.id===_catPickerTxId);
+  if(t){
+    t.cat = code;
+    t.catInfo = cat(code);
+    t.editado = true;
+    saveEd(_catPickerTxId, {cat: code});
+    toast('✓ Categoria: '+cat(code).code+' — '+cat(code).nome, 'ok');
+  }
+  fecharCatPicker();
+  render();
+}
+
 function updJourEl(el){
   const id = el.dataset.id;
   const field = el.dataset.field;
@@ -2003,7 +2065,9 @@ function renderJour(){
               </td>
               <td style="padding:6px 10px;color:var(--tx3)">${isRealizado?fmtDataCurta(t.date):'—'}</td>
               <td style="padding:2px 6px;min-width:170px">
-                <select data-id="${t.id}" data-field="cat" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle}" ${inpFocus}>${catOpts(t.cat)}</select>
+                <button onclick="abrirCatPicker('${t.id}')" style="width:100%;text-align:left;border:1px solid var(--bor2);background:var(--sur);font-size:11px;font-family:inherit;color:var(--txt);padding:4px 7px;border-radius:5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="Clique para trocar categoria">
+                  <span style="color:${t.catInfo.cor};font-weight:600">${t.catInfo.code}</span> ${t.catInfo.nome}
+                </button>
               </td>
               <td style="padding:2px 6px;min-width:200px">
                 <input type="text" value="${t.desc.replace(/"/g,'&quot;')}" data-id="${t.id}" data-field="desc" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle}" ${inpFocus}>
@@ -3156,5 +3220,21 @@ function toggleTime(){
 // INIT
 render();
 </script>
+<!-- MODAL SELETOR DE CATEGORIA -->
+<div class="modal-bg" id="catpicker-bg" onclick="if(event.target===this) fecharCatPicker()">
+  <div class="modal" style="width:420px">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:14px;font-weight:700">Selecionar Categoria</span>
+      <button onclick="fecharCatPicker()" style="border:none;background:none;font-size:18px;cursor:pointer;color:var(--tx3)">✕</button>
+    </div>
+    <div style="padding:14px 18px 8px">
+      <input type="text" id="catpicker-busca" placeholder="Buscar... ex: salário, fornecedor, energia" autofocus
+        oninput="filtrarCatPicker(this.value)"
+        style="width:100%;padding:9px 12px;border:1.5px solid var(--sacc);border-radius:var(--r);font-size:13px">
+    </div>
+    <div id="catpicker-lista" style="max-height:400px;overflow-y:auto;padding:4px 10px 14px"></div>
+  </div>
+</div>
+
 </body>
 </html>
