@@ -1498,17 +1498,48 @@ function renderCF(){
 
   // Calcular futuros
   const futReal = MESES_FUT.map(m=>({
-    rec:  txMes(m,null,'CREDIT'),
-    forn: Math.abs(txMes(m,['4.2.1','4.2.4'],'DEBIT')),
-    trib: Math.abs(txMes(m,['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'],'DEBIT')),
-    vend: Math.abs(txMes(m,['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'],'DEBIT')),
-    moto: Math.abs(txMes(m,['4.6.1','4.6.2','4.6.3'],'DEBIT')),
-    adm:  Math.abs(txMes(m,['5.1.1','5.1.99','5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'],'DEBIT')),
-    pes:  Math.abs(txMes(m,['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],'DEBIT')),
-    traf: Math.abs(txMes(m,['5.8.1','5.8.2'],'DEBIT')),
-    inv:  Math.abs(txMes(m,['6.4.1','6.4.2'],'DEBIT')),
-    noin: txMes(m,['7.1.4','7.1.6','7.1.7','7.1.99'],'CREDIT'),
-    nout: Math.abs(txMes(m,['7.2.1','7.2.13','7.2.99'],'DEBIT')),
+    rec:   txMes(m,null,'CREDIT'),
+    jur:   txMes(m,['3.3'],'CREDIT'),
+    trib:  Math.abs(txMes(m,['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'],'DEBIT')),
+    t411:  Math.abs(txMes(m,['4.1.1'],'DEBIT')),
+    t414:  Math.abs(txMes(m,['4.1.4'],'DEBIT')),
+    t499:  Math.abs(txMes(m,['4.1.99'],'DEBIT')),
+    forn:  Math.abs(txMes(m,['4.2.1','4.2.4'],'DEBIT')),
+    f421:  Math.abs(txMes(m,['4.2.1'],'DEBIT')),
+    f424:  Math.abs(txMes(m,['4.2.4'],'DEBIT')),
+    emb:   Math.abs(txMes(m,['4.3.1'],'DEBIT')),
+    vend:  Math.abs(txMes(m,['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'],'DEBIT')),
+    v441:  Math.abs(txMes(m,['4.4.1'],'DEBIT')),
+    v442:  Math.abs(txMes(m,['4.4.2'],'DEBIT')),
+    v443:  Math.abs(txMes(m,['4.4.3'],'DEBIT')),
+    v444:  Math.abs(txMes(m,['4.4.4'],'DEBIT')),
+    v446:  Math.abs(txMes(m,['4.4.6'],'DEBIT')),
+    moto:  Math.abs(txMes(m,['4.6.1','4.6.2','4.6.3'],'DEBIT')),
+    m461:  Math.abs(txMes(m,['4.6.1'],'DEBIT')),
+    m462:  Math.abs(txMes(m,['4.6.2'],'DEBIT')),
+    m463:  Math.abs(txMes(m,['4.6.3'],'DEBIT')),
+    fin:   Math.abs(txMes(m,['5.1.1','5.1.99'],'DEBIT')),
+    adm:   Math.abs(txMes(m,['5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'],'DEBIT')),
+    a521:  Math.abs(txMes(m,['5.2.1'],'DEBIT')),
+    a523:  Math.abs(txMes(m,['5.2.3'],'DEBIT')),
+    a524:  Math.abs(txMes(m,['5.2.4'],'DEBIT')),
+    a5211: Math.abs(txMes(m,['5.2.11'],'DEBIT')),
+    a5217: Math.abs(txMes(m,['5.2.17'],'DEBIT')),
+    a5299: Math.abs(txMes(m,['5.2.99','5.2.19'],'DEBIT')),
+    pes:   Math.abs(txMes(m,['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],'DEBIT')),
+    p531:  Math.abs(txMes(m,['5.3.1'],'DEBIT')),
+    p532:  Math.abs(txMes(m,['5.3.2'],'DEBIT')),
+    p535:  Math.abs(txMes(m,['5.3.5'],'DEBIT')),
+    p536:  Math.abs(txMes(m,['5.3.6'],'DEBIT')),
+    p537:  Math.abs(txMes(m,['5.3.7'],'DEBIT')),
+    p5312: Math.abs(txMes(m,['5.3.12'],'DEBIT')),
+    p5313: Math.abs(txMes(m,['5.3.13'],'DEBIT')),
+    veic:  Math.abs(txMes(m,['5.5.3','5.5.4','5.5.5','5.5.99'],'DEBIT')),
+    traf:  Math.abs(txMes(m,['5.8.1','5.8.2'],'DEBIT')),
+    inv:   Math.abs(txMes(m,['6.4.1','6.4.2'],'DEBIT')),
+    noin:  txMes(m,['7.1.4','7.1.6','7.1.7','7.1.99'],'CREDIT'),
+    nout:  Math.abs(txMes(m,['7.2.1','7.2.13','7.2.99'],'DEBIT')),
+    n7213: Math.abs(txMes(m,['7.2.13'],'DEBIT')),
   }));
 
   // Esperado futuro = meta mensal
@@ -1532,24 +1563,63 @@ function renderCF(){
   // Construir linhas da tabela
   // Cada linha tem: label, key (para buscar hist/fut), tipo (+/-)
   const linhas = [
-    {label:'Receita/Faturamento', key:'rec', tipo:'+', nivel:1, cat:null, creditType:'CREDIT'},
-    {label:'Custos Variáveis',    key:'cv',  tipo:'-', nivel:1, calc:true},
-    {label:'4.1 — Custos Tributários', key:'trib', tipo:'-', nivel:2},
-    {label:'4.2 — Fornecedores',       key:'forn', tipo:'-', nivel:2, destaque:true},
-    {label:'4.4 — Custo com Vendas',   key:'vend', tipo:'-', nivel:2},
-    {label:'4.6 — Custos com Motos',   key:'moto', tipo:'-', nivel:2},
-    {label:'Margem de Contribuição',   key:'mc',   tipo:'=', nivel:1, calc:true},
-    {label:'Despesas Fixas',           key:'df',   tipo:'-', nivel:1, calc:true},
-    {label:'5.1+5.2 — Desp. Adm.',     key:'adm',  tipo:'-', nivel:2},
-    {label:'5.3 — Desp. com Pessoal',  key:'pes',  tipo:'-', nivel:2},
-    {label:'5.8 — Tráfego Pago',       key:'traf', tipo:'-', nivel:2},
-    {label:'Lucro Op. Antes Inv.',     key:'lai',  tipo:'=', nivel:1, calc:true},
-    {label:'Investimentos DHFIT',      key:'inv',  tipo:'-', nivel:1},
-    {label:'Mov. Não Operacionais',    key:'no',   tipo:'±', nivel:1, calc:true},
-    {label:'7.1 — Entradas n/op.',     key:'noin', tipo:'+', nivel:2},
-    {label:'7.2 — Saídas n/op.',       key:'nout', tipo:'-', nivel:2},
-    {label:'Resultado Líquido',        key:'res',  tipo:'=', nivel:1, calc:true, destaque:true},
-    {label:'Saldo Final Sicredi',      key:'sf',   tipo:'=', nivel:1, calc:true},
+    // ── RECEITA ──
+    {label:'Receita/Faturamento',           key:'rec',   tipo:'+', nivel:1},
+    {label:'3.1.8 — Receita de Vendas',     key:'rec',   tipo:'+', nivel:2, sub:'3.1.8'},
+    {label:'3.3 — Recebimento de juros',    key:'jur',   tipo:'+', nivel:2, sub:'3.3'},
+    // ── CUSTOS VARIÁVEIS ──
+    {label:'Custos Variáveis',              key:'cv',    tipo:'-', nivel:1, calc:true},
+    {label:'4.1 — Custos Tributários',      key:'trib',  tipo:'-', nivel:2},
+    {label:'  4.1.1 — Imposto RF',          key:'t411',  tipo:'-', nivel:3, sub:'4.1.1'},
+    {label:'  4.1.4 — PIS/COFINS/ICMS',     key:'t414',  tipo:'-', nivel:3, sub:'4.1.4'},
+    {label:'  4.1.99 — Outros trib.',       key:'t499',  tipo:'-', nivel:3, sub:'4.1.99'},
+    {label:'4.2 — Fornecedores',            key:'forn',  tipo:'-', nivel:2, destaque:true},
+    {label:'  4.2.1 — Fornecedores',        key:'f421',  tipo:'-', nivel:3, sub:'4.2.1'},
+    {label:'  4.2.4 — Juros por atraso',    key:'f424',  tipo:'-', nivel:3, sub:'4.2.4'},
+    {label:'4.3 — Embalagens',              key:'emb',   tipo:'-', nivel:2, sub:'4.3.1'},
+    {label:'4.4 — Custo com Vendas',        key:'vend',  tipo:'-', nivel:2},
+    {label:'  4.4.1 — Taxas maquininha',    key:'v441',  tipo:'-', nivel:3, sub:'4.4.1'},
+    {label:'  4.4.2 — Comissão Vendedor',   key:'v442',  tipo:'-', nivel:3, sub:'4.4.2'},
+    {label:'  4.4.3 — Taxa de Pix',         key:'v443',  tipo:'-', nivel:3, sub:'4.4.3'},
+    {label:'  4.4.4 — Frete',               key:'v444',  tipo:'-', nivel:3, sub:'4.4.4'},
+    {label:'  4.4.6 — Motoboy Terceirizado',key:'v446',  tipo:'-', nivel:3, sub:'4.4.6'},
+    {label:'4.6 — Custos com Motos',        key:'moto',  tipo:'-', nivel:2},
+    {label:'  4.6.1 — Gasolina',            key:'m461',  tipo:'-', nivel:3, sub:'4.6.1'},
+    {label:'  4.6.2 — Manut. Moto',         key:'m462',  tipo:'-', nivel:3, sub:'4.6.2'},
+    {label:'  4.6.3 — Manut. Moto Elét.',   key:'m463',  tipo:'-', nivel:3, sub:'4.6.3'},
+    // ── MARGEM ──
+    {label:'Margem de Contribuição',        key:'mc',    tipo:'=', nivel:1, calc:true},
+    // ── DESPESAS FIXAS ──
+    {label:'Despesas Fixas',                key:'df',    tipo:'-', nivel:1, calc:true},
+    {label:'5.1 — Desp. Financeiras',       key:'fin',   tipo:'-', nivel:2, sub:'5.1.1'},
+    {label:'5.2 — Desp. Administrativas',   key:'adm',   tipo:'-', nivel:2},
+    {label:'  5.2.1 — Internet',            key:'a521',  tipo:'-', nivel:3, sub:'5.2.1'},
+    {label:'  5.2.3 — Energia elétrica',    key:'a523',  tipo:'-', nivel:3, sub:'5.2.3'},
+    {label:'  5.2.4 — Aluguel',             key:'a524',  tipo:'-', nivel:3, sub:'5.2.4'},
+    {label:'  5.2.11 — Contador',           key:'a5211', tipo:'-', nivel:3, sub:'5.2.11'},
+    {label:'  5.2.17 — CAERN',              key:'a5217', tipo:'-', nivel:3, sub:'5.2.17'},
+    {label:'  5.2.99 — Outras desp. adm.',  key:'a5299', tipo:'-', nivel:3, sub:'5.2.99'},
+    {label:'5.3 — Desp. com Pessoal',       key:'pes',   tipo:'-', nivel:2},
+    {label:'  5.3.1 — Salário',             key:'p531',  tipo:'-', nivel:3, sub:'5.3.1'},
+    {label:'  5.3.2 — Pró-labore',          key:'p532',  tipo:'-', nivel:3, sub:'5.3.2'},
+    {label:'  5.3.5 — FGTS',               key:'p535',  tipo:'-', nivel:3, sub:'5.3.5'},
+    {label:'  5.3.6 — DARF INSS/IRRF',     key:'p536',  tipo:'-', nivel:3, sub:'5.3.6'},
+    {label:'  5.3.7 — 13º e Férias',        key:'p537',  tipo:'-', nivel:3, sub:'5.3.7'},
+    {label:'  5.3.12 — Horas Extras',       key:'p5312', tipo:'-', nivel:3, sub:'5.3.12'},
+    {label:'  5.3.13 — Alimentação',        key:'p5313', tipo:'-', nivel:3, sub:'5.3.13'},
+    {label:'5.5 — Desp. com Veículos',      key:'veic',  tipo:'-', nivel:2, sub:'5.5.3'},
+    {label:'5.8 — Tráfego Pago',            key:'traf',  tipo:'-', nivel:2, sub:'5.8.1'},
+    // ── LUCRO ──
+    {label:'Lucro Op. Antes Inv.',          key:'lai',   tipo:'=', nivel:1, calc:true},
+    {label:'Investimentos DHFIT',           key:'inv',   tipo:'-', nivel:1, sub:'6.4.1'},
+    // ── NÃO OPERACIONAL ──
+    {label:'Mov. Não Operacionais',         key:'no',    tipo:'±', nivel:1, calc:true},
+    {label:'7.1 — Entradas n/op.',          key:'noin',  tipo:'+', nivel:2, sub:'7.1'},
+    {label:'7.2 — Saídas n/op.',            key:'nout',  tipo:'-', nivel:2, sub:'7.2'},
+    {label:'  7.2.13 — Custos Empréstimos', key:'n7213', tipo:'-', nivel:3, sub:'7.2.13'},
+    // ── RESULTADO ──
+    {label:'Resultado Líquido',             key:'res',   tipo:'=', nivel:1, calc:true, destaque:true},
+    {label:'Saldo Final Sicredi',           key:'sf',    tipo:'=', nivel:1, calc:true},
   ];
 
   // Calcular valores por mês
@@ -1616,7 +1686,8 @@ function renderCF(){
     if(l.key==='res') return 'color:#60a5fa!important;font-weight:700';
     if(l.key==='sf') return 'color:#93c5fd!important;font-weight:700';
     if(l.key==='mc'||l.key==='lai') return 'color:var(--sacc);font-weight:700';
-    if(l.destaque&&l.nivel===2) return 'color:var(--red);font-weight:700';
+    if(l.destaque&&l.nivel===2) return 'color:var(--red);font-weight:700;padding-left:22px';
+    if(l.nivel===3) return 'padding-left:38px;color:var(--tx3);font-size:11px';
     if(l.nivel===2) return 'padding-left:22px;color:var(--tx2)';
     return 'font-weight:700';
   }
@@ -1649,9 +1720,17 @@ function renderCF(){
   linhas.forEach(l=>{
     // Skip sub-linhas se não expandido
     if(l.nivel===2){
-      if((l.key==='trib'||l.key==='forn'||l.key==='vend'||l.key==='moto') && !cfExp.c) return;
-      if((l.key==='adm'||l.key==='pes'||l.key==='traf') && !cfExp.d) return;
-      if((l.key==='noin'||l.key==='nout') && !cfExp.n) return;
+      if(['trib','forn','emb','vend','moto'].includes(l.key) && !cfExp.c) return;
+      if(['fin','adm','pes','veic','traf'].includes(l.key) && !cfExp.d) return;
+      if(['noin','nout'].includes(l.key) && !cfExp.n) return;
+    }
+    if(l.nivel===3){
+      // N3 só aparece em modo N2 expandido
+      const cvKeys=['t411','t414','t499','f421','f424','v441','v442','v443','v444','v446','m461','m462','m463'];
+      const dfKeys=['a521','a523','a524','a5211','a5217','a5299','p531','p532','p535','p536','p537','p5312','p5313','n7213'];
+      const noKeys=['n7213'];
+      if(cvKeys.includes(l.key) && (!cfExp.c || cfExp.lvl===1)) return;
+      if(dfKeys.includes(l.key) && (!cfExp.d || cfExp.lvl===1)) return;
     }
 
     const rs = rowStyle(l);
