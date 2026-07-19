@@ -1096,7 +1096,7 @@ let mostrarFiltroStatus = false;
 let busca = '';
 let tipoModal = 'entrada';
 let cfExp = {};
-let dataFiltro = '2026-07-04'; // data selecionada para livro/conciliação
+let dataFiltro = ''; // data selecionada para livro/conciliação
 let PAGE = 'dash';
 let timeOpen = false;
 
@@ -1698,6 +1698,18 @@ function resetConciliacao(){
   location.reload();
 }
 
+function abrirEditarJour(id){
+  filtro='todos'; filtrosStatus=[]; busca='';
+  window._cfFiltroMes=null; window._cfFiltroCats=null; window.dataFiltroMes=null;
+  openId=id;
+  PAGE='conc';
+  render();
+  setTimeout(()=>{
+    const el = document.getElementById('txi-'+id);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 100);
+}
+
 function updEl(el){
   upd(el.dataset.id, el.dataset.field, el.value);
 }
@@ -1822,15 +1834,13 @@ function concTodos(){
 // JOURNAL
 // ════════════════════════════════
 function renderJour(){
-  // filtrar por data + busca
-  // Filtro vindo do Fluxo de Caixa (clique em valor)
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
+  const hoje = '2026-07-19';
 
   let txData;
   if(cfMes){
-    // Drill-down do CF ou Painel
     txData = TX.filter(t=>{
       const mesOk = dataFiltro ? t.date===dataFiltro : t.date.substring(0,7)===cfMes;
       const catOk = !cfCats || cfCats.length===0 || cfCats.includes(t.cat);
@@ -1844,92 +1854,154 @@ function renderJour(){
   } else {
     txData = TX;
   }
+
+  const filtroContaJour = window._jourConta || 'todas';
+  if(filtroContaJour!=='todas') txData = txData.filter(t=>t.conta===filtroContaJour);
+
   const fil = txData.filter(t=>!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase()));
-  const tE = fil.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0);
-  const tS = fil.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
-  const liq = tE - tS;
 
-  return `<div class="card">
-    <!-- TOOLBAR -->
-    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+  // Ordenar por data desc
+  const rows = [...fil].sort((a,b)=>b.date.localeCompare(a.date)||b.hora.localeCompare(a.hora));
+
+  // Totais
+  const vReceber = fil.filter(t=>t.type==='CREDIT'&&t.status==='pendente').reduce((s,t)=>s+t.amt,0);
+  const vRecebido = fil.filter(t=>t.type==='CREDIT'&&(t.status==='conciliado'||t.status==='transferencia')).reduce((s,t)=>s+t.amt,0);
+  const vPagar = fil.filter(t=>t.type==='DEBIT'&&(t.status==='pendente'||t.status==='previsto')).reduce((s,t)=>s+t.amt,0);
+  const vPago = fil.filter(t=>t.type==='DEBIT'&&(t.status==='conciliado'||t.status==='transferencia')).reduce((s,t)=>s+t.amt,0);
+
+  // Saldos por conta (cards do topo)
+  function saldoConta(nomeConta){
+    const txc = TX.filter(t=>t.conta===nomeConta && (t.status==='conciliado'||t.status==='transferencia'));
+    return txc.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0) - txc.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
+  }
+  const contasResumo = [
+    {n:'1. MATRIZ', conta:'Sicredi Matriz', icon:'🏦', saldo:saldoConta('Sicredi Matriz')},
+    {n:'3. DISTRIBUIDORA', conta:'Sicredi Distribuidora', icon:'🏦', saldo:saldoConta('Sicredi Distribuidora')},
+    {n:'Caixa (Dinheiro)', conta:'Caixa', icon:'💵', saldo:saldoConta('Caixa')},
+  ];
+
+  // Sequência (parcelas)
+  function getSeq(t){
+    const m = t.desc.match(/PARCELA\s*(\d+)\s*\/\s*(\d+)/i);
+    if(m) return m[1]+' de '+m[2];
+    return '1 de 1';
+  }
+
+  // Centro de custo
+  function getCC(t){
+    if(t.conta==='Sicredi Distribuidora') return 'ATACADO · DISTRIBUIDORA';
+    if(t.conta==='Sicredi Matriz') return 'VAREJO · MATRIZ';
+    return t.conta||'—';
+  }
+
+  // Status visual
+  function getStatusInfo(t){
+    if(t.status==='conciliado') return {label:'REALIZADO', bg:'var(--gbg)', color:'var(--grn)'};
+    if(t.status==='transferencia') return {label:'TRANSFERÊNCIA', bg:'#e0f2fe', color:'#0369a1'};
+    if(t.status==='previsto') return {label:'PREVISTO', bg:'#e0f2fe', color:'#0369a1'};
+    if(t.status==='ignorado') return {label:'IGNORADO', bg:'var(--sur2)', color:'var(--tx3)'};
+    if(t.date<hoje) return {label:'ATRASADO', bg:'#fee2e2', color:'var(--red)'};
+    if(t.date===hoje) return {label:'HOJE', bg:'var(--ybg)', color:'var(--yel)'};
+    return {label:'NO PRAZO', bg:'#e0f2fe', color:'#0369a1'};
+  }
+
+  function fmtDataCurta(d){
+    if(!d) return '—';
+    const [y,m,dd] = d.split('-');
+    return dd+'/'+m+'/'+y;
+  }
+
+  const contasUnicas = [...new Set(TX.map(t=>t.conta).filter(Boolean))];
+
+  return `<div style="display:flex;flex-direction:column;gap:10px">
+
+  <!-- CARDS DE CONTAS -->
+  <div style="display:grid;grid-template-columns:repeat(${contasResumo.length},1fr);gap:10px">
+    ${contasResumo.map(c=>`<div class="card" style="padding:12px 16px;cursor:pointer;${filtroContaJour===c.conta?'border-color:var(--sacc);border-width:2px':''}" onclick="window._jourConta=window._jourConta==='${c.conta}'?'todas':'${c.conta}';render()">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:16px">${c.icon}</span>
+        <span style="font-size:12px;font-weight:700;color:var(--txt)">${c.n}</span>
+      </div>
+      <div style="font-size:18px;font-weight:700;color:${c.saldo>=0?'var(--txt)':'var(--red)'}">${fmtR(c.saldo)}</div>
+    </div>`).join('')}
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="card" style="padding:10px 14px">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:${window._cfFiltroMes?'8px':'0'}">
       ${window._cfFiltroMes?`<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:var(--r)">
-        <span style="font-size:12px;color:#0369a1">📊 Fluxo de Caixa · ${window._cfFiltroMes} ${window._cfFiltroCats&&window._cfFiltroCats.length>0?'· '+window._cfFiltroCats.slice(0,3).join(', ')+(window._cfFiltroCats.length>3?'...':''):window._cfFiltroTipo==='CREDIT'?'· Todas Entradas':window._cfFiltroTipo==='DEBIT'?'· Todas Saídas':'· Todos'}</span>
-        <button class="btn" onclick="window._cfFiltroMes=null;window._cfFiltroCats=null;window.dataFiltroMes=null;go('cf',document.getElementById('ni-cf'))">
-          ← Voltar ao Fluxo de Caixa
-        </button>
-        <button class="btn" onclick="window._cfFiltroMes=null;window._cfFiltroCats=null;window.dataFiltroMes=null;render()">
-          ✕ Limpar filtro
-        </button>
+        <span style="font-size:12px;color:#0369a1">📊 Fluxo de Caixa · ${window._cfFiltroMes}</span>
+        <button class="btn" onclick="window._cfFiltroMes=null;window._cfFiltroCats=null;window.dataFiltroMes=null;go('cf',document.getElementById('ni-cf'))">← Voltar</button>
+        <button class="btn" onclick="window._cfFiltroMes=null;window._cfFiltroCats=null;window.dataFiltroMes=null;render()">✕ Limpar</button>
       </div>`:''}
-      <div style="display:flex;align-items:center;gap:8px">
-        <label style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px">Data</label>
-        <input type="date" value="${dataFiltro}" onchange="dataFiltro=this.value;render()"
-          style="padding:6px 10px;border:1px solid var(--bor2);border-radius:var(--r);font-size:13px;color:var(--txt);background:var(--sur);cursor:pointer">
-        <button class="btn" onclick="dataFiltro='';render()">Todas as datas</button>
-      </div>
-      <div style="display:flex;gap:5px;margin-left:4px">
-        <button class="btn" onclick="mudarDia(-1)">◀ Dia anterior</button>
-        <button class="btn" onclick="mudarDia(1)">Próximo dia ▶</button>
-      </div>
-      <input class="srch" placeholder="Buscar descrição ou cliente..." value="${busca}" oninput="busca=this.value;render()" style="flex:1;min-width:160px">
-      <button class="btn pri" onclick="openModal()">+ Lançamento</button>
     </div>
-    <!-- RESUMO DIA -->
-    <div style="display:flex;align-items:center;gap:16px;padding:8px 14px;background:var(--sur2);border-bottom:1px solid var(--bor)">
-      <span style="font-size:12px;font-weight:700;color:var(--tx2)">${dataFiltro?fmtD(dataFiltro):'Todos os dias'} · Sicredi</span>
-      <span style="font-size:12px;font-weight:700;color:var(--grn)">↑ ${fmtR(tE)}</span>
-      <span style="font-size:12px;font-weight:700;color:var(--red)">↓ ${fmtR(tS)}</span>
-      <span style="font-size:12px;font-weight:700;color:${liq>=0?'var(--grn)':'var(--red)'}">= ${liq>=0?'+':''}${fmtR(liq)}</span>
-      <span style="font-size:11px;color:var(--tx3);margin-left:auto">${fil.length} lançamento(s)</span>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <input type="date" value="${dataFiltro||''}" onchange="dataFiltro=this.value;window.dataFiltroMes=null;window._cfFiltroMes=null;render()" style="padding:6px 10px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px">
+      ${dataFiltro?`<button class="btn" onclick="dataFiltro='';render()">✕ Limpar data</button>`:''}
+      <select onchange="window._jourConta=this.value;render()" style="padding:6px 10px;border:1px solid var(--bor2);border-radius:var(--r);font-size:12px">
+        <option value="todas"${filtroContaJour==='todas'?' selected':''}>Todas as contas</option>
+        ${contasUnicas.map(c=>`<option value="${c}"${filtroContaJour===c?' selected':''}>${c}</option>`).join('')}
+      </select>
+      <input class="srch" placeholder="Buscar descrição ou cliente..." value="${busca}" oninput="busca=this.value;render()" style="flex:1;min-width:180px">
+      <button class="btn" onclick="mudarDia(-1)">◀</button>
+      <button class="btn" onclick="mudarDia(1)">▶</button>
     </div>
-    <!-- TABELA -->
-    <div style="overflow-x:auto"><table>
-      <thead><tr><th>Hora</th><th>Data</th><th>Descrição</th><th>Categoria</th><th>Entrada</th><th>Saída</th><th>Status</th><th>Concil.</th><th>Cliente</th></tr></thead>
-      <tbody>${fil.length===0?`<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--tx3)">Nenhum lançamento encontrado para ${dataFiltro?fmtD(dataFiltro):'essa data'}</td></tr>`:
-        fil.map(t=>`<tr style="cursor:pointer" onclick="go('conc',document.getElementById('ni-conc'));setTimeout(()=>{openId='${t.id}';render()},80)" title="Clique para conciliar">
-          <td style="color:var(--tx3)">${t.hora}</td>
-          <td style="color:var(--tx3);white-space:nowrap">${fmtD(t.date)}</td>
-          <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">${t.desc}</td>
-          <td><span style="font-size:10px;padding:2px 6px;border-radius:6px;background:${t.catInfo.cor}22;color:${t.catInfo.cor};font-weight:600">${t.catInfo.code}</span></td>
-          <td style="color:var(--grn);font-weight:600">${t.type==='CREDIT'?'+'+fmtR(t.amt):'—'}</td>
-          <td style="color:var(--red);font-weight:600">${t.type==='DEBIT'?'−'+fmtR(t.amt):'—'}</td>
-          <td><span class="pill ${t.status==='conciliado'?'ok':t.status==='ignorado'?'ig':'pend'}">${t.status}</span></td>
-          <td style="text-align:center;color:${t.status==='conciliado'?'var(--grn)':'var(--tx3)'}">${t.status==='conciliado'?'✓':'—'}</td>
-          <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis">${t.cli||'—'}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table></div>
-  </div>`;
+  </div>
+
+  <!-- KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+    <div class="kpi" style="border-left:3px solid var(--yel)"><div class="kl">Valor a Receber</div><div class="kv" style="color:var(--yel)">${fmtR(vReceber)}</div></div>
+    <div class="kpi" style="border-left:3px solid var(--grn)"><div class="kl">Valor Recebido</div><div class="kv g">${fmtR(vRecebido)}</div></div>
+    <div class="kpi" style="border-left:3px solid #fca5a5"><div class="kl">Valor a Pagar</div><div class="kv" style="color:#dc2626">${fmtR(vPagar)}</div></div>
+    <div class="kpi" style="border-left:3px solid var(--red)"><div class="kl">Valor Pago</div><div class="kv r">${fmtR(vPago)}</div></div>
+  </div>
+
+  <!-- TABELA -->
+  <div class="card" style="overflow:hidden">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);font-size:13px;font-weight:700;display:flex;justify-content:space-between">
+      <span>Lançamentos (${rows.length})</span>
+      <span style="font-size:11px;color:var(--tx3);font-weight:400">Clique numa linha para editar</span>
+    </div>
+    <div style="overflow-x:auto;max-height:600px">
+      <table style="width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap">
+        <thead><tr>
+          ${['Data agend.','Data realiz.','Plano de conta','Descrição','Sequência','Conta bancária','Valor a receber','Valor recebido','Valor a pagar','Valor pago','Status','Cliente/Fornecedor','Centro de custo']
+            .map(h=>`<th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">${h}</th>`).join('')}
+        </tr></thead>
+        <tbody>
+          ${rows.length===0?`<tr><td colspan="13" style="text-align:center;padding:30px;color:var(--tx3)">Nenhum lançamento encontrado</td></tr>`:
+          rows.map(t=>{
+            const st = getStatusInfo(t);
+            const isRealizado = t.status==='conciliado'||t.status==='transferencia';
+            const dataReal = isRealizado ? fmtDataCurta(t.date) : '—';
+            const vRec = (t.type==='CREDIT'&&t.status==='pendente') ? fmtR(t.amt) : '—';
+            const vRecb = (t.type==='CREDIT'&&isRealizado) ? fmtR(t.amt) : '—';
+            const vPag = (t.type==='DEBIT'&&(t.status==='pendente'||t.status==='previsto')) ? fmtR(t.amt) : '—';
+            const vPg = (t.type==='DEBIT'&&isRealizado) ? fmtR(t.amt) : '—';
+            return `<tr style="border-bottom:1px solid var(--bor);cursor:pointer" onclick="abrirEditarJour('${t.id}')" title="Clique para editar">
+              <td style="padding:6px 10px">${fmtDataCurta(t.date)}</td>
+              <td style="padding:6px 10px;color:var(--tx3)">${dataReal}</td>
+              <td style="padding:6px 10px"><span style="color:${t.catInfo.cor}">${t.catInfo.code}</span> ${t.catInfo.nome}</td>
+              <td style="padding:6px 10px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.desc}">${t.desc.substring(0,40)}</td>
+              <td style="padding:6px 10px;color:var(--tx3)">${getSeq(t)}</td>
+              <td style="padding:6px 10px">${t.conta||'—'}</td>
+              <td style="padding:6px 10px;color:var(--yel);font-weight:600">${vRec}</td>
+              <td style="padding:6px 10px;color:var(--grn);font-weight:600">${vRecb}</td>
+              <td style="padding:6px 10px;color:#dc2626;font-weight:600">${vPag}</td>
+              <td style="padding:6px 10px;color:var(--red);font-weight:600">${vPg}</td>
+              <td style="padding:6px 10px"><span style="font-size:9px;padding:2px 7px;border-radius:8px;font-weight:700;background:${st.bg};color:${st.color}">${st.label}</span></td>
+              <td style="padding:6px 10px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.cli||'—'}</td>
+              <td style="padding:6px 10px;color:var(--tx3)">${getCC(t)}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>`;
 }
 
-function abrirDiarioData(mesISO, catCodesStr, tipo, dataEspecifica){
-  dataFiltro = dataEspecifica || '';
-  busca = '';
-  window._cfFiltroMes = dataEspecifica ? dataEspecifica.substring(0,7) : (mesISO||null);
-  window._cfFiltroCats = catCodesStr ? catCodesStr.split(',').filter(c=>c) : [];
-  window._cfFiltroTipo = tipo || null;
-  window.dataFiltroMes = dataEspecifica ? null : (mesISO||null);
-  if(dataEspecifica) dataFiltro = dataEspecifica;
-  go('jour', document.getElementById('ni-jour'));
-}
 
-function abrirDiario(mesISO, catCodesStr, tipo){
-  dataFiltro = '';
-  busca = '';
-  window._cfFiltroMes = mesISO || null;
-  window._cfFiltroCats = catCodesStr ? catCodesStr.split(',').filter(c=>c) : [];
-  window._cfFiltroTipo = tipo || null;
-  window.dataFiltroMes = mesISO || null;
-  go('jour', document.getElementById('ni-jour'));
-}
-
-function mudarDia(delta){
-  if(!dataFiltro){ dataFiltro='2026-07-04'; return render(); }
-  const d = new Date(dataFiltro+'T12:00:00');
-  d.setDate(d.getDate()+delta);
-  dataFiltro = d.toISOString().split('T')[0];
-  render();
-}
 
 // ════════════════════════════════
 // CASH FLOW
