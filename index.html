@@ -1105,9 +1105,11 @@ function saveEd(id, data){
 }
 
 function buildTX(){
-  // Preservar estado temporário (painel transferência) do TX anterior
+  // Preservar estado temporário (painel transferência) do TX anterior + _transfState global
   const prevState = {};
   TX.forEach(t=>{ if(t._showTransf||t._contaTransf) prevState[t.id]={_showTransf:t._showTransf,_contaTransf:t._contaTransf}; });
+  // Mesclar com _transfState global (sobrescreve para garantir persistência)
+  if(window._transfState){ Object.assign(prevState, window._transfState); }
 
   TX = RAW.map(r=>{
     const ed = EDITED[r.id]||{};
@@ -1522,7 +1524,7 @@ function renderConc(){
 }
 
 function renderTransfPanel(t){
-  const contas = ['Sicredi Matriz','Sicredi Distribuidora','Nubank','Itaú','Mercado Pago','Caixa (Dinheiro)'];
+  const contas = ['Sicredi Matriz','Sicredi Distribuidora','Caixa (Dinheiro)'];
   const id = t.id;
   const sentido = t.type==='CREDIT'?'origem (saída)':'destino (entrada)';
 
@@ -1662,15 +1664,16 @@ function ckClick(el){
 
 function abrirTransf(el){
   const id = el.dataset ? el.dataset.id : el;
-  // Fechar outros painéis de transferência
-  TX.forEach(t=>{ if(t.id!==id) t._showTransf=false; });
+  TX.forEach(t=>{ if(t.id!==id){ t._showTransf=false; if(window._transfState) delete window._transfState[t.id]; }});
   const t = TX.find(x=>x.id===id);
   if(!t) return;
-  // Toggle: se já está aberto, fecha; senão abre
   const jaAberto = t._showTransf;
   t._showTransf = !jaAberto;
   t._contaTransf = null;
-  openId = id; // manter expandido
+  if(!window._transfState) window._transfState = {};
+  if(t._showTransf) window._transfState[id] = {_showTransf:true, _contaTransf:null};
+  else delete window._transfState[id];
+  openId = id;
   render();
 }
 
