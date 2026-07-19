@@ -248,12 +248,12 @@ tr:hover td{background:var(--sur2)}
   <div class="sc-live">
     <div class="sc-dot"></div>
     <span class="sc-txt">Sicredi Matriz · 38.364.354</span>
-    <span class="sc-saldo">R$ 432,06</span>
+    <span class="sc-saldo" id="sb-saldo-matriz">R$ 0,00</span>
   </div>
   <div class="sc-live" style="margin-top:3px;background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.18)">
     <div class="sc-dot"></div>
     <span class="sc-txt">Sicredi Distrib. · 55.656.085</span>
-    <span class="sc-saldo">R$ 0,00</span>
+    <span class="sc-saldo" id="sb-saldo-dist">R$ 0,00</span>
   </div>
   <nav class="snav">
     <div class="ng">Controle</div>
@@ -1717,6 +1717,41 @@ function abrirTransf(el){
 }
 
 function abrirTransfEl(el){ abrirTransf(el); }
+
+function setContaTransf(btn){
+  const id = btn.dataset.id;
+  const conta = btn.dataset.conta;
+  if(!window._transfState) window._transfState = {};
+  window._transfState[id] = {_showTransf:true, _contaTransf:conta};
+  const t = TX.find(x=>x.id===id);
+  if(t){ t._contaTransf = conta; t._showTransf = true; }
+  render();
+}
+
+function confirmarTransf(btn){
+  const id = btn.dataset.id;
+  const t = TX.find(x=>x.id===id);
+  if(!t||!t._contaTransf){ toast('Selecione a conta acima primeiro!','warn'); return; }
+  const contaOrigem = t._contaTransf;
+  const contaDest = t.conta||'Sicredi';
+  t.status='transferencia';
+  t.cat='transf';
+  t._showTransf=false;
+  t._contaTransf=null;
+  if(window._transfState) delete window._transfState[id];
+  saveEd(id,{status:'transferencia',cat:'transf',contaTransf:contaOrigem});
+  toast('🔄 Transferência: '+contaOrigem+' → '+contaDest,'ok');
+  openId=null;
+  render();
+}
+
+function cancelarTransf(btn){
+  const id = btn.dataset.id;
+  const t = TX.find(x=>x.id===id);
+  if(t){ t._showTransf=false; t._contaTransf=null; }
+  if(window._transfState) delete window._transfState[id];
+  render();
+}
 
 function upd(id, field, value){
   const t=TX.find(x=>x.id===id);
