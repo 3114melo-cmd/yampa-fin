@@ -1991,7 +1991,7 @@ function renderJour(){
     return dd+'/'+m+'/'+y;
   }
 
-  const contasUnicas = [...new Set(TX.map(t=>t.conta).filter(Boolean))];
+  const contasUnicas = [...new Set(['Sicredi Matriz','Sicredi Distribuidora','Caixa (Dinheiro)', ...TX.map(t=>t.conta).filter(Boolean)])];
 
   return `<div style="display:flex;flex-direction:column;gap:10px">
 
