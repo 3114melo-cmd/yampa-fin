@@ -1159,6 +1159,17 @@ function go(p, el){
 function fmtR(v){return'R$ '+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtD(s){return s?s.split('-').reverse().join('/'):'—';}
 
+function updateSaldoBadges(){
+  // Atualizar badges da sidebar com saldo conciliado
+  const sm = TX.filter(t=>t.conta==='Sicredi Matriz'&&t.status==='conciliado');
+  const sd = TX.filter(t=>t.conta==='Sicredi Distribuidora'&&t.status==='conciliado');
+  const calcS = txs => txs.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0) - txs.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
+  const elM = document.getElementById('sb-saldo-matriz');
+  const elD = document.getElementById('sb-saldo-dist');
+  if(elM) elM.textContent = fmtR(calcS(sm));
+  if(elD) elD.textContent = fmtR(calcS(sd));
+}
+
 function updateBadge(){
   document.getElementById('badge-pend').textContent=TX.filter(t=>t.status==='pendente').length;
 }
@@ -1177,7 +1188,7 @@ function irDiario(mes, cats, tipo, data){
 }
 
 function render(){
-  buildTX(); updateBadge();
+  buildTX(); updateBadge(); updateSaldoBadges();
   const ct=document.getElementById('ct');
   // Preencher select do modal
   document.getElementById('m-cat').innerHTML=catOpts();
@@ -1349,23 +1360,24 @@ function renderDash(){
       <div style="width:28px;height:28px;border-radius:50%;background:${c.cor}22;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-right:10px">${c.icon}</div>
       <div style="flex:1">
         <div style="font-size:13px;font-weight:600;color:var(--txt)">${c.nome}</div>
-        <div style="font-size:10px;color:var(--tx3);margin-top:1px">
-          ${c.info.conciliados} conciliados · ${c.info.pendentes} pendentes
-          ${c.info.previsto!==c.info.atual?` · Previsto: ${fmtR(c.info.previsto)}`:''}
+        <div style="font-size:10px;color:var(--tx3);margin-top:2px;display:flex;gap:8px">
+          <span style="color:var(--grn)">↑ ${fmtR(c.info.entradas)}</span>
+          <span style="color:var(--red)">↓ ${fmtR(c.info.saidas)}</span>
+          <span>${c.info.conciliados} concil. · ${c.info.pendentes} pend.${c.info.previstos>0?' · '+c.info.previstos+' prev.':''}</span>
         </div>
       </div>
       <div style="text-align:right">
-        <div style="font-size:15px;font-weight:700;color:${c.info.atual>0?'var(--txt)':'var(--tx3)'}">
-          ${c.info.atual>0?fmtR(c.info.atual):'R$ 0,00'}
+        <div style="font-size:15px;font-weight:700;color:${c.info.atual>=0?'var(--txt)':'var(--red)'}">
+          ${c.info.atual>=0?fmtR(c.info.atual):'−'+fmtR(Math.abs(c.info.atual))}
         </div>
-        <div style="font-size:10px;color:var(--tx3)">saldo banco</div>
+        <div style="font-size:10px;color:var(--tx3)">saldo conciliado</div>
       </div>
     </div>`).join('')}
     <div style="display:flex;align-items:center;padding:12px 20px;background:var(--sur2);border-top:2px solid var(--bor)">
       <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;flex:1;color:var(--tx2)">TOTAL</span>
       <div style="text-align:right">
         <div style="font-size:16px;font-weight:700;color:var(--sacc)">${fmtR(saldoTotal)}</div>
-        <div style="font-size:10px;color:var(--tx3)">saldo banco consolidado</div>
+        <div style="font-size:10px;color:var(--tx3)">total conciliado</div>
       </div>
     </div>
   </div>
