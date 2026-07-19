@@ -310,6 +310,7 @@ tr:hover td{background:var(--sur2)}
         Sicredi · 18/07 · 21:44
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
+      <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
       <button class="btn" onclick="toggleTime()">Time</button>
     </div>
   </div>
@@ -1685,6 +1686,14 @@ function txItem(t){
 function concEl(el){ conc(el.dataset.id); }
 function desconcEl(el){ desconc(el.dataset.id); }
 function ignEl(el){ ign(el.dataset.id); }
+
+function resetConciliacao(){
+  if(!confirm('Isso vai apagar TODAS as conciliações salvas neste navegador (edições, categorias, status) e recarregar do zero. Confirma?')) return;
+  localStorage.removeItem('yf_ed');
+  localStorage.removeItem('yf_cad');
+  localStorage.removeItem('yf_meta_forn');
+  location.reload();
+}
 
 function updEl(el){
   upd(el.dataset.id, el.dataset.field, el.value);
