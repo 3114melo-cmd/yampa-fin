@@ -1989,6 +1989,203 @@ function concTodos(){
 // ════════════════════════════════
 // JOURNAL
 // ════════════════════════════════
+// FILTROS DE COLUNA (estilo Yampa)
+window._colFiltros = window._colFiltros || {};
+window._colSort = window._colSort || {campo:null, dir:'asc'};
+window._catNivel = window._catNivel || 3;
+window._catSelTemp = null;
+
+function fecharPopoverCol(){
+  const p = document.getElementById('col-popover');
+  if(p) p.remove();
+  document.removeEventListener('click', fecharPopoverColOutside);
+}
+function fecharPopoverColOutside(e){
+  const p = document.getElementById('col-popover');
+  if(p && !p.contains(e.target)) fecharPopoverCol();
+}
+
+function ordenarColuna(campo, dir){
+  window._colSort = {campo:campo, dir:dir};
+  fecharPopoverCol();
+  render();
+}
+
+function getValoresColuna(campo){
+  const seen = new Map();
+  TX.forEach(function(t){
+    var v, l;
+    if(campo==='cat'){ v=t.cat; l=t.catInfo.code+' '+t.catInfo.nome; }
+    else if(campo==='conta'){ v=t.conta||'sem conta'; l=v; }
+    else if(campo==='status'){ v=t.status; l=({pendente:'Pendente',conciliado:'Realizado',previsto:'Previsto',transferencia:'Transferencia',ignorado:'Ignorado'})[t.status]||t.status; }
+    else if(campo==='cli'){ v=t.cli||'sem nome'; l=v; }
+    else { v=t[campo]; l=String(v); }
+    if(v!==undefined && !seen.has(v)) seen.set(v,l);
+  });
+  var out=[];
+  seen.forEach(function(label,valor){ out.push({valor:valor,label:label}); });
+  return out;
+}
+
+function abrirFiltroColuna(campo, ev){
+  ev.stopPropagation();
+  fecharPopoverCol();
+  var rect = ev.currentTarget.getBoundingClientRect();
+  var pop = document.createElement('div');
+  pop.id = 'col-popover';
+  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+Math.max(8,rect.left-40)+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:0;z-index:300;width:300px;max-height:70vh;overflow:hidden;display:flex;flex-direction:column';
+  var valoresDisponiveis = getValoresColuna(campo);
+  var filtroAtual = window._colFiltros[campo];
+  window._catSelTemp = filtroAtual ? new Set(filtroAtual) : new Set(valoresDisponiveis.map(function(v){return v.valor;}));
+  var htmlTop = document.createElement('div');
+  htmlTop.style.cssText = 'padding:10px 12px;border-bottom:1px solid var(--bor)';
+  var btnAsc = document.createElement('div');
+  btnAsc.className = 'cp-item'; btnAsc.style.padding='7px 8px'; btnAsc.textContent = 'Classificar de A a Z';
+  btnAsc.onclick = function(){ ordenarColuna(campo,'asc'); };
+  var btnDesc = document.createElement('div');
+  btnDesc.className = 'cp-item'; btnDesc.style.padding='7px 8px'; btnDesc.textContent = 'Classificar de Z a A';
+  btnDesc.onclick = function(){ ordenarColuna(campo,'desc'); };
+  htmlTop.appendChild(btnAsc); htmlTop.appendChild(btnDesc);
+  var corpo = document.createElement('div');
+  corpo.id = 'col-filtro-corpo';
+  corpo.style.cssText = 'flex:1;overflow-y:auto;padding:8px 12px';
+  var rodape = document.createElement('div');
+  rodape.style.cssText = 'padding:10px 12px;border-top:1px solid var(--bor);display:flex;gap:8px;justify-content:flex-end';
+  var btnCancel = document.createElement('button');
+  btnCancel.className='btn'; btnCancel.textContent='Cancelar'; btnCancel.onclick=fecharPopoverCol;
+  var btnOk = document.createElement('button');
+  btnOk.className='btn pri'; btnOk.textContent='OK'; btnOk.onclick=function(){ aplicarFiltroColuna(campo); };
+  rodape.appendChild(btnCancel); rodape.appendChild(btnOk);
+  pop.appendChild(htmlTop); pop.appendChild(corpo); pop.appendChild(rodape);
+  document.body.appendChild(pop);
+  renderCorpoFiltroColuna(campo);
+  setTimeout(function(){ document.addEventListener('click', fecharPopoverColOutside); }, 10);
+}
+
+function catTreeItem(code, nome, indent, checked){
+  var label = document.createElement('label');
+  label.className = 'cp-item';
+  label.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 4px 6px '+(8+indent*16)+'px;cursor:pointer;font-size:12px';
+  var cb = document.createElement('input');
+  cb.type='checkbox'; cb.checked=checked;
+  cb.onchange = function(){ toggleColSelPrefix(code, cb.checked); };
+  var span = document.createElement('span');
+  span.textContent = code+' '+nome;
+  label.appendChild(cb); label.appendChild(span);
+  return label;
+}
+
+function renderCorpoFiltroColuna(campo){
+  var corpo = document.getElementById('col-filtro-corpo');
+  if(!corpo) return;
+  corpo.innerHTML = '';
+  if(campo==='cat'){
+    var tabs = document.createElement('div');
+    tabs.style.cssText = 'display:flex;gap:4px;margin-bottom:10px;border-bottom:1px solid var(--bor);padding-bottom:8px';
+    [1,2,3].forEach(function(n){
+      var sel = window._catNivel===n;
+      var btn = document.createElement('button');
+      btn.textContent = 'Nivel '+n;
+      btn.style.cssText = 'flex:1;padding:6px;border-radius:6px;border:1px solid '+(sel?'var(--sacc)':'var(--bor2)')+';background:'+(sel?'var(--acl)':'var(--sur)')+';color:'+(sel?'var(--sacc)':'var(--tx2)')+';font-size:11px;font-weight:600;cursor:pointer';
+      btn.onclick = function(){ window._catNivel=n; renderCorpoFiltroColuna('cat'); };
+      tabs.appendChild(btn);
+    });
+    corpo.appendChild(tabs);
+    var arvore = document.createElement('div');
+    var nivel1 = CATS.filter(function(c){return c.nivel===1;});
+    nivel1.forEach(function(n1){
+      var filhosN2 = CATS.filter(function(c){return c.nivel===2 && c.code.indexOf(n1.code+'.')===0;});
+      if(window._catNivel===1){
+        var checked = window._catSelTemp.has(n1.code);
+        arvore.appendChild(catTreeItem(n1.code, n1.nome, 0, checked));
+      } else {
+        var lbl1 = document.createElement('div');
+        lbl1.style.cssText = 'padding:5px 4px;font-size:11px;font-weight:700;color:var(--tx2)';
+        lbl1.textContent = n1.nome;
+        arvore.appendChild(lbl1);
+        filhosN2.forEach(function(n2){
+          if(window._catNivel===2){
+            var checked2 = window._catSelTemp.has(n2.code);
+            arvore.appendChild(catTreeItem(n2.code, n2.nome, 1, checked2));
+          } else {
+            var lbl2 = document.createElement('div');
+            lbl2.style.cssText = 'padding:4px 4px 4px 16px;font-size:10px;font-weight:600;color:var(--tx3)';
+            lbl2.textContent = n2.nome;
+            arvore.appendChild(lbl2);
+            var filhosN3 = CATS.filter(function(c){return c.nivel===3 && c.code.indexOf(n2.code+'.')===0;});
+            filhosN3.forEach(function(n3){
+              var checked3 = window._catSelTemp.has(n3.code);
+              arvore.appendChild(catTreeItem(n3.code, n3.nome, 2, checked3));
+            });
+          }
+        });
+      }
+    });
+    corpo.appendChild(arvore);
+  } else {
+    if(campo==='cli'){
+      var busca_ = document.createElement('input');
+      busca_.type='text'; busca_.placeholder='Buscar...';
+      busca_.style.cssText = 'width:100%;padding:6px 8px;border:1px solid var(--bor2);border-radius:6px;font-size:12px;margin-bottom:8px';
+      busca_.oninput = function(){ filtrarListaCol(busca_.value); };
+      corpo.appendChild(busca_);
+    }
+    var listaDiv = document.createElement('div');
+    listaDiv.id = 'col-lista-items';
+    var valores = getValoresColuna(campo);
+    valores.sort(function(a,b){ return String(a.label).localeCompare(String(b.label)); });
+    valores.forEach(function(v){
+      var checked = window._catSelTemp.has(v.valor);
+      var label = document.createElement('label');
+      label.className = 'cp-item';
+      label.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 4px;cursor:pointer;font-size:12px';
+      var cb = document.createElement('input');
+      cb.type='checkbox'; cb.checked=checked;
+      cb.onchange = function(){ toggleColSel(v.valor, cb.checked); };
+      var span = document.createElement('span');
+      span.textContent = v.label;
+      label.appendChild(cb); label.appendChild(span);
+      listaDiv.appendChild(label);
+    });
+    corpo.appendChild(listaDiv);
+  }
+}
+
+function toggleColSel(valor, checked){
+  if(checked) window._catSelTemp.add(valor);
+  else window._catSelTemp.delete(valor);
+}
+
+function toggleColSelPrefix(codePrefix, checked){
+  var afetados = CATS.filter(function(c){ return c.code===codePrefix || c.code.indexOf(codePrefix+'.')===0; });
+  afetados.forEach(function(c){
+    if(checked) window._catSelTemp.add(c.code);
+    else window._catSelTemp.delete(c.code);
+  });
+  if(checked) window._catSelTemp.add(codePrefix);
+  else window._catSelTemp.delete(codePrefix);
+}
+
+function filtrarListaCol(termo){
+  var t = normalizarBusca(termo);
+  var items = document.querySelectorAll('#col-lista-items label');
+  items.forEach(function(lb){
+    var texto = normalizarBusca(lb.textContent);
+    lb.style.display = texto.indexOf(t)>=0 ? 'flex' : 'none';
+  });
+}
+
+function aplicarFiltroColuna(campo){
+  var total = getValoresColuna(campo).length;
+  if(window._catSelTemp.size >= total || window._catSelTemp.size===0){
+    delete window._colFiltros[campo];
+  } else {
+    window._colFiltros[campo] = new Set(window._catSelTemp);
+  }
+  fecharPopoverCol();
+  render();
+}
+
 function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
@@ -2017,9 +2214,39 @@ function renderJour(){
   let fil = txData.filter(t=>!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase()));
   if(window._jourCatFiltro) fil = fil.filter(t=>t.cat===window._jourCatFiltro);
   if(window._jourStatusFiltro) fil = fil.filter(t=>t.status===window._jourStatusFiltro);
+  // Filtros de coluna (checkbox multi-select)
+  Object.entries(window._colFiltros||{}).forEach(([campo,valores])=>{
+    fil = fil.filter(t=>{
+      let v;
+      if(campo==='cat') v = t.cat;
+      else if(campo==='conta') v = t.conta||'—';
+      else if(campo==='status') v = t.status;
+      else if(campo==='cli') v = t.cli||'—';
+      else v = t[campo];
+      return valores.has(v);
+    });
+  });
 
-  // Ordenar por data desc
-  const rows = [...fil].sort((a,b)=>b.date.localeCompare(a.date)||b.hora.localeCompare(a.hora));
+  // Ordenar
+  let rows;
+  if(window._colSort && window._colSort.campo){
+    const {campo, dir} = window._colSort;
+    rows = [...fil].sort((a,b)=>{
+      let va,vb;
+      if(campo==='date'){ va=a.date; vb=b.date; }
+      else if(campo==='cat'){ va=a.catInfo.code; vb=b.catInfo.code; }
+      else if(campo==='desc'){ va=a.desc; vb=b.desc; }
+      else if(campo==='conta'){ va=a.conta||''; vb=b.conta||''; }
+      else if(campo==='amt'){ va=a.amt; vb=b.amt; }
+      else if(campo==='status'){ va=a.status; vb=b.status; }
+      else if(campo==='cli'){ va=a.cli||''; vb=b.cli||''; }
+      else { va=a[campo]; vb=b[campo]; }
+      if(typeof va==='number') return dir==='asc'? va-vb : vb-va;
+      return dir==='asc'? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+    });
+  } else {
+    rows = [...fil].sort((a,b)=>b.date.localeCompare(a.date)||b.hora.localeCompare(a.hora));
+  }
 
   // Totais
   const vReceber = fil.filter(t=>t.type==='CREDIT'&&t.status==='pendente').reduce((s,t)=>s+t.amt,0);
@@ -2123,26 +2350,18 @@ function renderJour(){
     <div style="overflow-x:auto;max-height:600px">
       <table style="width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap">
         <thead><tr>
-          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">
-            Data agend. <span style="cursor:pointer;color:${dataFiltro?'var(--sacc)':'var(--tx3)'}" onclick="abrirFiltroData(event)" title="Filtrar por data">▽${dataFiltro?' •':''}</span>
-          </th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Data agend. <span style="cursor:pointer;color:${(window._colFiltros['date']?'var(--sacc)':'var(--tx3)')}" onclick="abrirFiltroColuna('date',event)" title="Filtrar/Ordenar">&#9661;${window._colFiltros['date']?' &bull;':''}</span></th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Data realiz.</th>
-          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">
-            Plano de conta <span style="cursor:pointer;color:${window._jourCatFiltro?'var(--sacc)':'var(--tx3)'}" onclick="abrirCatPicker(null)" title="Filtrar por categoria">▽${window._jourCatFiltro?' •':''}</span>
-          </th>
-          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Descrição</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Plano de conta <span style="cursor:pointer;color:${(window._colFiltros['cat']?'var(--sacc)':'var(--tx3)')}" onclick="abrirFiltroColuna('cat',event)" title="Filtrar/Ordenar">&#9661;${window._colFiltros['cat']?' &bull;':''}</span></th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Descrição <span style="cursor:pointer;color:${(window._colFiltros['desc']?'var(--sacc)':'var(--tx3)')}" onclick="abrirFiltroColuna('desc',event)" title="Filtrar/Ordenar">&#9661;${window._colFiltros['desc']?' &bull;':''}</span></th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Sequência</th>
-          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">
-            Conta bancária <span style="cursor:pointer;color:${filtroContaJour!=='todas'?'var(--sacc)':'var(--tx3)'}" onclick="abrirFiltroConta(event)" title="Filtrar por conta">▽${filtroContaJour!=='todas'?' •':''}</span>
-          </th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Conta bancária <span style="cursor:pointer;color:${(window._colFiltros['conta']?'var(--sacc)':'var(--tx3)')}" onclick="abrirFiltroColuna('conta',event)" title="Filtrar/Ordenar">&#9661;${window._colFiltros['conta']?' &bull;':''}</span></th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Valor a receber</th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Valor recebido</th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Valor a pagar</th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Valor pago</th>
-          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">
-            Status <span style="cursor:pointer;color:${window._jourStatusFiltro?'var(--sacc)':'var(--tx3)'}" onclick="abrirFiltroStatusJour(event)" title="Filtrar por status">▽${window._jourStatusFiltro?' •':''}</span>
-          </th>
-          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Cliente/Fornecedor</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Status <span style="cursor:pointer;color:${(window._colFiltros['status']?'var(--sacc)':'var(--tx3)')}" onclick="abrirFiltroColuna('status',event)" title="Filtrar/Ordenar">&#9661;${window._colFiltros['status']?' &bull;':''}</span></th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Cliente/Fornecedor <span style="cursor:pointer;color:${(window._colFiltros['cli']?'var(--sacc)':'var(--tx3)')}" onclick="abrirFiltroColuna('cli',event)" title="Filtrar/Ordenar">&#9661;${window._colFiltros['cli']?' &bull;':''}</span></th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Centro de custo</th>
         </tr></thead>
         <tbody>
