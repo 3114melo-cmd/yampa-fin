@@ -1767,6 +1767,22 @@ function fecharPopoverOutside(e){
   if(p && !p.contains(e.target)) fecharPopover();
 }
 
+function exportarCSV(){
+  const rows = window._jourRowsAtuais || [];
+  if(rows.length===0){ toast('Nada para exportar','warn'); return; }
+  const headers = ['Data','Descricao','Categoria','Conta','Valor','Tipo','Status','Cliente/Fornecedor'];
+  let csv = headers.join(';')+'\n';
+  rows.forEach(t=>{
+    csv += [t.date, '"'+t.desc.replace(/"/g,'""')+'"', t.catInfo.code+' '+t.catInfo.nome, t.conta||'', t.amt.toFixed(2).replace('.',','), t.type, t.status, '"'+(t.cli||'').replace(/"/g,'""')+'"'].join(';')+'\n';
+  });
+  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'livro_diario_'+HOJE_SISTEMA+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('✓ CSV exportado','ok');
+}
+
 function abrirCatPicker(id){
   if(id===null){
     // Modo filtro de coluna (não edição de linha)
@@ -2186,6 +2202,540 @@ function aplicarFiltroColuna(campo){
   render();
 }
 
+// ════════════════════════════════
+// STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
+// ════════════════════════════════
+const HOJE_SISTEMA = '2026-07-19';
+
+function getStatusTx(t){
+  if(t.status==='conciliado') return 'realizado';
+  if(t.status==='ignorado') return 'ignorado';
+  if(t.status==='previsto') return 'previsto';
+  if(t.status==='transferencia') return 'transferencia';
+  if(t.date < HOJE_SISTEMA) return 'atrasado';
+  if(t.date === HOJE_SISTEMA && t.type==='CREDIT') return 'receber_hoje';
+  if(t.date === HOJE_SISTEMA && t.type==='DEBIT') return 'pagar_hoje';
+  return 'no_prazo';
+}
+
+function getOrigem(t){
+  if(String(t.id).indexOf('manual_')===0) return 'Lançamento Manual';
+  if(String(t.id).indexOf('import_')===0) return 'Importação';
+  return 'OFX';
+}
+
+function getCentroCustoGlobal(t){
+  if(t.conta==='Sicredi Distribuidora') return 'ATACADO · DISTRIBUIDORA';
+  if(t.conta==='Sicredi Matriz') return 'VAREJO · MATRIZ';
+  return t.conta||'—';
+}
+
+function getSeqNum(t){
+  var m = t.desc.match(/PARCELA\s*(\d+)\s*\/\s*(\d+)/i);
+  return m ? parseInt(m[1],10) : 1;
+}
+
+// ════════════════════════════════
+// FILTROS AVANCADOS (motor de avaliacao)
+// ════════════════════════════════
+function novoFiltroAvancado(){
+  return {
+    dataAgendada:  {op:'nenhum', v1:null, v2:null},
+    dataRealizada: {op:'nenhum', v1:null, v2:null},
+    dataAlteracao: {op:'nenhum', v1:null, v2:null},
+    planoConta: null,
+    contaBancaria: null,
+    status: null,
+    conciliado: null,
+    valorAReceber: {op:'nenhum', v1:null, v2:null},
+    valorRecebido: {op:'nenhum', v1:null, v2:null},
+    valorAPagar:   {op:'nenhum', v1:null, v2:null},
+    valorPago:     {op:'nenhum', v1:null, v2:null},
+    historico: {op:'nenhum', texto:''},
+    sequencia: {op:'nenhum', v1:null, v2:null},
+    clienteFornecedor: null,
+    meioPagamento: null,
+    centroCusto: null,
+    projeto: null,
+    origem: null,
+  };
+}
+window._advFiltros = window._advFiltros || novoFiltroAvancado();
+
+function avalDataOp(dataVal, op, v1, v2){
+  if(op==='nenhum') return true;
+  if(!dataVal) return op==='esta_vazio';
+  var hoje = HOJE_SISTEMA;
+  if(op==='hoje') return dataVal===hoje;
+  if(op==='esta_semana'){
+    var d = new Date(dataVal+'T00:00:00'), h = new Date(hoje+'T00:00:00');
+    var diff = Math.floor((d-h)/86400000);
+    return diff>=-h.getDay() && diff < (7-h.getDay());
+  }
+  if(op==='este_mes') return dataVal.substring(0,7)===hoje.substring(0,7);
+  if(op==='ate_hoje') return dataVal<=hoje;
+  if(op==='data_e') return dataVal===v1;
+  if(op==='anterior_a') return v1 ? dataVal<v1 : true;
+  if(op==='posterior_a') return v1 ? dataVal>v1 : true;
+  if(op==='entre') return (!v1||dataVal>=v1) && (!v2||dataVal<=v2);
+  if(op==='nao_entre') return !((!v1||dataVal>=v1) && (!v2||dataVal<=v2));
+  if(op==='esta_vazio') return !dataVal;
+  if(op==='nao_vazio') return !!dataVal;
+  return true;
+}
+
+function avalNumOp(val, op, v1, v2){
+  if(op==='nenhum') return true;
+  var vazio = (val===null || val===undefined || val===0);
+  if(op==='esta_vazio') return vazio;
+  if(op==='nao_vazio') return !vazio;
+  if(vazio) return false;
+  var n1 = parseFloat(v1), n2 = parseFloat(v2);
+  if(op==='maior_que') return !isNaN(n1) ? val>n1 : true;
+  if(op==='maior_igual') return !isNaN(n1) ? val>=n1 : true;
+  if(op==='menor_que') return !isNaN(n1) ? val<n1 : true;
+  if(op==='menor_igual') return !isNaN(n1) ? val<=n1 : true;
+  if(op==='igual') return !isNaN(n1) ? val===n1 : true;
+  if(op==='diferente') return !isNaN(n1) ? val!==n1 : true;
+  if(op==='entre') return (isNaN(n1)||val>=n1) && (isNaN(n2)||val<=n2);
+  if(op==='nao_entre') return !((isNaN(n1)||val>=n1) && (isNaN(n2)||val<=n2));
+  return true;
+}
+
+function avalTextoOp(txt, op, termo){
+  if(op==='nenhum') return true;
+  var t = (txt||'').toLowerCase();
+  var q = (termo||'').toLowerCase();
+  if(op==='esta_vazio') return !t;
+  if(op==='nao_vazio') return !!t;
+  if(!q) return true;
+  if(op==='contem') return t.indexOf(q)>=0;
+  if(op==='nao_contem') return t.indexOf(q)<0;
+  if(op==='comeca_com') return t.indexOf(q)===0;
+  if(op==='termina_com') return t.substr(-q.length)===q;
+  if(op==='exato') return t===q;
+  return true;
+}
+
+function passaFiltrosAvancados(t){
+  var f = window._advFiltros;
+  var isRealizado = t.status==='conciliado'||t.status==='transferencia';
+  var dataReal = isRealizado ? t.date : null;
+
+  if(!avalDataOp(t.date, f.dataAgendada.op, f.dataAgendada.v1, f.dataAgendada.v2)) return false;
+  if(!avalDataOp(dataReal, f.dataRealizada.op, f.dataRealizada.v1, f.dataRealizada.v2)) return false;
+  if(!avalDataOp(t.date, f.dataAlteracao.op, f.dataAlteracao.v1, f.dataAlteracao.v2)) return false;
+
+  if(f.planoConta && !f.planoConta.has(t.cat)) return false;
+  if(f.contaBancaria && !f.contaBancaria.has(t.conta||'sem conta')) return false;
+  if(f.status && f.status.size>0 && !f.status.has(getStatusTx(t))) return false;
+  if(f.conciliado==='sim' && !isRealizado) return false;
+  if(f.conciliado==='nao' && isRealizado) return false;
+
+  var vReceber  = (t.type==='CREDIT'&&t.status==='pendente') ? t.amt : 0;
+  var vRecebido = (t.type==='CREDIT'&&isRealizado) ? t.amt : 0;
+  var vPagar    = (t.type==='DEBIT'&&(t.status==='pendente'||t.status==='previsto')) ? t.amt : 0;
+  var vPago     = (t.type==='DEBIT'&&isRealizado) ? t.amt : 0;
+  if(!avalNumOp(vReceber,  f.valorAReceber.op, f.valorAReceber.v1, f.valorAReceber.v2)) return false;
+  if(!avalNumOp(vRecebido, f.valorRecebido.op, f.valorRecebido.v1, f.valorRecebido.v2)) return false;
+  if(!avalNumOp(vPagar,    f.valorAPagar.op,   f.valorAPagar.v1,   f.valorAPagar.v2)) return false;
+  if(!avalNumOp(vPago,     f.valorPago.op,     f.valorPago.v1,     f.valorPago.v2)) return false;
+
+  if(!avalTextoOp(t.desc, f.historico.op, f.historico.texto)) return false;
+  if(!avalNumOp(getSeqNum(t), f.sequencia.op, f.sequencia.v1, f.sequencia.v2)) return false;
+
+  if(f.clienteFornecedor && !f.clienteFornecedor.has(t.cli||'sem nome')) return false;
+  if(f.meioPagamento && !f.meioPagamento.has(t.meio||'sem meio')) return false;
+  if(f.centroCusto && !f.centroCusto.has(getCentroCustoGlobal(t))) return false;
+  if(f.projeto && !f.projeto.has(t.projeto||'sem projeto')) return false;
+  if(f.origem && !f.origem.has(getOrigem(t))) return false;
+
+  return true;
+}
+
+function contarFiltrosAtivos(){
+  var f = window._advFiltros;
+  var c = 0;
+  ['dataAgendada','dataRealizada','dataAlteracao'].forEach(function(k){ if(f[k].op!=='nenhum') c++; });
+  ['valorAReceber','valorRecebido','valorAPagar','valorPago'].forEach(function(k){ if(f[k].op!=='nenhum') c++; });
+  if(f.historico.op!=='nenhum') c++;
+  if(f.sequencia.op!=='nenhum') c++;
+  ['planoConta','contaBancaria','status','clienteFornecedor','meioPagamento','centroCusto','projeto','origem'].forEach(function(k){ if(f[k] && f[k].size>0) c++; });
+  if(f.conciliado) c++;
+  return c;
+}
+
+function limparFiltrosAvancados(){
+  window._advFiltros = novoFiltroAvancado();
+  render();
+}
+
+// ════════════════════════════════
+// UI FILTROS AVANCADOS (chips, painel rapido, modal)
+// ════════════════════════════════
+window._advModalGrupo = window._advModalGrupo || 'data';
+window._jourTab = window._jourTab || 'lanc';
+
+function getFiltrosSalvos(){
+  try{ return JSON.parse(localStorage.getItem('yf_filtros_salvos')||'[]'); }catch(e){ return []; }
+}
+function salvarFiltroComoPreset(){
+  var nome = prompt('Nome do filtro:');
+  if(!nome) return;
+  var lista = getFiltrosSalvos();
+  var serial = JSON.stringify(window._advFiltros, function(k,v){ return (v instanceof Set) ? {__set:true, vals:[...v]} : v; });
+  lista.push({nome:nome, filtros:serial});
+  localStorage.setItem('yf_filtros_salvos', JSON.stringify(lista));
+  toast('✓ Filtro salvo: '+nome, 'ok');
+  render();
+}
+function carregarFiltroSalvo(idx){
+  var lista = getFiltrosSalvos();
+  var item = lista[idx];
+  if(!item) return;
+  var obj = JSON.parse(item.filtros, function(k,v){ return (v && v.__set) ? new Set(v.vals) : v; });
+  window._advFiltros = obj;
+  fecharPainelFiltroRapido();
+  render();
+}
+function removerFiltroSalvo(idx){
+  var lista = getFiltrosSalvos();
+  lista.splice(idx,1);
+  localStorage.setItem('yf_filtros_salvos', JSON.stringify(lista));
+  render();
+}
+
+function aplicarFiltroRapido(tipo){
+  window._advFiltros = novoFiltroAvancado();
+  if(tipo==='este_mes'){ window._advFiltros.dataAgendada = {op:'este_mes',v1:null,v2:null}; }
+  else if(tipo==='atrasados'){ window._advFiltros.status = new Set(['atrasado']); }
+  else if(tipo==='vencendo_hoje'){ window._advFiltros.status = new Set(['receber_hoje','pagar_hoje']); }
+  else if(tipo==='realizados'){ window._advFiltros.status = new Set(['realizado']); }
+  fecharPainelFiltroRapido();
+  render();
+}
+
+function togglePainelFiltroRapido(ev){
+  if(ev) ev.stopPropagation();
+  var existente = document.getElementById('filtro-rapido-painel');
+  if(existente){ existente.remove(); document.removeEventListener('click', fecharPainelFiltroRapidoOutside); return; }
+  var btn = document.getElementById('btn-filtros-principal');
+  var rect = btn.getBoundingClientRect();
+  var pop = document.createElement('div');
+  pop.id = 'filtro-rapido-painel';
+  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+6)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:14px;z-index:300;width:320px;max-height:75vh;overflow-y:auto';
+  pop.innerHTML = montarPainelFiltroRapidoHTML();
+  document.body.appendChild(pop);
+  setTimeout(function(){ document.addEventListener('click', fecharPainelFiltroRapidoOutside); }, 10);
+}
+function fecharPainelFiltroRapido(){
+  var p = document.getElementById('filtro-rapido-painel');
+  if(p) p.remove();
+  document.removeEventListener('click', fecharPainelFiltroRapidoOutside);
+}
+function fecharPainelFiltroRapidoOutside(e){
+  var p = document.getElementById('filtro-rapido-painel');
+  var btn = document.getElementById('btn-filtros-principal');
+  if(p && !p.contains(e.target) && e.target!==btn) fecharPainelFiltroRapido();
+}
+
+function getChipsAtivos(){
+  var f = window._advFiltros;
+  var chips = [];
+  var labelsOp = {hoje:'Hoje',esta_semana:'Esta semana',este_mes:'Este mês',ate_hoje:'Até hoje',data_e:'Data é',anterior_a:'Antes de',posterior_a:'Depois de',entre:'Entre',nao_entre:'Não entre',esta_vazio:'Vazio',nao_vazio:'Preenchido'};
+  var labelsNum = {maior_que:'>',maior_igual:'>=',menor_que:'<',menor_igual:'<=',igual:'=',diferente:'!=',entre:'entre',nao_entre:'não entre',esta_vazio:'vazio',nao_vazio:'preenchido'};
+  if(f.dataAgendada.op!=='nenhum') chips.push({campo:'dataAgendada', label:'Data agendada: '+(labelsOp[f.dataAgendada.op]||f.dataAgendada.op)});
+  if(f.dataRealizada.op!=='nenhum') chips.push({campo:'dataRealizada', label:'Data realizada: '+(labelsOp[f.dataRealizada.op]||f.dataRealizada.op)});
+  if(f.dataAlteracao.op!=='nenhum') chips.push({campo:'dataAlteracao', label:'Última alteração: '+(labelsOp[f.dataAlteracao.op]||f.dataAlteracao.op)});
+  if(f.planoConta && f.planoConta.size>0) chips.push({campo:'planoConta', label:'Plano de conta ('+f.planoConta.size+')'});
+  if(f.contaBancaria && f.contaBancaria.size>0) chips.push({campo:'contaBancaria', label:'Conta ('+f.contaBancaria.size+')'});
+  if(f.status && f.status.size>0) chips.push({campo:'status', label:'Status ('+f.status.size+')'});
+  if(f.conciliado) chips.push({campo:'conciliado', label:'Conciliado: '+(f.conciliado==='sim'?'Sim':'Não')});
+  if(f.valorAReceber.op!=='nenhum') chips.push({campo:'valorAReceber', label:'A receber '+(labelsNum[f.valorAReceber.op]||'')+' '+(f.valorAReceber.v1||'')});
+  if(f.valorRecebido.op!=='nenhum') chips.push({campo:'valorRecebido', label:'Recebido '+(labelsNum[f.valorRecebido.op]||'')+' '+(f.valorRecebido.v1||'')});
+  if(f.valorAPagar.op!=='nenhum') chips.push({campo:'valorAPagar', label:'A pagar '+(labelsNum[f.valorAPagar.op]||'')+' '+(f.valorAPagar.v1||'')});
+  if(f.valorPago.op!=='nenhum') chips.push({campo:'valorPago', label:'Pago '+(labelsNum[f.valorPago.op]||'')+' '+(f.valorPago.v1||'')});
+  if(f.historico.op!=='nenhum') chips.push({campo:'historico', label:'Histórico: '+f.historico.texto});
+  if(f.sequencia.op!=='nenhum') chips.push({campo:'sequencia', label:'Sequência '+(labelsNum[f.sequencia.op]||'')+' '+(f.sequencia.v1||'')});
+  if(f.clienteFornecedor && f.clienteFornecedor.size>0) chips.push({campo:'clienteFornecedor', label:'Cliente/Fornecedor ('+f.clienteFornecedor.size+')'});
+  if(f.meioPagamento && f.meioPagamento.size>0) chips.push({campo:'meioPagamento', label:'Meio pagto ('+f.meioPagamento.size+')'});
+  if(f.centroCusto && f.centroCusto.size>0) chips.push({campo:'centroCusto', label:'Centro custo ('+f.centroCusto.size+')'});
+  if(f.projeto && f.projeto.size>0) chips.push({campo:'projeto', label:'Projeto ('+f.projeto.size+')'});
+  if(f.origem && f.origem.size>0) chips.push({campo:'origem', label:'Origem ('+f.origem.size+')'});
+  return chips;
+}
+
+function removerChip(campo){
+  var padrao = novoFiltroAvancado();
+  window._advFiltros[campo] = padrao[campo];
+  render();
+  togglePainelFiltroRapido();
+  togglePainelFiltroRapido();
+}
+
+function montarPainelFiltroRapidoHTML(){
+  var chips = getChipsAtivos();
+  var html = '';
+  if(chips.length>0){
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+    html += '<span style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase">Filtros ativos</span>';
+    html += '<button onclick="limparFiltrosAvancados()" style="font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;font-weight:600">Limpar tudo</button>';
+    html += '</div><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">';
+    chips.forEach(function(c){
+      html += '<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 8px;background:var(--acl);color:var(--sacc);border-radius:14px;font-size:11px;font-weight:500">'+c.label+'<span style="cursor:pointer;font-weight:700" onclick="removerChip(\''+c.campo+'\')">×</span></span>';
+    });
+    html += '</div>';
+    html += '<button onclick="salvarFiltroComoPreset()" class="btn" style="width:100%;justify-content:center;margin-bottom:12px;font-size:12px">💾 Salvar filtros como...</button>';
+  }
+  html += '<div style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;margin-bottom:6px">Rápidos</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">';
+  [['este_mes','📅 Este mês'],['atrasados','⚠ Atrasados'],['vencendo_hoje','⏰ Vencendo hoje'],['realizados','✓ Realizados']].forEach(function(p){
+    html += '<button onclick="aplicarFiltroRapido(\''+p[0]+'\')" class="btn" style="font-size:11px;justify-content:center">'+p[1]+'</button>';
+  });
+  html += '</div>';
+  var salvos = getFiltrosSalvos();
+  if(salvos.length>0){
+    html += '<div style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;margin-bottom:6px">Salvos</div>';
+    salvos.forEach(function(s,i){
+      html += '<div style="display:flex;align-items:center;gap:6px;padding:6px 4px" class="cp-item">';
+      html += '<span style="flex:1;cursor:pointer;font-size:12px" onclick="carregarFiltroSalvo('+i+')">🔖 '+s.nome+'</span>';
+      html += '<span style="cursor:pointer;color:var(--tx3)" onclick="removerFiltroSalvo('+i+')">✕</span></div>';
+    });
+  }
+  html += '<div style="border-top:1px solid var(--bor);margin-top:10px;padding-top:10px"><a onclick="abrirModalFiltroAvancado()" style="font-size:12px;color:var(--sacc);cursor:pointer;font-weight:600">⚙ Filtro avançado...</a></div>';
+  return html;
+}
+
+// ════════════════════════════════
+// MODAL AVANCADO DE FILTROS
+// ════════════════════════════════
+var OPS_DATA = [['nenhum','Nenhum'],['hoje','Hoje'],['esta_semana','Esta semana'],['este_mes','Este mês'],['ate_hoje','Até hoje'],['data_e','A data é'],['anterior_a','Data anterior a'],['posterior_a','Data posterior a'],['entre','Está entre'],['nao_entre','Não está entre'],['esta_vazio','Está vazio (sem dados)'],['nao_vazio','Não está vazio']];
+var OPS_NUM = [['nenhum','Nenhum'],['maior_que','Maior que'],['maior_igual','Maior ou igual a'],['menor_que','Menor que'],['menor_igual','Menor ou igual a'],['igual','É igual a'],['diferente','É diferente de'],['entre','Está entre'],['nao_entre','Não está entre'],['esta_vazio','Está vazio (sem dados)'],['nao_vazio','Não está vazio']];
+var OPS_TXT = [['nenhum','Nenhum'],['contem','O texto contém'],['nao_contem','O texto não contém'],['comeca_com','O texto começa com'],['termina_com','O texto termina com'],['exato','O texto é exatamente'],['esta_vazio','Está vazio'],['nao_vazio','Não está vazio']];
+
+function abrirModalFiltroAvancado(){
+  fecharPainelFiltroRapido();
+  window._advFiltrosBackup = JSON.stringify(window._advFiltros, function(k,v){ return (v instanceof Set)?{__set:true,vals:[...v]}:v; });
+  document.getElementById('advfilter-bg').classList.add('open');
+  renderModalAvancado();
+}
+function cancelarModalAvancado(){
+  window._advFiltros = JSON.parse(window._advFiltrosBackup, function(k,v){ return (v&&v.__set)?new Set(v.vals):v; });
+  document.getElementById('advfilter-bg').classList.remove('open');
+  render();
+}
+function verResultadosModal(){
+  document.getElementById('advfilter-bg').classList.remove('open');
+  render();
+}
+function trocarGrupoModal(g){
+  window._advModalGrupo = g;
+  renderModalAvancado();
+}
+
+function opSelectHTML(campo, ops, valorAtual, subcampo){
+  var html = '<select onchange="atualizarOpFiltro(\''+campo+'\',\''+subcampo+'\',this.value)" style="width:100%;padding:7px 9px;border:1px solid var(--bor2);border-radius:6px;font-size:12px;margin-bottom:8px">';
+  ops.forEach(function(o){ html += '<option value="'+o[0]+'"'+(o[0]===valorAtual?' selected':'')+'>'+o[1]+'</option>'; });
+  html += '</select>';
+  return html;
+}
+
+function atualizarOpFiltro(campo, sub, valor){
+  window._advFiltros[campo][sub] = valor;
+  renderModalAvancado();
+}
+function atualizarValFiltro(campo, sub, valor){
+  window._advFiltros[campo][sub] = valor;
+}
+
+function precisaV1(op){ return ['data_e','anterior_a','posterior_a','entre','nao_entre'].indexOf(op)>=0; }
+function precisaV2(op){ return ['entre','nao_entre'].indexOf(op)>=0; }
+function precisaNumV1(op){ return ['maior_que','maior_igual','menor_que','menor_igual','igual','diferente','entre','nao_entre'].indexOf(op)>=0; }
+function precisaNumV2(op){ return ['entre','nao_entre'].indexOf(op)>=0; }
+
+function campoDataHTML(campo, label){
+  var f = window._advFiltros[campo];
+  var html = '<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">'+label+'</div>';
+  html += opSelectHTML(campo, OPS_DATA, f.op, 'op');
+  if(precisaV1(f.op)){
+    html += '<input type="date" value="'+(f.v1||'')+'" onchange="atualizarValFiltro(\''+campo+'\',\'v1\',this.value)" style="width:100%;padding:6px 9px;border:1px solid var(--bor2);border-radius:6px;font-size:12px;margin-bottom:6px">';
+  }
+  if(precisaV2(f.op)){
+    html += '<input type="date" value="'+(f.v2||'')+'" onchange="atualizarValFiltro(\''+campo+'\',\'v2\',this.value)" placeholder="até" style="width:100%;padding:6px 9px;border:1px solid var(--bor2);border-radius:6px;font-size:12px">';
+  }
+  html += '</div>';
+  return html;
+}
+
+function campoNumHTML(campo, label){
+  var f = window._advFiltros[campo];
+  var html = '<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">'+label+'</div>';
+  html += opSelectHTML(campo, OPS_NUM, f.op, 'op');
+  if(precisaNumV1(f.op)){
+    html += '<input type="number" step="0.01" value="'+(f.v1!==null?f.v1:'')+'" onchange="atualizarValFiltro(\''+campo+'\',\'v1\',parseFloat(this.value))" placeholder="Valor" style="width:100%;padding:6px 9px;border:1px solid var(--bor2);border-radius:6px;font-size:12px;margin-bottom:6px">';
+  }
+  if(precisaNumV2(f.op)){
+    html += '<input type="number" step="0.01" value="'+(f.v2!==null?f.v2:'')+'" onchange="atualizarValFiltro(\''+campo+'\',\'v2\',parseFloat(this.value))" placeholder="até" style="width:100%;padding:6px 9px;border:1px solid var(--bor2);border-radius:6px;font-size:12px">';
+  }
+  html += '</div>';
+  return html;
+}
+
+function campoTextoHTML(campo, label){
+  var f = window._advFiltros[campo];
+  var html = '<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">'+label+'</div>';
+  html += opSelectHTML(campo, OPS_TXT, f.op, 'op');
+  if(f.op!=='nenhum' && f.op!=='esta_vazio' && f.op!=='nao_vazio'){
+    html += '<input type="text" value="'+(f.texto||'')+'" onchange="atualizarValFiltro(\''+campo+'\',\'texto\',this.value)" placeholder="Texto" style="width:100%;padding:6px 9px;border:1px solid var(--bor2);border-radius:6px;font-size:12px">';
+  }
+  html += '</div>';
+  return html;
+}
+
+function toggleMultiSel(campo, valor, checked){
+  if(!window._advFiltros[campo]) window._advFiltros[campo] = new Set();
+  if(checked) window._advFiltros[campo].add(valor);
+  else window._advFiltros[campo].delete(valor);
+  if(window._advFiltros[campo].size===0) window._advFiltros[campo] = null;
+}
+
+function campoMultiSelHTML(campo, label, valoresFn, comBusca){
+  var atual = window._advFiltros[campo] || new Set();
+  var valores = valoresFn();
+  var html = '<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">'+label+'</div>';
+  if(valores.length===0){
+    html += '<div style="font-size:11px;color:var(--tx3);padding:8px;background:var(--sur2);border-radius:6px">Nenhum valor configurado</div></div>';
+    return html;
+  }
+  if(comBusca){
+    html += '<input type="text" placeholder="Buscar..." oninput="filtrarMultiSelList(this.value,this)" style="width:100%;padding:6px 8px;border:1px solid var(--bor2);border-radius:6px;font-size:12px;margin-bottom:6px">';
+  }
+  html += '<div style="max-height:180px;overflow-y:auto;border:1px solid var(--bor);border-radius:6px;padding:4px">';
+  valores.forEach(function(v){
+    var checked = atual.has(v);
+    html += '<label class="cp-item" style="display:flex;align-items:center;gap:7px;padding:5px 6px;font-size:12px"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleMultiSel(\''+campo+'\',\''+String(v).replace(/'/g,"\\\\'")+'\',this.checked)">'+v+'</label>';
+  });
+  html += '</div></div>';
+  return html;
+}
+function filtrarMultiSelList(termo, inputEl){
+  var t = normalizarBusca(termo);
+  var labels = inputEl.parentElement.querySelectorAll('label');
+  labels.forEach(function(lb){ lb.style.display = normalizarBusca(lb.textContent).indexOf(t)>=0?'flex':'none'; });
+}
+
+function valoresContas(){ return ['Sicredi Matriz','Sicredi Distribuidora','Caixa (Dinheiro)']; }
+function valoresClientes(){ var s=new Set(); TX.forEach(function(t){ s.add(t.cli||'sem nome'); }); return [...s].sort(); }
+function valoresMeios(){ var s=new Set(); TX.forEach(function(t){ s.add(t.meio||'sem meio'); }); return [...s].sort(); }
+function valoresCentroCusto(){ var s=new Set(); TX.forEach(function(t){ s.add(getCentroCustoGlobal(t)); }); return [...s].sort(); }
+function valoresProjeto(){ return []; }
+function valoresOrigem(){ return ['Importação','Lançamento Manual','OFX']; }
+
+function campoPlanoContaHTML(){
+  var atual = window._advFiltros.planoConta || new Set();
+  var html = '<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">Plano de conta</div>';
+  html += '<input type="text" placeholder="Buscar categoria..." oninput="filtrarPlanoContaModal(this.value)" style="width:100%;padding:6px 8px;border:1px solid var(--bor2);border-radius:6px;font-size:12px;margin-bottom:8px">';
+  html += '<div style="display:flex;gap:4px;margin-bottom:8px">';
+  [1,2,3].forEach(function(n){
+    var sel = (window._advPlanoNivel||3)===n;
+    html += '<button onclick="window._advPlanoNivel='+n+';renderModalAvancado()" style="flex:1;padding:5px;border-radius:5px;border:1px solid '+(sel?'var(--sacc)':'var(--bor2)')+';background:'+(sel?'var(--acl)':'var(--sur)')+';color:'+(sel?'var(--sacc)':'var(--tx2)')+';font-size:10px;font-weight:600;cursor:pointer">Nível '+n+'</button>';
+  });
+  html += '</div>';
+  html += '<div id="plano-conta-lista" style="max-height:220px;overflow-y:auto;border:1px solid var(--bor);border-radius:6px;padding:4px">';
+  var nivel = window._advPlanoNivel||3;
+  var itens = CATS.filter(function(c){ return c.nivel===nivel; });
+  itens.forEach(function(c){
+    var checked = atual.has(c.code);
+    html += '<label class="cp-item" data-txt="'+(c.code+' '+c.nome).toLowerCase()+'" style="display:flex;align-items:center;gap:7px;padding:5px 6px;font-size:11px"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleMultiSel(\'planoConta\',\''+c.code+'\',this.checked)"><span style="color:'+c.cor+';font-weight:600">'+c.code+'</span> '+c.nome+'</label>';
+  });
+  html += '</div></div>';
+  return html;
+}
+function filtrarPlanoContaModal(termo){
+  var t = normalizarBusca(termo);
+  var labels = document.querySelectorAll('#plano-conta-lista label');
+  labels.forEach(function(lb){ lb.style.display = normalizarBusca(lb.dataset.txt).indexOf(t)>=0?'flex':'none'; });
+}
+
+function campoStatusTagsHTML(){
+  var atual = window._advFiltros.status || new Set();
+  var opts = [['realizado','Realizado'],['receber_hoje','Receber hoje'],['pagar_hoje','Pagar hoje'],['atrasado','Atrasado'],['no_prazo','No prazo']];
+  var html = '<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">Status</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
+  opts.forEach(function(o){
+    var sel = atual.has(o[0]);
+    html += '<button onclick="toggleMultiSel(\'status\',\''+o[0]+'\','+(!sel)+');renderModalAvancado()" style="padding:6px 12px;border-radius:16px;border:1.5px solid '+(sel?'var(--sacc)':'var(--bor2)')+';background:'+(sel?'var(--sacc)':'var(--sur)')+';color:'+(sel?'#fff':'var(--tx2)')+';font-size:11px;font-weight:600;cursor:pointer">'+o[1]+'</button>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function campoConciliadoHTML(){
+  var atual = window._advFiltros.conciliado;
+  var html = '<div style="margin-bottom:18px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">Conciliado</div><div style="display:flex;gap:6px">';
+  [['','Nenhum'],['sim','Sim'],['nao','Não']].forEach(function(o){
+    var sel = (atual||'')===o[0];
+    html += '<button onclick="window._advFiltros.conciliado=\''+o[0]+'\';renderModalAvancado()" style="flex:1;padding:7px;border-radius:6px;border:1.5px solid '+(sel?'var(--sacc)':'var(--bor2)')+';background:'+(sel?'var(--acl)':'var(--sur)')+';color:'+(sel?'var(--sacc)':'var(--tx2)')+';font-size:12px;font-weight:600;cursor:pointer">'+o[1]+'</button>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function renderModalAvancado(){
+  var body = document.getElementById('advfilter-body');
+  if(!body) return;
+  var grupos = [['data','Data'],['classificacao','Classificação'],['valor','Valor'],['outros','Outros']];
+  var sidebar = '<div style="width:150px;border-right:1px solid var(--bor);padding:10px 0;flex-shrink:0">';
+  grupos.forEach(function(g){
+    var sel = window._advModalGrupo===g[0];
+    sidebar += '<div onclick="trocarGrupoModal(\''+g[0]+'\')" style="padding:10px 16px;cursor:pointer;font-size:13px;font-weight:'+(sel?'700':'500')+';color:'+(sel?'var(--sacc)':'var(--tx2)')+';background:'+(sel?'var(--acl)':'transparent')+';border-left:3px solid '+(sel?'var(--sacc)':'transparent')+'">'+g[1]+'</div>';
+  });
+  sidebar += '</div>';
+
+  var painel = '<div style="flex:1;padding:16px 20px;overflow-y:auto;max-height:60vh">';
+  var g = window._advModalGrupo;
+  if(g==='data'){
+    painel += campoDataHTML('dataAgendada','Data agendada');
+    painel += campoDataHTML('dataRealizada','Data realizada');
+    painel += campoDataHTML('dataAlteracao','Data da última alteração');
+  } else if(g==='classificacao'){
+    painel += campoPlanoContaHTML();
+    painel += campoMultiSelHTML('contaBancaria','Conta bancária', valoresContas, true);
+    painel += campoStatusTagsHTML();
+    painel += campoConciliadoHTML();
+  } else if(g==='valor'){
+    painel += campoNumHTML('valorAReceber','Valor a receber');
+    painel += campoNumHTML('valorRecebido','Valor recebido');
+    painel += campoNumHTML('valorAPagar','Valor a pagar');
+    painel += campoNumHTML('valorPago','Valor pago');
+  } else if(g==='outros'){
+    painel += campoTextoHTML('historico','Histórico');
+    painel += campoNumHTML('sequencia','Sequência');
+    painel += campoMultiSelHTML('clienteFornecedor','Cliente/Fornecedor', valoresClientes, true);
+    painel += campoMultiSelHTML('meioPagamento','Meio de pagamento', valoresMeios, false);
+    painel += campoMultiSelHTML('centroCusto','Centro de custo', valoresCentroCusto, true);
+    painel += campoMultiSelHTML('projeto','Projeto', valoresProjeto, true);
+    painel += campoMultiSelHTML('origem','Origem', valoresOrigem, false);
+  }
+  painel += '</div>';
+
+  var qtdAtivos = contarFiltrosAtivos();
+  var qtdResultados = TX.filter(passaFiltrosAvancados).length;
+
+  body.innerHTML = 
+    '<div style="padding:14px 20px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between">'
+    +'<div><span style="font-size:15px;font-weight:700">Filtro avançado</span> <span style="font-size:12px;color:var(--tx3);margin-left:8px">'+qtdAtivos+' filtro(s) ativo(s)</span></div>'
+    +'<div><button onclick="limparFiltrosAvancados();renderModalAvancado()" class="btn" style="font-size:11px">Limpar todos</button> <button onclick="document.getElementById(\'advfilter-bg\').classList.remove(\'open\')" style="border:none;background:none;font-size:18px;cursor:pointer;color:var(--tx3);margin-left:8px">✕</button></div>'
+    +'</div>'
+    +'<div style="display:flex">'+sidebar+painel+'</div>'
+    +'<div style="padding:12px 20px;border-top:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between">'
+    +'<span style="font-size:12px;color:var(--tx3)">'+qtdResultados+' resultado(s) encontrado(s)</span>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button onclick="salvarFiltroComoPreset()" class="btn">Salvar filtro</button>'
+    +'<button onclick="cancelarModalAvancado()" class="btn">Cancelar</button>'
+    +'<button onclick="verResultadosModal()" class="btn pri">Ver resultados</button>'
+    +'</div></div>';
+}
+
 function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
@@ -2214,6 +2764,8 @@ function renderJour(){
   let fil = txData.filter(t=>!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase()));
   if(window._jourCatFiltro) fil = fil.filter(t=>t.cat===window._jourCatFiltro);
   if(window._jourStatusFiltro) fil = fil.filter(t=>t.status===window._jourStatusFiltro);
+  if(window._jourTab==='pend') fil = fil.filter(t=>t.status==='pendente');
+  fil = fil.filter(passaFiltrosAvancados);
   // Filtros de coluna (checkbox multi-select)
   Object.entries(window._colFiltros||{}).forEach(([campo,valores])=>{
     fil = fil.filter(t=>{
@@ -2298,7 +2850,25 @@ function renderJour(){
 
   const contasUnicas = [...new Set(['Sicredi Matriz','Sicredi Distribuidora','Caixa (Dinheiro)', ...TX.map(t=>t.conta).filter(Boolean)])];
 
+  window._jourRowsAtuais = rows;
+  const qtdFiltrosAtivos = contarFiltrosAtivos();
+
   return `<div style="display:flex;flex-direction:column;gap:10px">
+
+  <!-- ABAS + TOOLBAR PRINCIPAL -->
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <div style="display:flex;border:1px solid var(--bor2);border-radius:20px;overflow:hidden">
+      <button onclick="window._jourTab='lanc';render()" style="padding:7px 16px;border:none;background:${window._jourTab==='lanc'?'var(--sacc)':'var(--sur)'};color:${window._jourTab==='lanc'?'#fff':'var(--tx2)'};font-size:12px;font-weight:600;cursor:pointer">📋 Lançamentos</button>
+      <button onclick="window._jourTab='pend';render()" style="padding:7px 16px;border:none;border-left:1px solid var(--bor2);background:${window._jourTab==='pend'?'var(--sacc)':'var(--sur)'};color:${window._jourTab==='pend'?'#fff':'var(--tx2)'};font-size:12px;font-weight:600;cursor:pointer">⏳ Pendências</button>
+    </div>
+    <input class="srch" placeholder="Buscar descrição ou cliente..." value="${busca}" oninput="busca=this.value;render()" style="flex:1;min-width:180px;max-width:340px">
+    <button class="btn" onclick="ordenarColuna('date', window._colSort.dir==='asc'?'desc':'asc')" title="Ordenar">↕ Ordenar</button>
+    <button class="btn" onclick="exportarCSV()" title="Exportar CSV">⬇ Exportar</button>
+    <button class="btn" onclick="salvarFiltroComoPreset()" title="Salvar filtros atuais">💾 Salvar filtros</button>
+    <button class="btn${qtdFiltrosAtivos>0?' pri':''}" id="btn-filtros-principal" onclick="togglePainelFiltroRapido(event)">
+      🔍 Filtros${qtdFiltrosAtivos>0?' ('+qtdFiltrosAtivos+')':''}
+    </button>
+  </div>
 
   <!-- CARDS DE CONTAS -->
   <div style="display:grid;grid-template-columns:repeat(${contasResumo.length},1fr);gap:10px">
@@ -3550,6 +4120,11 @@ render();
     </div>
     <div id="catpicker-lista" style="max-height:400px;overflow-y:auto;padding:4px 10px 14px"></div>
   </div>
+</div>
+
+<!-- MODAL FILTRO AVANCADO -->
+<div class="modal-bg" id="advfilter-bg" onclick="if(event.target===this) cancelarModalAvancado()">
+  <div class="modal" style="width:680px;max-width:95vw;padding:0" id="advfilter-body"></div>
 </div>
 
 </body>
