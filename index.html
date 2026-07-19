@@ -2079,16 +2079,29 @@ function abrirFiltroColuna(campo, ev){
 }
 
 function catTreeItem(code, nome, indent, checked){
-  var label = document.createElement('label');
-  label.className = 'cp-item';
-  label.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 4px 6px '+(8+indent*16)+'px;cursor:pointer;font-size:12px';
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 4px 6px '+(8+indent*16)+'px';
   var cb = document.createElement('input');
-  cb.type='checkbox'; cb.checked=checked;
+  cb.type='checkbox'; cb.checked=checked; cb.style.cursor='pointer';
   cb.onchange = function(){ toggleColSelPrefix(code, cb.checked); };
   var span = document.createElement('span');
   span.textContent = code+' '+nome;
-  label.appendChild(cb); label.appendChild(span);
-  return label;
+  span.style.cssText = 'flex:1;font-size:12px;cursor:pointer';
+  span.onclick = function(){ selecionarApenasEste(code); };
+  var btnSo = document.createElement('span');
+  btnSo.textContent = 'somente';
+  btnSo.style.cssText = 'font-size:10px;color:var(--sacc);cursor:pointer;opacity:.7;flex-shrink:0';
+  btnSo.onclick = function(){ selecionarApenasEste(code); };
+  row.appendChild(cb); row.appendChild(span); row.appendChild(btnSo);
+  return row;
+}
+
+function selecionarApenasEste(code){
+  window._catSelTemp.clear();
+  var afetados = CATS.filter(function(c){ return c.code===code || c.code.indexOf(code+'.')===0; });
+  afetados.forEach(function(c){ window._catSelTemp.add(c.code); });
+  window._catSelTemp.add(code);
+  renderCorpoFiltroColuna('cat');
 }
 
 function renderCorpoFiltroColuna(campo){
@@ -2150,18 +2163,27 @@ function renderCorpoFiltroColuna(campo){
     listaDiv.id = 'col-lista-items';
     var valores = getValoresColuna(campo);
     valores.sort(function(a,b){ return String(a.label).localeCompare(String(b.label)); });
+    var marcarTodos = document.createElement('div');
+    marcarTodos.style.cssText = 'display:flex;gap:10px;padding:4px;margin-bottom:6px;border-bottom:1px solid var(--bor)';
+    marcarTodos.innerHTML = '<span style="font-size:10px;color:var(--sacc);cursor:pointer;font-weight:600" onclick="window._catSelTemp=new Set(getValoresColuna(\''+campo+'\').map(function(v){return v.valor;}));renderCorpoFiltroColuna(\''+campo+'\')">Marcar todos</span><span style="font-size:10px;color:var(--tx3);cursor:pointer;font-weight:600" onclick="window._catSelTemp=new Set();renderCorpoFiltroColuna(\''+campo+'\')">Desmarcar todos</span>';
+    listaDiv.appendChild(marcarTodos);
     valores.forEach(function(v){
       var checked = window._catSelTemp.has(v.valor);
-      var label = document.createElement('label');
-      label.className = 'cp-item';
-      label.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 4px;cursor:pointer;font-size:12px';
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 4px';
       var cb = document.createElement('input');
-      cb.type='checkbox'; cb.checked=checked;
+      cb.type='checkbox'; cb.checked=checked; cb.style.cursor='pointer';
       cb.onchange = function(){ toggleColSel(v.valor, cb.checked); };
       var span = document.createElement('span');
       span.textContent = v.label;
-      label.appendChild(cb); label.appendChild(span);
-      listaDiv.appendChild(label);
+      span.style.cssText = 'flex:1;font-size:12px;cursor:pointer';
+      span.onclick = function(){ window._catSelTemp=new Set([v.valor]); renderCorpoFiltroColuna(campo); };
+      var btnSo = document.createElement('span');
+      btnSo.textContent = 'somente';
+      btnSo.style.cssText = 'font-size:10px;color:var(--sacc);cursor:pointer;opacity:.7;flex-shrink:0';
+      btnSo.onclick = function(){ window._catSelTemp=new Set([v.valor]); renderCorpoFiltroColuna(campo); };
+      row.appendChild(cb); row.appendChild(span); row.appendChild(btnSo);
+      listaDiv.appendChild(row);
     });
     corpo.appendChild(listaDiv);
   }
