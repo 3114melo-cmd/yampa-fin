@@ -1707,7 +1707,77 @@ function resetConciliacao(){
 
 let _catPickerTxId = null;
 
+function abrirFiltroData(ev){
+  ev.stopPropagation();
+  const hoje = '2026-07-19';
+  const existente = document.getElementById('filtro-popover');
+  if(existente) existente.remove();
+  const rect = ev.target.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.id = 'filtro-popover';
+  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:300;min-width:180px';
+  pop.innerHTML = `
+    <div class="cp-item" onclick="dataFiltro='${hoje}';fecharPopover();render()">📅 Hoje</div>
+    <div class="cp-item" onclick="dataFiltro='';window._jourSoAtrasados=true;fecharPopover();render()">⚠ Atrasados</div>
+    <div class="cp-item" onclick="dataFiltro='';window._jourSoAtrasados=false;fecharPopover();render()">📋 Todos</div>
+    <div style="padding:8px 10px;border-top:1px solid var(--bor);margin-top:4px">
+      <input type="date" value="${dataFiltro||''}" onchange="dataFiltro=this.value;fecharPopover();render()" style="width:100%;padding:6px;border:1px solid var(--bor2);border-radius:5px;font-size:12px">
+    </div>
+  `;
+  document.body.appendChild(pop);
+  setTimeout(()=>document.addEventListener('click', fecharPopoverOutside), 10);
+}
+
+function abrirFiltroConta(ev){
+  ev.stopPropagation();
+  const existente = document.getElementById('filtro-popover');
+  if(existente) existente.remove();
+  const rect = ev.target.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.id = 'filtro-popover';
+  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:300;min-width:180px';
+  const contas = ['todas','Sicredi Matriz','Sicredi Distribuidora','Caixa (Dinheiro)'];
+  pop.innerHTML = contas.map(c=>'<div class="cp-item" onclick="window._jourConta=\''+c+'\';fecharPopover();render()">'+(c==='todas'?'📋 Todas as contas':'🏦 '+c)+'</div>').join('');
+  document.body.appendChild(pop);
+  setTimeout(()=>document.addEventListener('click', fecharPopoverOutside), 10);
+}
+
+function abrirFiltroStatusJour(ev){
+  ev.stopPropagation();
+  const existente = document.getElementById('filtro-popover');
+  if(existente) existente.remove();
+  const rect = ev.target.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.id = 'filtro-popover';
+  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:300;min-width:170px';
+  const opts = [['','📋 Todos'],['pendente','⏳ Pendente'],['conciliado','✓ Realizado'],['previsto','📅 Previsto'],['transferencia','🔄 Transferência'],['ignorado','— Ignorado']];
+  pop.innerHTML = opts.map(([v,l])=>'<div class="cp-item" onclick="window._jourStatusFiltro=\''+v+'\';fecharPopover();render()">'+l+'</div>').join('');
+  document.body.appendChild(pop);
+  setTimeout(()=>document.addEventListener('click', fecharPopoverOutside), 10);
+}
+
+function fecharPopover(){
+  const p = document.getElementById('filtro-popover');
+  if(p) p.remove();
+  document.removeEventListener('click', fecharPopoverOutside);
+}
+
+function fecharPopoverOutside(e){
+  const p = document.getElementById('filtro-popover');
+  if(p && !p.contains(e.target)) fecharPopover();
+}
+
 function abrirCatPicker(id){
+  if(id===null){
+    // Modo filtro de coluna (não edição de linha)
+    _catPickerTxId = null;
+    document.getElementById('catpicker-bg').classList.add('open');
+    const inp = document.getElementById('catpicker-busca');
+    inp.value = '';
+    setTimeout(()=>inp.focus(), 50);
+    filtrarCatPicker('');
+    return;
+  }
   _catPickerTxId = id;
   document.getElementById('catpicker-bg').classList.add('open');
   const inp = document.getElementById('catpicker-busca');
@@ -1750,7 +1820,13 @@ function filtrarCatPicker(termo){
 }
 
 function selecionarCat(code){
-  if(!_catPickerTxId) return;
+  if(_catPickerTxId===null){
+    // Modo filtro de coluna
+    window._jourCatFiltro = code;
+    fecharCatPicker();
+    render();
+    return;
+  }
   const t = TX.find(x=>x.id===_catPickerTxId);
   if(t){
     t.cat = code;
@@ -1938,7 +2014,9 @@ function renderJour(){
   const filtroContaJour = window._jourConta || 'todas';
   if(filtroContaJour!=='todas') txData = txData.filter(t=>t.conta===filtroContaJour);
 
-  const fil = txData.filter(t=>!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase()));
+  let fil = txData.filter(t=>!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase()));
+  if(window._jourCatFiltro) fil = fil.filter(t=>t.cat===window._jourCatFiltro);
+  if(window._jourStatusFiltro) fil = fil.filter(t=>t.status===window._jourStatusFiltro);
 
   // Ordenar por data desc
   const rows = [...fil].sort((a,b)=>b.date.localeCompare(a.date)||b.hora.localeCompare(a.hora));
@@ -2045,8 +2123,27 @@ function renderJour(){
     <div style="overflow-x:auto;max-height:600px">
       <table style="width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap">
         <thead><tr>
-          ${['Data agend.','Data realiz.','Plano de conta','Descrição','Sequência','Conta bancária','Valor a receber','Valor recebido','Valor a pagar','Valor pago','Status','Cliente/Fornecedor','Centro de custo']
-            .map(h=>`<th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">${h}</th>`).join('')}
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">
+            Data agend. <span style="cursor:pointer;color:${dataFiltro?'var(--sacc)':'var(--tx3)'}" onclick="abrirFiltroData(event)" title="Filtrar por data">▽${dataFiltro?' •':''}</span>
+          </th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Data realiz.</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">
+            Plano de conta <span style="cursor:pointer;color:${window._jourCatFiltro?'var(--sacc)':'var(--tx3)'}" onclick="abrirCatPicker(null)" title="Filtrar por categoria">▽${window._jourCatFiltro?' •':''}</span>
+          </th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Descrição</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Sequência</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">
+            Conta bancária <span style="cursor:pointer;color:${filtroContaJour!=='todas'?'var(--sacc)':'var(--tx3)'}" onclick="abrirFiltroConta(event)" title="Filtrar por conta">▽${filtroContaJour!=='todas'?' •':''}</span>
+          </th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Valor a receber</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Valor recebido</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Valor a pagar</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Valor pago</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">
+            Status <span style="cursor:pointer;color:${window._jourStatusFiltro?'var(--sacc)':'var(--tx3)'}" onclick="abrirFiltroStatusJour(event)" title="Filtrar por status">▽${window._jourStatusFiltro?' •':''}</span>
+          </th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Cliente/Fornecedor</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Centro de custo</th>
         </tr></thead>
         <tbody>
           ${rows.length===0?`<tr><td colspan="13" style="text-align:center;padding:30px;color:var(--tx3)">Nenhum lançamento encontrado</td></tr>`:
