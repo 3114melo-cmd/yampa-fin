@@ -1080,7 +1080,10 @@ const RAW = [
   {id:'brg262_10',date:'2026-09-21',hora:'09:00',desc:'BOLETO NF 262.206 - BRG SUPLEMENTOS - PARCELA 10/13',amt:1197.24,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.2.1',cli:'BRG Suplementos Nutricionais Ltda',previsto:true},
   {id:'brg262_11',date:'2026-09-26',hora:'09:00',desc:'BOLETO NF 262.206 - BRG SUPLEMENTOS - PARCELA 11/13',amt:1197.24,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.2.1',cli:'BRG Suplementos Nutricionais Ltda',previsto:true},
   {id:'brg262_12',date:'2026-10-01',hora:'09:00',desc:'BOLETO NF 262.206 - BRG SUPLEMENTOS - PARCELA 12/13',amt:1197.24,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.2.1',cli:'BRG Suplementos Nutricionais Ltda',previsto:true},
-  {id:'brg262_13',date:'2026-10-06',hora:'09:00',desc:'BOLETO NF 262.206 - BRG SUPLEMENTOS - PARCELA 13/13',amt:1197.22,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.2.1',cli:'BRG Suplementos Nutricionais Ltda',previsto:true}
+  {id:'brg262_13',date:'2026-10-06',hora:'09:00',desc:'BOLETO NF 262.206 - BRG SUPLEMENTOS - PARCELA 13/13',amt:1197.22,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'4.2.1',cli:'BRG Suplementos Nutricionais Ltda',previsto:true},
+  // ── AJUSTE DE SALDO INICIAL (19/07/2026) — iguala ao saldo real do banco ──
+  {id:'ajuste_matriz_01',date:'2026-07-19',hora:'00:00',desc:'AJUSTE DE SALDO INICIAL - Sincronizacao com saldo real do banco',amt:4417.29,type:'CREDIT',conta:'Sicredi Matriz',cat:'13.99',cli:'Ajuste de Caixa',status_fixo:'conciliado'},
+  {id:'ajuste_dist_01',date:'2026-07-19',hora:'00:00',desc:'AJUSTE DE SALDO INICIAL - Sincronizacao com saldo real do banco',amt:1753.88,type:'DEBIT',conta:'Sicredi Distribuidora',cat:'13.99',cli:'Ajuste de Caixa',status_fixo:'conciliado'}
 ];
 
 // Estado
@@ -1115,7 +1118,7 @@ function buildTX(){
   TX = RAW.map(r=>{
     const ed = EDITED[r.id]||{};
     const c = ed.cat || r.cat || (r.transf ? '4.9.9' : autocat(r.desc, r.type));
-    const statusDefault = r.previsto ? 'previsto' : (r.transf ? 'transferencia' : 'conciliado');
+    const statusDefault = r.status_fixo || (r.previsto ? 'previsto' : (r.transf ? 'transferencia' : 'conciliado'));
     const prev = prevState[r.id]||{};
     return {
       ...r,
