@@ -1345,16 +1345,28 @@ function renderDash(){
         05/07/2026
       </div>
     </div>
-    ${contas.map((c,i)=>`<div style="display:flex;align-items:center;padding:13px 20px;border-bottom:1px solid var(--bor);${i===contas.length-1?'border-bottom:none':''}">
+    ${contas.map((c,i)=>`<div style="display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid var(--bor);${i===contas.length-1?'border-bottom:none':''}">
       <div style="width:28px;height:28px;border-radius:50%;background:${c.cor}22;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-right:10px">${c.icon}</div>
-      <div style="font-size:13px;font-weight:600;color:var(--txt);flex:1">${c.nome}</div>
-      <div style="font-size:14px;font-weight:700;color:${c.saldo>0?'var(--txt)':'var(--tx3)'}">
-        ${c.saldo>0?fmtR(c.saldo):'R$ 0,00'}
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:var(--txt)">${c.nome}</div>
+        <div style="font-size:10px;color:var(--tx3);margin-top:1px">
+          ${c.info.conciliados} conciliados · ${c.info.pendentes} pendentes
+          ${c.info.previsto!==c.info.atual?` · Previsto: ${fmtR(c.info.previsto)}`:''}
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:15px;font-weight:700;color:${c.info.atual>0?'var(--txt)':'var(--tx3)'}">
+          ${c.info.atual>0?fmtR(c.info.atual):'R$ 0,00'}
+        </div>
+        <div style="font-size:10px;color:var(--tx3)">saldo banco</div>
       </div>
     </div>`).join('')}
     <div style="display:flex;align-items:center;padding:12px 20px;background:var(--sur2);border-top:2px solid var(--bor)">
       <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;flex:1;color:var(--tx2)">TOTAL</span>
-      <span style="font-size:16px;font-weight:700;color:var(--sacc)">R$ ${saldoTotal.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.').replace(/,(\d{2})$/,',$1')}</span>
+      <div style="text-align:right">
+        <div style="font-size:16px;font-weight:700;color:var(--sacc)">${fmtR(saldoTotal)}</div>
+        <div style="font-size:10px;color:var(--tx3)">saldo banco consolidado</div>
+      </div>
     </div>
   </div>
 
