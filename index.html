@@ -1129,6 +1129,9 @@ function buildTX(){
       obs: ed.obs || r.obs || '',
       meio: ed.meio || (r.previsto?'Boleto':'PIX'),
       status: ed.status || statusDefault,
+      amt: (ed.amt!==undefined) ? ed.amt : r.amt,
+      date: ed.date || r.date,
+      conta: ed.conta || r.conta,
       editado: !!EDITED[r.id],
       contaTransf: r.transf || ed.contaTransf || null,
       _showTransf: prev._showTransf || false,
@@ -1698,6 +1701,21 @@ function resetConciliacao(){
   location.reload();
 }
 
+function updJourEl(el){
+  const id = el.dataset.id;
+  const field = el.dataset.field;
+  let val = el.value;
+  if(field==='amt'){ val = Math.abs(parseFloat(val)||0); }
+  const t = TX.find(x=>x.id===id);
+  if(!t) return;
+  t[field] = val;
+  if(field==='cat') t.catInfo = cat(val);
+  t.editado = true;
+  saveEd(id, {[field]: val});
+  toast('✓ Atualizado','ok');
+  render();
+}
+
 function abrirEditarJour(id){
   filtro='todos'; filtrosStatus=[]; busca='';
   window._cfFiltroMes=null; window._cfFiltroCats=null; window.dataFiltroMes=null;
@@ -1973,24 +1991,48 @@ function renderJour(){
           rows.map(t=>{
             const st = getStatusInfo(t);
             const isRealizado = t.status==='conciliado'||t.status==='transferencia';
-            const dataReal = isRealizado ? fmtDataCurta(t.date) : '—';
-            const vRec = (t.type==='CREDIT'&&t.status==='pendente') ? fmtR(t.amt) : '—';
-            const vRecb = (t.type==='CREDIT'&&isRealizado) ? fmtR(t.amt) : '—';
-            const vPag = (t.type==='DEBIT'&&(t.status==='pendente'||t.status==='previsto')) ? fmtR(t.amt) : '—';
-            const vPg = (t.type==='DEBIT'&&isRealizado) ? fmtR(t.amt) : '—';
-            return `<tr style="border-bottom:1px solid var(--bor);cursor:pointer" onclick="abrirEditarJour('${t.id}')" title="Clique para editar">
-              <td style="padding:6px 10px">${fmtDataCurta(t.date)}</td>
-              <td style="padding:6px 10px;color:var(--tx3)">${dataReal}</td>
-              <td style="padding:6px 10px"><span style="color:${t.catInfo.cor}">${t.catInfo.code}</span> ${t.catInfo.nome}</td>
-              <td style="padding:6px 10px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.desc}">${t.desc.substring(0,40)}</td>
+            const showReceber = t.type==='CREDIT'&&t.status==='pendente';
+            const showRecebido = t.type==='CREDIT'&&isRealizado;
+            const showPagar = t.type==='DEBIT'&&(t.status==='pendente'||t.status==='previsto');
+            const showPago = t.type==='DEBIT'&&isRealizado;
+            const inpStyle = 'width:100%;border:none;background:transparent;font-size:11px;font-family:inherit;color:inherit;padding:2px;border-radius:3px';
+            const inpFocus = 'onfocus="this.style.background=\'var(--sur2)\';this.style.border=\'1px solid var(--sacc)\'" onblur="this.style.background=\'transparent\';this.style.border=\'none\'"';
+            return `<tr style="border-bottom:1px solid var(--bor)">
+              <td style="padding:2px 6px">
+                <input type="date" value="${t.date}" data-id="${t.id}" data-field="date" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle}" ${inpFocus}>
+              </td>
+              <td style="padding:6px 10px;color:var(--tx3)">${isRealizado?fmtDataCurta(t.date):'—'}</td>
+              <td style="padding:2px 6px;min-width:170px">
+                <select data-id="${t.id}" data-field="cat" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle}" ${inpFocus}>${catOpts(t.cat)}</select>
+              </td>
+              <td style="padding:2px 6px;min-width:200px">
+                <input type="text" value="${t.desc.replace(/"/g,'&quot;')}" data-id="${t.id}" data-field="desc" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle}" ${inpFocus}>
+              </td>
               <td style="padding:6px 10px;color:var(--tx3)">${getSeq(t)}</td>
-              <td style="padding:6px 10px">${t.conta||'—'}</td>
-              <td style="padding:6px 10px;color:var(--yel);font-weight:600">${vRec}</td>
-              <td style="padding:6px 10px;color:var(--grn);font-weight:600">${vRecb}</td>
-              <td style="padding:6px 10px;color:#dc2626;font-weight:600">${vPag}</td>
-              <td style="padding:6px 10px;color:var(--red);font-weight:600">${vPg}</td>
-              <td style="padding:6px 10px"><span style="font-size:9px;padding:2px 7px;border-radius:8px;font-weight:700;background:${st.bg};color:${st.color}">${st.label}</span></td>
-              <td style="padding:6px 10px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.cli||'—'}</td>
+              <td style="padding:2px 6px;min-width:130px">
+                <select data-id="${t.id}" data-field="conta" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle}" ${inpFocus}>
+                  ${contasUnicas.map(c=>`<option value="${c}"${t.conta===c?' selected':''}>${c}</option>`).join('')}
+                </select>
+              </td>
+              <td style="padding:2px 6px;color:var(--yel);font-weight:600">
+                ${showReceber?`<input type="number" step="0.01" value="${t.amt}" data-id="${t.id}" data-field="amt" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle};color:var(--yel);font-weight:600" ${inpFocus}>`:'—'}
+              </td>
+              <td style="padding:6px 10px;color:var(--grn);font-weight:600">${showRecebido?fmtR(t.amt):'—'}</td>
+              <td style="padding:2px 6px;color:#dc2626;font-weight:600">
+                ${showPagar?`<input type="number" step="0.01" value="${t.amt}" data-id="${t.id}" data-field="amt" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle};color:#dc2626;font-weight:600" ${inpFocus}>`:'—'}
+              </td>
+              <td style="padding:6px 10px;color:var(--red);font-weight:600">${showPago?fmtR(t.amt):'—'}</td>
+              <td style="padding:2px 6px">
+                <select data-id="${t.id}" data-field="status" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;background:${st.bg};color:${st.color};border:none;cursor:pointer">
+                  <option value="pendente"${t.status==='pendente'?' selected':''}>PENDENTE</option>
+                  <option value="conciliado"${t.status==='conciliado'?' selected':''}>REALIZADO</option>
+                  <option value="previsto"${t.status==='previsto'?' selected':''}>PREVISTO</option>
+                  <option value="ignorado"${t.status==='ignorado'?' selected':''}>IGNORADO</option>
+                </select>
+              </td>
+              <td style="padding:2px 6px;min-width:120px">
+                <input type="text" value="${(t.cli||'').replace(/"/g,'&quot;')}" data-id="${t.id}" data-field="cli" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle}" ${inpFocus}>
+              </td>
               <td style="padding:6px 10px;color:var(--tx3)">${getCC(t)}</td>
             </tr>`;
           }).join('')}
