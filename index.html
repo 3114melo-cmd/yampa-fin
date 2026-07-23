@@ -2885,17 +2885,27 @@ function navAnoPeriodo(delta){
 
 function clicarMesPeriodo(mes){
   var t = window._cfPeriodoTemp;
-  if(t.inicio===null || (t.inicio!==null && t.fim!==null)){
-    t.inicio = mes; t.fim = null;
-  } else {
-    if(mes >= t.inicio){ t.fim = mes; }
-    else { t.fim = t.inicio; t.inicio = mes; }
+  if(t.inicio===null){
+    // primeiro clique: marca inicio e mostra "clique no fim ou clique de novo p/ selecionar so este mes"
+    t.inicio = mes;
+    t.fim = mes; // ja pre-seleciona como mes unico
+    renderSeletorPeriodo();
+    return;
   }
-  renderSeletorPeriodo();
-  if(t.inicio!==null && t.fim!==null){
-    window._cfPeriodo = {ano:window._cfPeriodoAnoNav, inicio:t.inicio, fim:t.fim};
-    setTimeout(function(){ fecharSeletorPeriodo(); render(); }, 250);
-  }
+  // segundo clique: define o fim do intervalo
+  if(mes >= t.inicio){ t.fim = mes; }
+  else { t.fim = t.inicio; t.inicio = mes; }
+  window._cfPeriodo = {ano:window._cfPeriodoAnoNav, inicio:t.inicio, fim:t.fim};
+  fecharSeletorPeriodo();
+  render();
+}
+
+function confirmarMesUnico(){
+  var t = window._cfPeriodoTemp;
+  if(t.inicio===null) return;
+  window._cfPeriodo = {ano:window._cfPeriodoAnoNav, inicio:t.inicio, fim:t.inicio};
+  fecharSeletorPeriodo();
+  render();
 }
 
 function limparPeriodo(){
@@ -2915,7 +2925,7 @@ function renderSeletorPeriodo(){
   html += '<span style="font-size:14px;font-weight:700">'+ano+'</span>';
   html += '<span onclick="navAnoPeriodo(1)" style="cursor:pointer;font-size:16px;color:var(--tx3);padding:2px 8px">›</span>';
   html += '</div>';
-  var label = (t.inicio!==null && t.fim===null) ? 'Selecione o fim' : 'Selecione o início';
+  var label = (t.inicio!==null) ? 'Clique no mês final (ou confirme abaixo p/ só este mês)' : 'Selecione o mês inicial';
   html += '<div style="text-align:center;font-size:11px;color:var(--tx3);margin-bottom:10px">'+label+'</div>';
   html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px">';
   nomesMeses.forEach(function(nome, i){
@@ -2931,7 +2941,10 @@ function renderSeletorPeriodo(){
     html += '<button onclick="clicarMesPeriodo('+mes+')" style="padding:9px 4px;border-radius:8px;border:none;background:'+bg+';color:'+color+';font-size:12px;font-weight:'+(isEdge?'700':'500')+';cursor:pointer">'+nome+'</button>';
   });
   html += '</div>';
-  html += '<button onclick="limparPeriodo()" style="width:100%;padding:8px;border:none;border-top:1px solid var(--bor);background:none;color:var(--tx3);font-size:12px;font-weight:600;cursor:pointer">Limpar</button>';
+  if(t.inicio!==null){
+    html += '<button onclick="confirmarMesUnico()" style="width:100%;padding:9px;border:none;border-radius:8px;background:var(--sacc);color:#fff;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:8px">✓ Aplicar só '+nomesMeses[t.inicio-1]+'</button>';
+  }
+  html += '<button onclick="limparPeriodo()" style="width:100%;padding:8px;border:none;border-top:1px solid var(--bor);background:none;color:var(--tx3);font-size:12px;font-weight:600;cursor:pointer">Limpar / Ano todo</button>';
   pop.innerHTML = html;
 }
 
