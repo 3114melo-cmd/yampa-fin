@@ -2846,6 +2846,95 @@ function renderModalAvancado(){
     +'</div></div>';
 }
 
+// ════════════════════════════════
+// SELETOR DE PERIODO (Fluxo de Caixa)
+// ════════════════════════════════
+window._cfPeriodo = window._cfPeriodo || {ano:2026, inicio:1, fim:12};
+window._cfPeriodoTemp = null;
+window._cfPeriodoAnoNav = 2026;
+
+function fecharSeletorPeriodo(){
+  var p = document.getElementById('periodo-popover');
+  if(p) p.remove();
+  document.removeEventListener('click', fecharSeletorPeriodoOutside);
+}
+function fecharSeletorPeriodoOutside(e){
+  var p = document.getElementById('periodo-popover');
+  var btn = document.getElementById('btn-periodo-cf');
+  if(p && !p.contains(e.target) && e.target!==btn) fecharSeletorPeriodo();
+}
+
+function abrirSeletorPeriodo(ev){
+  ev.stopPropagation();
+  fecharSeletorPeriodo();
+  window._cfPeriodoAnoNav = window._cfPeriodo.ano;
+  window._cfPeriodoTemp = {inicio:null, fim:null};
+  var rect = ev.currentTarget.getBoundingClientRect();
+  var pop = document.createElement('div');
+  pop.id = 'periodo-popover';
+  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+6)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:14px;z-index:300;width:260px';
+  document.body.appendChild(pop);
+  renderSeletorPeriodo();
+  setTimeout(function(){ document.addEventListener('click', fecharSeletorPeriodoOutside); }, 10);
+}
+
+function navAnoPeriodo(delta){
+  window._cfPeriodoAnoNav += delta;
+  renderSeletorPeriodo();
+}
+
+function clicarMesPeriodo(mes){
+  var t = window._cfPeriodoTemp;
+  if(t.inicio===null || (t.inicio!==null && t.fim!==null)){
+    t.inicio = mes; t.fim = null;
+  } else {
+    if(mes >= t.inicio){ t.fim = mes; }
+    else { t.fim = t.inicio; t.inicio = mes; }
+  }
+  renderSeletorPeriodo();
+  if(t.inicio!==null && t.fim!==null){
+    window._cfPeriodo = {ano:window._cfPeriodoAnoNav, inicio:t.inicio, fim:t.fim};
+    setTimeout(function(){ fecharSeletorPeriodo(); render(); }, 250);
+  }
+}
+
+function limparPeriodo(){
+  window._cfPeriodo = {ano:2026, inicio:1, fim:12};
+  fecharSeletorPeriodo();
+  render();
+}
+
+function renderSeletorPeriodo(){
+  var pop = document.getElementById('periodo-popover');
+  if(!pop) return;
+  var ano = window._cfPeriodoAnoNav;
+  var t = window._cfPeriodoTemp;
+  var nomesMeses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
+  html += '<span onclick="navAnoPeriodo(-1)" style="cursor:pointer;font-size:16px;color:var(--tx3);padding:2px 8px">‹</span>';
+  html += '<span style="font-size:14px;font-weight:700">'+ano+'</span>';
+  html += '<span onclick="navAnoPeriodo(1)" style="cursor:pointer;font-size:16px;color:var(--tx3);padding:2px 8px">›</span>';
+  html += '</div>';
+  var label = (t.inicio!==null && t.fim===null) ? 'Selecione o fim' : 'Selecione o início';
+  html += '<div style="text-align:center;font-size:11px;color:var(--tx3);margin-bottom:10px">'+label+'</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px">';
+  nomesMeses.forEach(function(nome, i){
+    var mes = i+1;
+    var isRangeSel = false;
+    var isEdge = false;
+    if(t.inicio!==null){
+      if(t.fim!==null){ isRangeSel = mes>=t.inicio && mes<=t.fim; isEdge = mes===t.inicio||mes===t.fim; }
+      else { isEdge = mes===t.inicio; }
+    }
+    var bg = isEdge ? 'var(--sacc)' : (isRangeSel ? 'var(--acl)' : 'var(--sur2)');
+    var color = isEdge ? '#fff' : (isRangeSel ? 'var(--sacc)' : 'var(--tx2)');
+    html += '<button onclick="clicarMesPeriodo('+mes+')" style="padding:9px 4px;border-radius:8px;border:none;background:'+bg+';color:'+color+';font-size:12px;font-weight:'+(isEdge?'700':'500')+';cursor:pointer">'+nome+'</button>';
+  });
+  html += '</div>';
+  html += '<button onclick="limparPeriodo()" style="width:100%;padding:8px;border:none;border-top:1px solid var(--bor);background:none;color:var(--tx3);font-size:12px;font-weight:600;cursor:pointer">Limpar</button>';
+  pop.innerHTML = html;
+}
+
 function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
@@ -3144,9 +3233,9 @@ function renderCF(){
     nout: [ 20000, 20000, 20000, 20000, 20000, 20000],
   };
 
-  // Meses futuros (Jul em diante) — puxar do TX
-  const MESES_FUT = ['2026-07','2026-08','2026-09'];
-  const LABELS_FUT = ['Jul','Ago','Set'];
+  // Meses futuros (Jul-Dez) — puxar do TX
+  const MESES_FUT = ['2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'];
+  const LABELS_FUT = ['Jul','Ago','Set','Out','Nov','Dez'];
 
   function txMes(mesISO, cats, tipo){
     return TX.filter(t=>{
@@ -3305,8 +3394,15 @@ function renderCF(){
     real: calcMes(futReal[i]),
   }))];
 
-  // Meses a exibir
-  const mesesExib = mesSel ? allMeses.filter(m=>m.iso===mesSel) : allMeses;
+  // Meses a exibir (filtro por intervalo de período OU mes unico selecionado no drill-down)
+  const periodo = window._cfPeriodo || {ano:2026, inicio:1, fim:12};
+  const mesesExib = mesSel
+    ? allMeses.filter(m=>m.iso===mesSel)
+    : allMeses.filter(m=>{
+        const mo = +m.iso.split('-')[1];
+        const yr = +m.iso.split('-')[0];
+        return yr===periodo.ano && mo>=periodo.inicio && mo<=periodo.fim;
+      });
 
   // Totais
   function totalCol(key, campo){
@@ -3438,6 +3534,9 @@ function renderCF(){
       <span style="font-size:11px;color:#0369a1;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:20px;padding:2px 9px">📅 Provisionado</span>
       <div style="margin-left:auto;display:flex;gap:6px">
         ${mesSel?`<button class="btn" onclick="window._cfMesSel=null;render()">← Todos os meses</button>`:''}
+        <button class="btn" id="btn-periodo-cf" onclick="abrirSeletorPeriodo(event)" style="display:flex;align-items:center;gap:6px">
+          📅 ${LABELS_FUT.length&&periodo.inicio===1&&periodo.fim===12?'Jan '+periodo.ano+' - Dez '+periodo.ano:['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][periodo.inicio]+' - '+['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][periodo.fim]+' '+periodo.ano}
+        </button>
         <button class="btn${cfExp.lvl===1?' pri':''}" onclick="cfExp.lvl=1;cfExp.c=false;cfExp.d=false;cfExp.n=false;render()">N1</button>
         <button class="btn${cfExp.lvl!==1?' pri':''}" onclick="cfExp.lvl=2;cfExp.c=true;cfExp.d=true;cfExp.n=true;render()">N2</button>
       </div>
