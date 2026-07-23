@@ -1803,7 +1803,7 @@ function abrirFiltroData(ev){
   const rect = ev.target.getBoundingClientRect();
   const pop = document.createElement('div');
   pop.id = 'filtro-popover';
-  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:300;min-width:180px';
+  var vwF=window.innerWidth, vhF=window.innerHeight; var leftF=Math.min(rect.left, vwF-200); leftF=Math.max(8,leftF); var topF=rect.bottom+4; if(topF+300>vhF) topF=Math.max(8,rect.top-300-4); pop.style.cssText = 'position:fixed;top:'+topF+'px;left:'+leftF+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:9999;min-width:180px;max-height:'+(vhF-20)+'px;overflow-y:auto';
   pop.innerHTML = `
     <div class="cp-item" onclick="dataFiltro='${hoje}';fecharPopover();render()">📅 Hoje</div>
     <div class="cp-item" onclick="dataFiltro='';window._jourSoAtrasados=true;fecharPopover();render()">⚠ Atrasados</div>
@@ -1823,7 +1823,7 @@ function abrirFiltroConta(ev){
   const rect = ev.target.getBoundingClientRect();
   const pop = document.createElement('div');
   pop.id = 'filtro-popover';
-  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:300;min-width:180px';
+  var vwF=window.innerWidth, vhF=window.innerHeight; var leftF=Math.min(rect.left, vwF-200); leftF=Math.max(8,leftF); var topF=rect.bottom+4; if(topF+300>vhF) topF=Math.max(8,rect.top-300-4); pop.style.cssText = 'position:fixed;top:'+topF+'px;left:'+leftF+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:9999;min-width:180px;max-height:'+(vhF-20)+'px;overflow-y:auto';
   const contas = ['todas','Sicredi Matriz','Sicredi Distribuidora','Caixa (Dinheiro)'];
   pop.innerHTML = contas.map(c=>'<div class="cp-item" onclick="window._jourConta=\''+c+'\';fecharPopover();render()">'+(c==='todas'?'📋 Todas as contas':'🏦 '+c)+'</div>').join('');
   document.body.appendChild(pop);
@@ -1837,7 +1837,7 @@ function abrirFiltroStatusJour(ev){
   const rect = ev.target.getBoundingClientRect();
   const pop = document.createElement('div');
   pop.id = 'filtro-popover';
-  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:300;min-width:170px';
+  var vwF2=window.innerWidth, vhF2=window.innerHeight; var leftF2=Math.min(rect.left, vwF2-200); leftF2=Math.max(8,leftF2); var topF2=rect.bottom+4; if(topF2+300>vhF2) topF2=Math.max(8,rect.top-300-4); pop.style.cssText = 'position:fixed;top:'+topF2+'px;left:'+leftF2+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:9999;min-width:170px;max-height:'+(vhF2-20)+'px;overflow-y:auto';
   const opts = [['','📋 Todos'],['pendente','⏳ Pendente'],['conciliado','✓ Realizado'],['previsto','📅 Previsto'],['transferencia','🔄 Transferência'],['ignorado','— Ignorado']];
   pop.innerHTML = opts.map(([v,l])=>'<div class="cp-item" onclick="window._jourStatusFiltro=\''+v+'\';fecharPopover();render()">'+l+'</div>').join('');
   document.body.appendChild(pop);
@@ -2137,7 +2137,7 @@ function abrirFiltroColuna(campo, ev){
   var rect = ev.currentTarget.getBoundingClientRect();
   var pop = document.createElement('div');
   pop.id = 'col-popover';
-  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+Math.max(8,rect.left-40)+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:0;z-index:300;width:300px;max-height:70vh;overflow:hidden;display:flex;flex-direction:column';
+  var vwC=window.innerWidth, vhC=window.innerHeight; var leftC=Math.min(Math.max(8,rect.left-40), vwC-310); leftC=Math.max(8,leftC); var topC=rect.bottom+4; if(topC+400>vhC) topC=Math.max(8,rect.top-400-4); pop.style.cssText = 'position:fixed;top:'+topC+'px;left:'+leftC+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:0;z-index:9999;width:300px;max-height:'+(vhC-20)+'px;overflow:hidden;display:flex;flex-direction:column';
   var valoresDisponiveis = getValoresColuna(campo);
   var filtroAtual = window._colFiltros[campo];
   window._catSelTemp = filtroAtual ? new Set(filtroAtual) : new Set(valoresDisponiveis.map(function(v){return v.valor;}));
@@ -2533,7 +2533,7 @@ function togglePainelFiltroRapido(ev){
   var rect = btn.getBoundingClientRect();
   var pop = document.createElement('div');
   pop.id = 'filtro-rapido-painel';
-  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+6)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:14px;z-index:300;width:320px;max-height:75vh;overflow-y:auto';
+  var vwR=window.innerWidth, vhR=window.innerHeight; var leftR=Math.min(rect.left, vwR-330); leftR=Math.max(8,leftR); var topR=rect.bottom+6; if(topR+400>vhR) topR=Math.max(8,rect.top-400-6); pop.style.cssText = 'position:fixed;top:'+topR+'px;left:'+leftR+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:14px;z-index:9999;width:320px;max-height:'+(vhR-20)+'px;overflow-y:auto';
   pop.innerHTML = montarPainelFiltroRapidoHTML();
   document.body.appendChild(pop);
   setTimeout(function(){ document.addEventListener('click', fecharPainelFiltroRapidoOutside); }, 10);
@@ -2870,9 +2870,16 @@ function abrirSeletorPeriodo(ev){
   window._cfPeriodoAnoNav = window._cfPeriodo.ano;
   window._cfPeriodoTemp = {inicio:null, fim:null};
   var rect = ev.currentTarget.getBoundingClientRect();
+  var popW = 260;
+  var vw = window.innerWidth;
+  var vh = window.innerHeight;
+  var leftPos = Math.min(rect.left, vw - popW - 12); // nao deixar sair pela direita
+  leftPos = Math.max(8, leftPos); // nao deixar sair pela esquerda
+  var topPos = rect.bottom + 6;
+  if(topPos + 340 > vh) topPos = Math.max(8, rect.top - 340 - 6); // se nao couber embaixo, abre pra cima
   var pop = document.createElement('div');
   pop.id = 'periodo-popover';
-  pop.style.cssText = 'position:fixed;top:'+(rect.bottom+6)+'px;left:'+rect.left+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:14px;z-index:300;width:260px';
+  pop.style.cssText = 'position:fixed;top:'+topPos+'px;left:'+leftPos+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:14px;z-index:9999;width:260px;max-height:'+(vh-20)+'px;overflow-y:auto';
   document.body.appendChild(pop);
   renderSeletorPeriodo();
   setTimeout(function(){ document.addEventListener('click', fecharSeletorPeriodoOutside); }, 10);
