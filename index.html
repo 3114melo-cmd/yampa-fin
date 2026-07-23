@@ -3562,12 +3562,8 @@ function renderCF(){
 
     let tds = '';
     mesesExib.forEach(m=>{
-      tds += `<td style="border-left:2px solid var(--bor2)"></td>`;
-      tds = tds.slice(0,-5); // remove last td
-      tds += `<td style="border-left:2px solid var(--bor2);padding:0"></td>`;
-      tds = tds.slice(0,-5);
-      // Esperado
-      tds += celEsp(m, l.key).replace('<td','<td style="border-left:2px solid var(--bor2);');
+      // Esperado (com borda esquerda mesclada corretamente no style existente)
+      tds += celEsp(m, l.key).replace('style="', 'style="border-left:2px solid var(--bor2);');
       // Realizado
       tds += celReal(m, l.key, m.isFut);
       // AV%
