@@ -1276,13 +1276,15 @@ function updateBadge(){
 // ════════════════════════════════
 // RENDER
 // ════════════════════════════════
-function irDiario(mes, cats, tipo, data){
+function irDiario(mes, cats, tipo, data, apenasRealizado){
   dataFiltro = data||'';
   busca = '';
   window._cfFiltroMes = mes||null;
   window._cfFiltroCats = Array.isArray(cats)?cats:(cats?[cats]:[]);
   window._cfFiltroTipo = tipo||null;
   window.dataFiltroMes = mes||null;
+  window._jourStatusFiltro = apenasRealizado ? null : null; // reservado
+  window._jourApenasRealizado = !!apenasRealizado;
   go('jour', document.getElementById('ni-jour'));
 }
 
@@ -2985,6 +2987,7 @@ function renderJour(){
   if(window._jourCatFiltro) fil = fil.filter(t=>t.cat===window._jourCatFiltro);
   if(window._jourStatusFiltro) fil = fil.filter(t=>t.status===window._jourStatusFiltro);
   if(window._jourTab==='pend') fil = fil.filter(t=>t.status==='pendente');
+  if(window._jourApenasRealizado) fil = fil.filter(t=>t.status==='conciliado'||t.status==='transferencia');
   fil = fil.filter(passaFiltrosAvancados);
   // Filtros de coluna (checkbox multi-select)
   Object.entries(window._colFiltros||{}).forEach(([campo,valores])=>{
@@ -3474,17 +3477,52 @@ function renderCF(){
   }
 
   // Renderizar célula
+  const CAT_MAP = {
+    rec:null, jur:['3.3'],
+    trib:['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'], t411:['4.1.1'], t414:['4.1.4'], t499:['4.1.99'],
+    forn:['4.2.1','4.2.4'], f421:['4.2.1'], f424:['4.2.4'], emb:['4.3.1'],
+    vend:['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'],
+    v441:['4.4.1'], v442:['4.4.2'], v443:['4.4.3'], v444:['4.4.4'], v446:['4.4.6'],
+    moto:['4.6.1','4.6.2','4.6.3'], m461:['4.6.1'], m462:['4.6.2'], m463:['4.6.3'],
+    fin:['5.1.1','5.1.99'],
+    adm:['5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'],
+    a521:['5.2.1'], a523:['5.2.3'], a524:['5.2.4'], a5211:['5.2.11'], a5217:['5.2.17'], a5299:['5.2.99','5.2.19'],
+    pes:['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],
+    p531:['5.3.1'], p532:['5.3.2'], p535:['5.3.5'], p536:['5.3.6'], p537:['5.3.7'], p5312:['5.3.12'], p5313:['5.3.13'],
+    veic:['5.5.3','5.5.4','5.5.5','5.5.99'], traf:['5.8.1','5.8.2'],
+    inv:['6.4.1','6.4.2'],
+    noin:['7.1.4','7.1.6','7.1.7','7.1.99'], nout:['7.2.1','7.2.13','7.2.99'], n7213:['7.2.13'],
+  };
+  const TIPO_MAP = {
+    rec:'CREDIT', jur:'CREDIT', noin:'CREDIT',
+  }; // demais chaves = DEBIT (default), calc rows (cv,mc,df,lai,no,res,sf) = null (mostra tudo)
+  function tipoDaChave(key){
+    if(TIPO_MAP[key]) return TIPO_MAP[key];
+    if(['cv','mc','df','lai','no','res','sf'].includes(key)) return null;
+    return 'DEBIT';
+  }
+
+  function serializeCats(cats){
+    if(!cats) return 'null';
+    return "[" + cats.map(c=>"'"+c+"'").join(',') + "]";
+  }
   function celEsp(m, key){
     const v = m.esp[key]||0;
-    if(!v) return '<td style="text-align:right;color:var(--tx3);font-size:11px">—</td>';
-    return `<td style="text-align:right;font-size:11px;color:var(--tx2);cursor:pointer" onclick="abrirDiario('${m.iso}','','','')" title="Esperado ${m.lbl}">${fmtR(v)}</td>`;
+    const cats = CAT_MAP[key]||null;
+    const tipo = tipoDaChave(key);
+    const onclick = `onclick="irDiario('${m.iso}',${serializeCats(cats)},${tipo?"'"+tipo+"'":'null'},'',false)"`;
+    if(!v) return `<td style="text-align:right;color:var(--tx3);font-size:11px;cursor:pointer" ${onclick} title="Ver lançamentos esperados de ${m.lbl}">—</td>`;
+    return `<td style="text-align:right;font-size:11px;color:var(--tx2);cursor:pointer" ${onclick} title="Esperado ${m.lbl} — clique para ver lançamentos">${fmtR(v)}</td>`;
   }
   function celReal(m, key, isFut){
     const v = m.real[key]||0;
-    if(!v && !isFut) return '<td style="text-align:right;color:var(--tx3);font-size:11px">—</td>';
+    const cats = CAT_MAP[key]||null;
+    const tipo = tipoDaChave(key);
+    const onclick = `onclick="irDiario('${m.iso}',${serializeCats(cats)},${tipo?"'"+tipo+"'":'null'},'',true)"`;
+    if(!v && !isFut) return `<td style="text-align:right;color:var(--tx3);font-size:11px;cursor:pointer" ${onclick} title="Ver lançamentos realizados de ${m.lbl}">—</td>`;
     const c = isFut ? '#0369a1' : (v > (m.esp[key]||0)*1.1 ? 'var(--red)' : v > 0 ? 'var(--txt)' : 'var(--tx3)');
     const style = `text-align:right;font-size:11px;font-weight:${isFut?'400':'500'};color:${c};${isFut?'font-style:italic':''}`;
-    return `<td style="${style};cursor:pointer" onclick="abrirDiario('${m.iso}','','','')" title="Realizado ${m.lbl}">${v?fmtR(v):'—'}</td>`;
+    return `<td style="${style};cursor:pointer" ${onclick} title="Realizado ${m.lbl} — clique para ver lançamentos">${v?fmtR(v):'—'}</td>`;
   }
   function celAV(m, key){
     const esp = m.esp[key]||0;
