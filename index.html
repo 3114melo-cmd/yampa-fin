@@ -3258,65 +3258,108 @@ function renderCF(){
   const MESES_FUT = ['2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'];
   const LABELS_FUT = ['Jul','Ago','Set','Out','Nov','Dez'];
 
-  function txMes(mesISO, cats, tipo){
+  function txMes(mesISO, cats, tipo, apenasRealizado){
     return TX.filter(t=>{
       const mesOk = t.date.startsWith(mesISO);
       const catOk = !cats || cats.includes(t.cat);
       const tipoOk = !tipo || t.type===tipo;
-      return mesOk && catOk && tipoOk && t.status!=='ignorado';
+      const statusOk = apenasRealizado
+        ? (t.status==='conciliado'||t.status==='transferencia')
+        : t.status!=='ignorado';
+      return mesOk && catOk && tipoOk && statusOk;
     }).reduce((s,t)=>s+t.amt,0);
   }
 
-  // Calcular futuros
-  const futReal = MESES_FUT.map(m=>({
-    rec:   txMes(m,null,'CREDIT'),
-    jur:   txMes(m,['3.3'],'CREDIT'),
-    trib:  Math.abs(txMes(m,['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'],'DEBIT')),
-    t411:  Math.abs(txMes(m,['4.1.1'],'DEBIT')),
-    t414:  Math.abs(txMes(m,['4.1.4'],'DEBIT')),
-    t499:  Math.abs(txMes(m,['4.1.99'],'DEBIT')),
-    forn:  Math.abs(txMes(m,['4.2.1','4.2.4'],'DEBIT')),
-    f421:  Math.abs(txMes(m,['4.2.1'],'DEBIT')),
-    f424:  Math.abs(txMes(m,['4.2.4'],'DEBIT')),
-    emb:   Math.abs(txMes(m,['4.3.1'],'DEBIT')),
-    vend:  Math.abs(txMes(m,['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'],'DEBIT')),
-    v441:  Math.abs(txMes(m,['4.4.1'],'DEBIT')),
-    v442:  Math.abs(txMes(m,['4.4.2'],'DEBIT')),
-    v443:  Math.abs(txMes(m,['4.4.3'],'DEBIT')),
-    v444:  Math.abs(txMes(m,['4.4.4'],'DEBIT')),
-    v446:  Math.abs(txMes(m,['4.4.6'],'DEBIT')),
-    moto:  Math.abs(txMes(m,['4.6.1','4.6.2','4.6.3'],'DEBIT')),
-    m461:  Math.abs(txMes(m,['4.6.1'],'DEBIT')),
-    m462:  Math.abs(txMes(m,['4.6.2'],'DEBIT')),
-    m463:  Math.abs(txMes(m,['4.6.3'],'DEBIT')),
-    fin:   Math.abs(txMes(m,['5.1.1','5.1.99'],'DEBIT')),
-    adm:   Math.abs(txMes(m,['5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'],'DEBIT')),
-    a521:  Math.abs(txMes(m,['5.2.1'],'DEBIT')),
-    a523:  Math.abs(txMes(m,['5.2.3'],'DEBIT')),
-    a524:  Math.abs(txMes(m,['5.2.4'],'DEBIT')),
-    a5211: Math.abs(txMes(m,['5.2.11'],'DEBIT')),
-    a5217: Math.abs(txMes(m,['5.2.17'],'DEBIT')),
-    a5299: Math.abs(txMes(m,['5.2.99','5.2.19'],'DEBIT')),
-    pes:   Math.abs(txMes(m,['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],'DEBIT')),
-    p531:  Math.abs(txMes(m,['5.3.1'],'DEBIT')),
-    p532:  Math.abs(txMes(m,['5.3.2'],'DEBIT')),
-    p535:  Math.abs(txMes(m,['5.3.5'],'DEBIT')),
-    p536:  Math.abs(txMes(m,['5.3.6'],'DEBIT')),
-    p537:  Math.abs(txMes(m,['5.3.7'],'DEBIT')),
-    p5312: Math.abs(txMes(m,['5.3.12'],'DEBIT')),
-    p5313: Math.abs(txMes(m,['5.3.13'],'DEBIT')),
-    veic:  Math.abs(txMes(m,['5.5.3','5.5.4','5.5.5','5.5.99'],'DEBIT')),
-    traf:  Math.abs(txMes(m,['5.8.1','5.8.2'],'DEBIT')),
-    inv:   Math.abs(txMes(m,['6.4.1','6.4.2'],'DEBIT')),
-    noin:  txMes(m,['7.1.4','7.1.6','7.1.7','7.1.99'],'CREDIT'),
-    nout:  Math.abs(txMes(m,['7.2.1','7.2.13','7.2.99'],'DEBIT')),
-    n7213: Math.abs(txMes(m,['7.2.13'],'DEBIT')),
+  // Esperado = TUDO que foi lançado (qualquer status, exceto ignorado)
+  const futEsp = MESES_FUT.map(m=>({
+    rec:   txMes(m,null,'CREDIT',false),
+    jur:   txMes(m,['3.3'],'CREDIT',false),
+    trib:  Math.abs(txMes(m,['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'],'DEBIT',false)),
+    t411:  Math.abs(txMes(m,['4.1.1'],'DEBIT',false)),
+    t414:  Math.abs(txMes(m,['4.1.4'],'DEBIT',false)),
+    t499:  Math.abs(txMes(m,['4.1.99'],'DEBIT',false)),
+    forn:  Math.abs(txMes(m,['4.2.1','4.2.4'],'DEBIT',false)),
+    f421:  Math.abs(txMes(m,['4.2.1'],'DEBIT',false)),
+    f424:  Math.abs(txMes(m,['4.2.4'],'DEBIT',false)),
+    emb:   Math.abs(txMes(m,['4.3.1'],'DEBIT',false)),
+    vend:  Math.abs(txMes(m,['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'],'DEBIT',false)),
+    v441:  Math.abs(txMes(m,['4.4.1'],'DEBIT',false)),
+    v442:  Math.abs(txMes(m,['4.4.2'],'DEBIT',false)),
+    v443:  Math.abs(txMes(m,['4.4.3'],'DEBIT',false)),
+    v444:  Math.abs(txMes(m,['4.4.4'],'DEBIT',false)),
+    v446:  Math.abs(txMes(m,['4.4.6'],'DEBIT',false)),
+    moto:  Math.abs(txMes(m,['4.6.1','4.6.2','4.6.3'],'DEBIT',false)),
+    m461:  Math.abs(txMes(m,['4.6.1'],'DEBIT',false)),
+    m462:  Math.abs(txMes(m,['4.6.2'],'DEBIT',false)),
+    m463:  Math.abs(txMes(m,['4.6.3'],'DEBIT',false)),
+    fin:   Math.abs(txMes(m,['5.1.1','5.1.99'],'DEBIT',false)),
+    adm:   Math.abs(txMes(m,['5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'],'DEBIT',false)),
+    a521:  Math.abs(txMes(m,['5.2.1'],'DEBIT',false)),
+    a523:  Math.abs(txMes(m,['5.2.3'],'DEBIT',false)),
+    a524:  Math.abs(txMes(m,['5.2.4'],'DEBIT',false)),
+    a5211: Math.abs(txMes(m,['5.2.11'],'DEBIT',false)),
+    a5217: Math.abs(txMes(m,['5.2.17'],'DEBIT',false)),
+    a5299: Math.abs(txMes(m,['5.2.99','5.2.19'],'DEBIT',false)),
+    pes:   Math.abs(txMes(m,['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],'DEBIT',false)),
+    p531:  Math.abs(txMes(m,['5.3.1'],'DEBIT',false)),
+    p532:  Math.abs(txMes(m,['5.3.2'],'DEBIT',false)),
+    p535:  Math.abs(txMes(m,['5.3.5'],'DEBIT',false)),
+    p536:  Math.abs(txMes(m,['5.3.6'],'DEBIT',false)),
+    p537:  Math.abs(txMes(m,['5.3.7'],'DEBIT',false)),
+    p5312: Math.abs(txMes(m,['5.3.12'],'DEBIT',false)),
+    p5313: Math.abs(txMes(m,['5.3.13'],'DEBIT',false)),
+    veic:  Math.abs(txMes(m,['5.5.3','5.5.4','5.5.5','5.5.99'],'DEBIT',false)),
+    traf:  Math.abs(txMes(m,['5.8.1','5.8.2'],'DEBIT',false)),
+    inv:   Math.abs(txMes(m,['6.4.1','6.4.2'],'DEBIT',false)),
+    noin:  txMes(m,['7.1.4','7.1.6','7.1.7','7.1.99'],'CREDIT',false),
+    nout:  Math.abs(txMes(m,['7.2.1','7.2.13','7.2.99'],'DEBIT',false)),
+    n7213: Math.abs(txMes(m,['7.2.13'],'DEBIT',false)),
   }));
 
-  // Esperado futuro = meta mensal
-  const futEsp = MESES_FUT.map(()=>({
-    rec:280000, forn:150000, trib:15000, vend:5000, moto:3000,
-    adm:15000,  pes:35000,   traf:10000, inv:10000, noin:5000, nout:20000
+  // Realizado = SOMENTE o que já foi pago/recebido (conciliado ou transferência)
+  const futReal = MESES_FUT.map(m=>({
+    rec:   txMes(m,null,'CREDIT',true),
+    jur:   txMes(m,['3.3'],'CREDIT',true),
+    trib:  Math.abs(txMes(m,['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'],'DEBIT',true)),
+    t411:  Math.abs(txMes(m,['4.1.1'],'DEBIT',true)),
+    t414:  Math.abs(txMes(m,['4.1.4'],'DEBIT',true)),
+    t499:  Math.abs(txMes(m,['4.1.99'],'DEBIT',true)),
+    forn:  Math.abs(txMes(m,['4.2.1','4.2.4'],'DEBIT',true)),
+    f421:  Math.abs(txMes(m,['4.2.1'],'DEBIT',true)),
+    f424:  Math.abs(txMes(m,['4.2.4'],'DEBIT',true)),
+    emb:   Math.abs(txMes(m,['4.3.1'],'DEBIT',true)),
+    vend:  Math.abs(txMes(m,['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'],'DEBIT',true)),
+    v441:  Math.abs(txMes(m,['4.4.1'],'DEBIT',true)),
+    v442:  Math.abs(txMes(m,['4.4.2'],'DEBIT',true)),
+    v443:  Math.abs(txMes(m,['4.4.3'],'DEBIT',true)),
+    v444:  Math.abs(txMes(m,['4.4.4'],'DEBIT',true)),
+    v446:  Math.abs(txMes(m,['4.4.6'],'DEBIT',true)),
+    moto:  Math.abs(txMes(m,['4.6.1','4.6.2','4.6.3'],'DEBIT',true)),
+    m461:  Math.abs(txMes(m,['4.6.1'],'DEBIT',true)),
+    m462:  Math.abs(txMes(m,['4.6.2'],'DEBIT',true)),
+    m463:  Math.abs(txMes(m,['4.6.3'],'DEBIT',true)),
+    fin:   Math.abs(txMes(m,['5.1.1','5.1.99'],'DEBIT',true)),
+    adm:   Math.abs(txMes(m,['5.2.1','5.2.2','5.2.3','5.2.4','5.2.11','5.2.17','5.2.19','5.2.99'],'DEBIT',true)),
+    a521:  Math.abs(txMes(m,['5.2.1'],'DEBIT',true)),
+    a523:  Math.abs(txMes(m,['5.2.3'],'DEBIT',true)),
+    a524:  Math.abs(txMes(m,['5.2.4'],'DEBIT',true)),
+    a5211: Math.abs(txMes(m,['5.2.11'],'DEBIT',true)),
+    a5217: Math.abs(txMes(m,['5.2.17'],'DEBIT',true)),
+    a5299: Math.abs(txMes(m,['5.2.99','5.2.19'],'DEBIT',true)),
+    pes:   Math.abs(txMes(m,['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],'DEBIT',true)),
+    p531:  Math.abs(txMes(m,['5.3.1'],'DEBIT',true)),
+    p532:  Math.abs(txMes(m,['5.3.2'],'DEBIT',true)),
+    p535:  Math.abs(txMes(m,['5.3.5'],'DEBIT',true)),
+    p536:  Math.abs(txMes(m,['5.3.6'],'DEBIT',true)),
+    p537:  Math.abs(txMes(m,['5.3.7'],'DEBIT',true)),
+    p5312: Math.abs(txMes(m,['5.3.12'],'DEBIT',true)),
+    p5313: Math.abs(txMes(m,['5.3.13'],'DEBIT',true)),
+    veic:  Math.abs(txMes(m,['5.5.3','5.5.4','5.5.5','5.5.99'],'DEBIT',true)),
+    traf:  Math.abs(txMes(m,['5.8.1','5.8.2'],'DEBIT',true)),
+    inv:   Math.abs(txMes(m,['6.4.1','6.4.2'],'DEBIT',true)),
+    noin:  txMes(m,['7.1.4','7.1.6','7.1.7','7.1.99'],'CREDIT',true),
+    nout:  Math.abs(txMes(m,['7.2.1','7.2.13','7.2.99'],'DEBIT',true)),
+    n7213: Math.abs(txMes(m,['7.2.13'],'DEBIT',true)),
   }));
 
   // Mês selecionado para detalhar (null = todos)
