@@ -666,6 +666,18 @@ function buildTX(){
         espelhoDe:ed.espelhoDe||null,contaTransf:ed.contaTransf||null});
     }
   });
+  // AUTO-ESPELHO: toda transferência com conta de contrapartida gera o lançamento espelho na outra conta
+  // (auto-corretivo: cobre transferências feitas antes desta funcionalidade)
+  TX.filter(t=>t.status==='transferencia' && t.contaTransf && !t.espelhoDe).forEach(t=>{
+    const espId = 'esp_'+t.id;
+    if(TX.find(x=>x.id===espId)) return;
+    const tipoEsp = t.type==='DEBIT' ? 'CREDIT' : 'DEBIT';
+    const ci = {code:'TRF', nome:'Transferência entre Contas', cor:'#0369a1', grupo:'Transferência'};
+    TX.push({id:espId, date:t.date, hora:t.hora, type:tipoEsp, amt:t.amt, conta:t.contaTransf,
+      cat:'transf', catInfo:ci, status:'transferencia', meio:'Transferência', cli:t.conta||'',
+      obs:'', editado:true, espelhoDe:t.id, contaTransf:t.conta||null,
+      desc:(tipoEsp==='CREDIT'?'Transferência recebida de ':'Transferência enviada para ')+(t.conta||'')});
+  });
 }
 buildTX();
 
