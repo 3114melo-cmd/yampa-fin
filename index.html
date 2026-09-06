@@ -659,9 +659,11 @@ function buildTX(){
   Object.entries(EDITED).forEach(([id,ed])=>{
     if(ed.manual && !TX.find(t=>t.id===id)){
       const c = ed.cat||'OUT';
-      TX.unshift({id,date:ed.date||'2026-07-04',hora:ed.hora||'--:--',desc:ed.desc||'',
-        amt:Math.abs(ed.amt||0),type:ed.type||'CREDIT',cat:c,catInfo:cat(c),
-        cli:ed.cli||'',obs:ed.obs||'',meio:ed.meio||'PIX',status:ed.status||'conciliado',editado:true});
+      const ci = c==='transf' ? {code:'TRF', nome:'Transferência entre Contas', cor:'#0369a1', grupo:'Transferência'} : cat(c);
+      TX.unshift({id,date:ed.date||HOJE_SISTEMA,hora:ed.hora||'--:--',desc:ed.desc||'',
+        amt:Math.abs(ed.amt||0),type:ed.type||'CREDIT',cat:c,catInfo:ci,conta:ed.conta||'Stone',
+        cli:ed.cli||'',obs:ed.obs||'',meio:ed.meio||'PIX',status:ed.status||'conciliado',editado:true,
+        espelhoDe:ed.espelhoDe||null,contaTransf:ed.contaTransf||null});
     }
   });
 }
@@ -1450,7 +1452,19 @@ function confirmarTransf(btn){
   t._contaTransf=null;
   if(window._transfState) delete window._transfState[id];
   saveEd(id,{status:'transferencia',cat:'transf',contaTransf:contaOrigem});
-  toast('🔄 Transferência: '+contaOrigem+' → '+contaDest,'ok');
+  // Criar lançamento ESPELHO na outra conta (tipo inverso) para o saldo dela mudar
+  const espId = 'esp_'+id;
+  const tipoEspelho = t.type==='DEBIT' ? 'CREDIT' : 'DEBIT';
+  saveEd(espId,{
+    manual:true, espelhoDe:id,
+    date:t.date, hora:t.hora, type:tipoEspelho, amt:t.amt,
+    conta:contaOrigem, cat:'transf', status:'transferencia', meio:'Transferência',
+    cli:contaDest,
+    desc:(tipoEspelho==='CREDIT'?'Transferência recebida de ':'Transferência enviada para ')+contaDest
+  });
+  const de = t.type==='DEBIT' ? contaDest : contaOrigem;
+  const para = t.type==='DEBIT' ? contaOrigem : contaDest;
+  toast('🔄 Transferência: '+de+' → '+para,'ok');
   openId=null;
   render();
 }
@@ -1490,8 +1504,12 @@ function conc(id){
 function desconc(id){
   const t=TX.find(x=>x.id===id);
   if(!t) return;
+  // Se for um espelho de transferência, desfaz o original em vez dele
+  if(t.espelhoDe){ desconc(t.espelhoDe); return; }
+  // Remover espelho vinculado, se houver
+  if(EDITED['esp_'+id]){ delete EDITED['esp_'+id]; try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){} }
   t.status='pendente';
-  saveEd(id,{status:'pendente'});
+  saveEd(id,{status:'pendente',cat:undefined,contaTransf:null});
   toast('↩ Desfeito');
   render();
 }
