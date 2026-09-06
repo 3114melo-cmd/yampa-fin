@@ -330,11 +330,23 @@ tr:hover td{background:var(--sur2)}
         <div class="tipo-b sel" onclick="selTipo(this,'entrada')"><div class="tipo-ic">📈</div><div class="tipo-lb" style="color:#059669">Entrada</div></div>
         <div class="tipo-b" onclick="selTipo(this,'saida')"><div class="tipo-ic">📉</div><div class="tipo-lb" style="color:#dc2626">Saída</div></div>
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
-        <div class="tipo-b" onclick="selTipo(this,'fantasma')"><div class="tipo-ic">👻</div><div class="tipo-lb">Fantasma</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-07-04"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-09-06"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
+      </div>
+      <div class="fr" id="m-conta-row">
+        <div class="fg"><label>Conta</label>
+          <select id="m-conta"><option>Stone</option><option>Caixa (Dinheiro)</option></select>
+        </div>
+      </div>
+      <div class="fr fr2" id="m-transf-row" style="display:none">
+        <div class="fg"><label>De (sai da conta)</label>
+          <select id="m-de"><option>Stone</option><option>Caixa (Dinheiro)</option></select>
+        </div>
+        <div class="fg"><label>Para (entra na conta)</label>
+          <select id="m-para"><option>Caixa (Dinheiro)</option><option>Stone</option></select>
+        </div>
       </div>
       <div class="fr"><div class="fg"><label>Descrição</label><input type="text" id="m-desc" placeholder="Ex: Pagamento DHFIT Distribuidora"></div></div>
       <div class="fr fr2">
@@ -346,7 +358,7 @@ tr:hover td{background:var(--sur2)}
       <div class="fr fr2">
         <div class="fg"><label>Cliente / Fornecedor</label><input type="text" id="m-cli" placeholder="Nome ou CNPJ"></div>
         <div class="fg"><label>Centro de Custo</label>
-          <select id="m-cc"><option>Yampa Suplementos</option><option>DHFIT Distribuidora</option><option>MotoRun Delivery</option><option>Holding</option></select>
+          <select id="m-cc"><option>Stone</option><option>Caixa</option></select>
         </div>
       </div>
     </div>
@@ -1520,6 +1532,8 @@ function desconc(id){
   if(t.espelhoDe){ desconc(t.espelhoDe); return; }
   // Remover espelho vinculado, se houver
   if(EDITED['esp_'+id]){ delete EDITED['esp_'+id]; try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){} }
+  // Transferência criada manualmente: desfazer = excluir os dois lançamentos
+  if(EDITED[id] && EDITED[id].manual){ delete EDITED[id]; try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){} toast('🗑 Transferência excluída'); render(); return; }
   t.status='pendente';
   saveEd(id,{status:'pendente',cat:undefined,contaTransf:null});
   toast('↩ Desfeito');
@@ -3133,23 +3147,45 @@ function renderMetas(){
 // ════════════════════════════════
 function openModal(){ document.getElementById('modal').classList.add('open'); }
 function closeModal(){ document.getElementById('modal').classList.remove('open'); }
-function selTipo(el,t){ tipoModal=t; document.querySelectorAll('.tipo-b').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); }
+function selTipo(el,t){
+  tipoModal=t;
+  document.querySelectorAll('.tipo-b').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  const isT = t==='transf';
+  const rowConta=document.getElementById('m-conta-row'), rowT=document.getElementById('m-transf-row');
+  if(rowConta) rowConta.style.display = isT?'none':'';
+  if(rowT) rowT.style.display = isT?'':'none';
+  const catSel=document.getElementById('m-cat'); if(catSel){ catSel.disabled=isT; catSel.parentElement.style.opacity=isT?'.45':'1'; }
+}
 
 function salvarManual(){
   const data=document.getElementById('m-data').value;
   const valor=parseFloat(document.getElementById('m-valor').value)||0;
-  const desc=document.getElementById('m-desc').value.trim();
+  let desc=document.getElementById('m-desc').value.trim();
   const c=document.getElementById('m-cat').value;
   const cli=document.getElementById('m-cli').value.trim();
   const meio=document.getElementById('m-meio').value;
-  if(!desc||!valor){ toast('Preencha descrição e valor!','err'); return; }
+  const hora=new Date().toTimeString().slice(0,5);
+  if(!valor){ toast('Preencha o valor!','err'); return; }
+
+  if(tipoModal==='transf'){
+    const de=document.getElementById('m-de').value;
+    const para=document.getElementById('m-para').value;
+    if(de===para){ toast('Conta de origem e destino devem ser diferentes!','err'); return; }
+    if(!desc) desc='Transferência '+de+' → '+para;
+    const idOut='m'+Date.now(); const idIn='esp_'+idOut;
+    saveEd(idOut,{manual:true,date:data,hora,desc:desc,amt:valor,type:'DEBIT',conta:de,cat:'transf',cli:para,meio:'Transferência',status:'transferencia',contaTransf:para});
+    saveEd(idIn,{manual:true,espelhoDe:idOut,date:data,hora,desc:'Transferência recebida de '+de,amt:valor,type:'CREDIT',conta:para,cat:'transf',cli:de,meio:'Transferência',status:'transferencia',contaTransf:de});
+    closeModal(); toast('🔄 Transferência: '+de+' → '+para+' · '+fmtR(valor),'ok'); render(); return;
+  }
+
+  if(!desc){ toast('Preencha a descrição!','err'); return; }
+  const conta=document.getElementById('m-conta').value;
   const isC=tipoModal==='entrada';
   const id='m'+Date.now();
-  const novo={id,date:data,hora:new Date().toTimeString().slice(0,5),desc,amt:valor,type:isC?'CREDIT':'DEBIT',cat:c,catInfo:cat(c),cli,obs:'',meio,status:'conciliado',editado:true};
-  TX.unshift(novo);
-  saveEd(id,{manual:true,date:data,desc,amt:valor,type:novo.type,cat:c,cli,meio,status:'conciliado'});
+  saveEd(id,{manual:true,date:data,hora,desc,amt:valor,type:isC?'CREDIT':'DEBIT',cat:c,cli,meio,conta,status:'conciliado'});
   closeModal();
-  toast('✓ Lançamento salvo!','ok');
+  toast('✓ Lançamento salvo em '+conta+'!','ok');
   render();
 }
 
