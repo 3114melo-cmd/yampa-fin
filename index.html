@@ -311,7 +311,7 @@ tr:hover td{background:var(--sur2)}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 06/09 · 03:00
+        Stone · 09/09 · 16:28
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -332,7 +332,7 @@ tr:hover td{background:var(--sur2)}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-09-06"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-09-09"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr" id="m-conta-row">
@@ -527,7 +527,7 @@ function autocat(desc, tipo){
 // ════════════════════════════════
 const RAW = [
   // STONE (CNPJ 38.364.354/0001-98 · Conta 73808024-4) · a partir de 05/09/2026
-  {id:'saldo_inicial_stone',date:'2026-09-05',hora:'00:00',desc:'SALDO INICIAL STONE - Abertura do sistema (saldo anterior a 05/09/2026)',amt:1028.02,type:'CREDIT',conta:'Stone',cat:'13.99',cli:'Saldo Inicial',meio:'Ajuste',status_fixo:'conciliado'},
+  {id:'saldo_inicial_stone',date:'2026-09-05',hora:'00:00',desc:'SALDO INICIAL STONE - Abertura do sistema (saldo anterior a 05/09/2026)',amt:873.44,type:'CREDIT',conta:'Stone',cat:'13.99',cli:'Saldo Inicial',meio:'Ajuste',status_fixo:'conciliado'},
   {id:'st_44bad2a2',date:'2026-09-05',hora:'23:24',desc:'Antecipação | Recebimento vendas',amt:224.19,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_7f135783',date:'2026-09-05',hora:'22:51',desc:'Transferência | Pix | NATANEL SANTANA GOMES',amt:85.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Natanel Santana Gomes',meio:'PIX'},
   {id:'st_21e005ed',date:'2026-09-05',hora:'22:46',desc:'Antecipação | Recebimento vendas',amt:89.17,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
@@ -612,7 +612,193 @@ const RAW = [
   {id:'st_909412e0',date:'2026-09-05',hora:'12:07',desc:'Antecipação | Recebimento vendas',amt:54.64,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_080d8ac3',date:'2026-09-05',hora:'12:07',desc:'Antecipação | Recebimento vendas',amt:163.93,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_ab58d8c7',date:'2026-09-05',hora:'11:34',desc:'Antecipação | Recebimento vendas',amt:161.49,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_adbc49c3',date:'2026-09-05',hora:'00:03',desc:'Transferência | Pix | Valdir Eustaquio da Conceicao',amt:809.69,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Valdir Eustaquio da Conceicao',meio:'PIX'}
+  {id:'st_adbc49c3',date:'2026-09-05',hora:'00:03',desc:'Transferência | Pix | Valdir Eustaquio da Conceicao',amt:809.69,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Valdir Eustaquio da Conceicao',meio:'PIX'},
+  // SYNC 09/09/2026 - 06 a 09/09
+  {id:'st_022cf8b7',date:'2026-09-09',hora:'09:31',desc:'Transferência | Conta Stone | PAGAR.ME PAGAMENTOS S.A.',amt:466.85,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PAGAR.ME PAGAMENTOS S.A.',meio:'PIX'},
+  {id:'st_80e855d9',date:'2026-09-09',hora:'06:15',desc:'Antecipação | Crédito | Recebimento vendas',amt:270.6,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_20d0b396',date:'2026-09-09',hora:'02:26',desc:'Pagamento | BRG SUPLEMENTOS NUTRICIONAIS LTDA',amt:1197.24,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'BRG SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto'},
+  {id:'st_e620023d',date:'2026-09-09',hora:'02:25',desc:'Pagamento | BRG SUPLEMENTOS NUTRICIONAIS LTDA',amt:1197.24,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'BRG SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto'},
+  {id:'st_c30e243a',date:'2026-09-08',hora:'23:37',desc:'Antecipação | Recebimento vendas',amt:183.56,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_22a41b22',date:'2026-09-08',hora:'23:26',desc:'Antecipação | Recebimento vendas',amt:137.18,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_4752197c',date:'2026-09-08',hora:'23:16',desc:'Antecipação | Recebimento vendas',amt:69.36,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_368d4c62',date:'2026-09-08',hora:'23:05',desc:'Pix | Maquininha | JOAO BATISTA NOGUEIRA DE SOUSA',amt:4.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOAO BATISTA NOGUEIRA DE SOUSA',meio:'PIX'},
+  {id:'st_1d9fb82a',date:'2026-09-08',hora:'22:47',desc:'Antecipação | Recebimento vendas',amt:38.88,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_b0f0733e',date:'2026-09-08',hora:'22:46',desc:'Pix | Maquininha | PEDRO LUCAS GALDINO DA SILVA',amt:114.43,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PEDRO LUCAS GALDINO DA SILVA',meio:'PIX'},
+  {id:'st_9abae8b5',date:'2026-09-08',hora:'22:43',desc:'Transferência | Pix | Andre Dos Santos Ribeiro',amt:50.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Andre Dos Santos Ribeiro',meio:'PIX'},
+  {id:'st_d72b6415',date:'2026-09-08',hora:'22:36',desc:'Transferência | Pix | Renato Cesar Aguiar De Sousa',amt:100.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Renato Cesar Aguiar De Sousa',meio:'PIX'},
+  {id:'st_00a021c4',date:'2026-09-08',hora:'22:22',desc:'Antecipação | Recebimento vendas',amt:69.36,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_eb7990ef',date:'2026-09-08',hora:'22:07',desc:'Pix | Maquininha | Lindalva Florencio Domingos',amt:194.03,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Lindalva Florencio Domingos',meio:'PIX'},
+  {id:'st_9f458d0a',date:'2026-09-08',hora:'21:58',desc:'Antecipação | Recebimento vendas',amt:27.67,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_54bc94ed',date:'2026-09-08',hora:'21:58',desc:'Antecipação | Recebimento vendas',amt:27.67,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_4ce135ca',date:'2026-09-08',hora:'21:55',desc:'Pix | Maquininha | Ryan David de Melo Souza',amt:278.6,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Ryan David de Melo Souza',meio:'PIX'},
+  {id:'st_bfa18719',date:'2026-09-08',hora:'21:49',desc:'Transferência | Pix | DANIELA DA SILVA PAIVA',amt:55.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DANIELA DA SILVA PAIVA',meio:'PIX'},
+  {id:'st_d6f5b84c',date:'2026-09-08',hora:'21:43',desc:'Antecipação | Recebimento vendas',amt:133.56,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_bc5e197f',date:'2026-09-08',hora:'21:43',desc:'Pix | Maquininha | Jessica Mayara Mendes',amt:5.88,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Jessica Mayara Mendes',meio:'PIX'},
+  {id:'st_b1119858',date:'2026-09-08',hora:'21:37',desc:'Pix | Maquininha | R D P DA SILVA',amt:243.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'R D P DA SILVA',meio:'PIX'},
+  {id:'st_b850547e',date:'2026-09-08',hora:'21:33',desc:'Pix | Maquininha | Fabiana Araujo da Silva',amt:283.58,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Fabiana Araujo da Silva',meio:'PIX'},
+  {id:'st_e77a5afe',date:'2026-09-08',hora:'21:25',desc:'Transferência | Pix | UBER DO BRASIL TECNOLOGIA LTDA.',amt:12.91,type:'DEBIT',conta:'Stone',cat:'4.4.6',cli:'UBER DO BRASIL TECNOLOGIA LTDA.',meio:'PIX'},
+  {id:'st_18d10578',date:'2026-09-08',hora:'21:20',desc:'Antecipação | Recebimento vendas',amt:136.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_468bfe22',date:'2026-09-08',hora:'21:13',desc:'Transferência | Pix | ALICE GABRIELA FERREIRA S CRUZ',amt:59.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ALICE GABRIELA FERREIRA S CRUZ',meio:'PIX'},
+  {id:'st_93ecbb99',date:'2026-09-08',hora:'21:02',desc:'Antecipação | Recebimento vendas',amt:53.14,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_184dde6a',date:'2026-09-08',hora:'20:58',desc:'Pix | Maquininha | ELIONE VIANA DE SOUZA',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ELIONE VIANA DE SOUZA',meio:'PIX'},
+  {id:'st_6285f230',date:'2026-09-08',hora:'20:54',desc:'Antecipação | Recebimento vendas',amt:154.58,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_48351267',date:'2026-09-08',hora:'20:51',desc:'Pix | Maquininha | THALES DE BARROS SILVA',amt:60.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'THALES DE BARROS SILVA',meio:'PIX'},
+  {id:'st_1f110470',date:'2026-09-08',hora:'20:48',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:450.0,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
+  {id:'st_9586e1be',date:'2026-09-08',hora:'20:47',desc:'Antecipação | Recebimento vendas',amt:115.93,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_26d536a0',date:'2026-09-08',hora:'20:43',desc:'Antecipação | Recebimento vendas',amt:95.4,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_a057e415',date:'2026-09-08',hora:'20:43',desc:'Transferência | Pix | CLAUDIONOR COSTA DA SILVA',amt:65.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'CLAUDIONOR COSTA DA SILVA',meio:'PIX'},
+  {id:'st_2b4caf83',date:'2026-09-08',hora:'20:41',desc:'Transferência | Pix | DHFIT NUTRICAO ESPORTIVA LTDA',amt:880.0,type:'DEBIT',conta:'Stone',cat:'7.2.99',cli:'DHFIT NUTRICAO ESPORTIVA LTDA',meio:'PIX'},
+  {id:'st_18214289',date:'2026-09-08',hora:'20:36',desc:'Pix | Maquininha | BEATRIZ FONSECA DE AMORIM OLIVEIRA',amt:134.33,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'BEATRIZ FONSECA DE AMORIM OLIVEIRA',meio:'PIX'},
+  {id:'st_80d41f57',date:'2026-09-08',hora:'20:34',desc:'Transferência | Pix | Jaqueline Felipe de Barros',amt:45.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Jaqueline Felipe de Barros',meio:'PIX'},
+  {id:'st_e25a3301',date:'2026-09-08',hora:'20:32',desc:'Pix | Maquininha | LUIZ ANTONIO DE ARAUJO',amt:69.56,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LUIZ ANTONIO DE ARAUJO',meio:'PIX'},
+  {id:'st_51ede0de',date:'2026-09-08',hora:'20:26',desc:'Pix | Maquininha | Anderson Câmara de Oliveira',amt:91.54,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Anderson Câmara de Oliveira',meio:'PIX'},
+  {id:'st_a360f9b8',date:'2026-09-08',hora:'20:14',desc:'Transferência | Pix | 99 TECNOLOGIA LTDA',amt:15.7,type:'DEBIT',conta:'Stone',cat:'4.4.6',cli:'99 TECNOLOGIA LTDA',meio:'PIX'},
+  {id:'st_f86512cf',date:'2026-09-08',hora:'20:12',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:250.0,type:'DEBIT',conta:'Stone',cat:'5.2.4',cli:'DH HOLDING IMOBILIARIA LTDA',meio:'PIX'},
+  {id:'st_3f94b38d',date:'2026-09-08',hora:'20:11',desc:'Transferência | Pix | Evandro Pires de Medeiros Filho',amt:59.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Evandro Pires de Medeiros Filho',meio:'PIX'},
+  {id:'st_3c768db8',date:'2026-09-08',hora:'19:59',desc:'Pix | Maquininha | Debora da Silva Dantas',amt:59.61,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Debora da Silva Dantas',meio:'PIX'},
+  {id:'st_07769544',date:'2026-09-08',hora:'19:55',desc:'Transferência | Pix | Manoel da Silva Imperial Junior',amt:130.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Manoel da Silva Imperial Junior',meio:'PIX'},
+  {id:'st_f39282cc',date:'2026-09-08',hora:'19:45',desc:'Transferência | Pix | ITALO IGO DA SILVA DOMINGOS',amt:122.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ITALO IGO DA SILVA DOMINGOS',meio:'PIX'},
+  {id:'st_f8e34e5e',date:'2026-09-08',hora:'19:37',desc:'Antecipação | Recebimento vendas',amt:28.62,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c1b2d391',date:'2026-09-08',hora:'19:37',desc:'Antecipação | Recebimento vendas',amt:28.62,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_d6e5d19a',date:'2026-09-08',hora:'19:36',desc:'Transferência | Pix | MARIA VITORIA DOMINGOS DA SILVA',amt:5.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MARIA VITORIA DOMINGOS DA SILVA',meio:'PIX'},
+  {id:'st_19567b39',date:'2026-09-08',hora:'19:35',desc:'Transferência | Pix | ANDRIELE SALES VALERIO',amt:100.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ANDRIELE SALES VALERIO',meio:'PIX'},
+  {id:'st_221d2ce0',date:'2026-09-08',hora:'19:32',desc:'Antecipação | Recebimento vendas',amt:179.66,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_18f2a67e',date:'2026-09-08',hora:'19:17',desc:'Pix | Maquininha | LUAN DE MATOS OLIVEIRA',amt:254.72,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LUAN DE MATOS OLIVEIRA',meio:'PIX'},
+  {id:'st_c1f2dc28',date:'2026-09-08',hora:'19:07',desc:'Antecipação | Recebimento vendas',amt:53.14,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c7fd790d',date:'2026-09-08',hora:'19:04',desc:'Transferência | Pix | ILDA FERREIRA ALVES',amt:100.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ILDA FERREIRA ALVES',meio:'PIX'},
+  {id:'st_effe8d50',date:'2026-09-08',hora:'19:03',desc:'Transferência | Pix | Eloiza Santos De Souza',amt:65.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Eloiza Santos De Souza',meio:'PIX'},
+  {id:'st_b72d5233',date:'2026-09-08',hora:'19:00',desc:'Transferência | Pix | WISLA LAHANA DA SILVA SANTOS FERREIRA',amt:129.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'WISLA LAHANA DA SILVA SANTOS FERREIRA',meio:'PIX'},
+  {id:'st_03ee367d',date:'2026-09-08',hora:'18:52',desc:'Transferência | Pix | Marileide de Oliveira',amt:0.01,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Marileide de Oliveira',meio:'PIX'},
+  {id:'st_5d5e8b4f',date:'2026-09-08',hora:'18:47',desc:'Antecipação | Recebimento vendas',amt:53.14,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_0824ed69',date:'2026-09-08',hora:'18:40',desc:'Antecipação | Recebimento vendas',amt:59.35,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_fbc3dfa7',date:'2026-09-08',hora:'18:39',desc:'Pix | Maquininha | BIANCA BEATRIZ DE OLIVEIRA SIMPLICIO',amt:69.65,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'BIANCA BEATRIZ DE OLIVEIRA SIMPLICIO',meio:'PIX'},
+  {id:'st_0494abdf',date:'2026-09-08',hora:'18:20',desc:'Transferência | Pix | DIENNE SINDY ALVES SOUZA',amt:170.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DIENNE SINDY ALVES SOUZA',meio:'PIX'},
+  {id:'st_deda0ca7',date:'2026-09-08',hora:'18:19',desc:'Transferência | Pix | DHFIT DISTRIBUIDORA LTDA',amt:10309.68,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'DHFIT DISTRIBUIDORA LTDA',meio:'PIX'},
+  {id:'st_1147a367',date:'2026-09-08',hora:'18:16',desc:'Pix | Maquininha | MARIA EDUARDA GOMES DA SILVA',amt:9.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIA EDUARDA GOMES DA SILVA',meio:'PIX'},
+  {id:'st_7bfb1c8a',date:'2026-09-08',hora:'18:13',desc:'Pix | Maquininha | MATHEUS SILVA DO NASCIMENTO',amt:186.07,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MATHEUS SILVA DO NASCIMENTO',meio:'PIX'},
+  {id:'st_830be567',date:'2026-09-08',hora:'18:06',desc:'Antecipação | Recebimento vendas',amt:154.48,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_29ad3bbf',date:'2026-09-08',hora:'18:02',desc:'Antecipação | Recebimento vendas',amt:138.61,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_4ae2b047',date:'2026-09-08',hora:'17:55',desc:'Transferência | Pix | Rute Venancio da Silva Crisanto',amt:15.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Rute Venancio da Silva Crisanto',meio:'PIX'},
+  {id:'st_2cef328b',date:'2026-09-08',hora:'17:52',desc:'Transferência | Pix | AILANE DA SILVA FRAGA LEITE',amt:5.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'AILANE DA SILVA FRAGA LEITE',meio:'PIX'},
+  {id:'st_ba4852ba',date:'2026-09-08',hora:'17:47',desc:'Antecipação | Recebimento vendas',amt:351.58,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_623efab7',date:'2026-09-08',hora:'17:47',desc:'Antecipação | Recebimento vendas',amt:234.39,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_276b8aac',date:'2026-09-08',hora:'17:40',desc:'Transferência | Pix | JESSICA PRISCILA NASCIMENTO VILELA',amt:106.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'JESSICA PRISCILA NASCIMENTO VILELA',meio:'PIX'},
+  {id:'st_84d3acbe',date:'2026-09-08',hora:'17:21',desc:'Transferência | Pix | THIAGO CESAR TORRES SILVA',amt:85.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'THIAGO CESAR TORRES SILVA',meio:'PIX'},
+  {id:'st_7fc61772',date:'2026-09-08',hora:'17:14',desc:'Pix | Maquininha | DAIANA MARIANA SILVA',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DAIANA MARIANA SILVA',meio:'PIX'},
+  {id:'st_6bb42382',date:'2026-09-08',hora:'17:12',desc:'Antecipação | Recebimento vendas',amt:37.84,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_282212bb',date:'2026-09-08',hora:'17:12',desc:'Antecipação | Recebimento vendas',amt:18.92,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_f1e31e4a',date:'2026-09-08',hora:'16:48',desc:'Transferência | TED | BANCO TOPAZIO S.A.',amt:207.31,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'BANCO TOPAZIO S.A.',meio:'TED'},
+  {id:'st_20b87896',date:'2026-09-08',hora:'16:35',desc:'Pix | Maquininha | Márcio Denilson de Lima',amt:139.21,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Márcio Denilson de Lima',meio:'PIX'},
+  {id:'st_548af7cc',date:'2026-09-08',hora:'16:32',desc:'Transferência | Pix | Maria Juvania de Barros',amt:105.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Maria Juvania de Barros',meio:'PIX'},
+  {id:'st_13b2cbc4',date:'2026-09-08',hora:'16:19',desc:'Transferência | Pix | RANIERE LOPES DA SONSECA',amt:130.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'RANIERE LOPES DA SONSECA',meio:'PIX'},
+  {id:'st_053e46ca',date:'2026-09-08',hora:'16:07',desc:'Pix | Maquininha | JOSE GABRIEL SILVA DE MEDEIROS',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSE GABRIEL SILVA DE MEDEIROS',meio:'PIX'},
+  {id:'st_297494ab',date:'2026-09-08',hora:'15:50',desc:'Antecipação | Recebimento vendas',amt:206.38,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_ac7c45bb',date:'2026-09-08',hora:'15:50',desc:'Antecipação | Recebimento vendas',amt:206.38,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_67e5caae',date:'2026-09-08',hora:'15:46',desc:'Pix | Maquininha | Claudio Mateus Pereira da Silva',amt:54.73,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Claudio Mateus Pereira da Silva',meio:'PIX'},
+  {id:'st_bae43adc',date:'2026-09-08',hora:'15:41',desc:'Pix | Maquininha | Flavio Alves de Assis Junior',amt:4.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Flavio Alves de Assis Junior',meio:'PIX'},
+  {id:'st_745f928f',date:'2026-09-08',hora:'15:35',desc:'Antecipação | Recebimento vendas',amt:59.35,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_0d14cbcf',date:'2026-09-08',hora:'15:32',desc:'Transferência | Pix | Djalma Mario da Cunha Filho',amt:2090.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Djalma Mario da Cunha Filho',meio:'PIX'},
+  {id:'st_89f1cb8b',date:'2026-09-08',hora:'15:31',desc:'Pagamento | BODY FOOD FABR DE AL S LTDA ME',amt:1392.76,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'BODY FOOD FABR DE AL S LTDA ME',meio:'Boleto'},
+  {id:'st_dbe6a0e7',date:'2026-09-08',hora:'15:30',desc:'Transferência | Pix | Renildo Costa Gomes',amt:93.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Renildo Costa Gomes',meio:'PIX'},
+  {id:'st_3690ee68',date:'2026-09-08',hora:'15:19',desc:'Antecipação | Recebimento vendas',amt:94.13,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_b356af66',date:'2026-09-08',hora:'15:15',desc:'Transferência | Pix | JESSICA PRISCILA NASCIMENTO VILELA',amt:159.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JESSICA PRISCILA NASCIMENTO VILELA',meio:'PIX'},
+  {id:'st_3fada15d',date:'2026-09-08',hora:'15:13',desc:'Transferência | Pix | Maria Aparecida Pereira de Lima',amt:69.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Maria Aparecida Pereira de Lima',meio:'PIX'},
+  {id:'st_f74d8ad5',date:'2026-09-08',hora:'15:12',desc:'Antecipação | Recebimento vendas',amt:54.49,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_6f597f8c',date:'2026-09-08',hora:'15:08',desc:'Antecipação | Recebimento vendas',amt:37.81,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_65b41b1a',date:'2026-09-08',hora:'15:08',desc:'Antecipação | Recebimento vendas',amt:75.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_a7b52199',date:'2026-09-08',hora:'15:02',desc:'Pix | Maquininha | Andre Dos Santos Ribeiro',amt:49.75,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Andre Dos Santos Ribeiro',meio:'PIX'},
+  {id:'st_1a2bbfee',date:'2026-09-08',hora:'14:57',desc:'Antecipação | Recebimento vendas',amt:47.31,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_b70228c9',date:'2026-09-08',hora:'14:57',desc:'Antecipação | Recebimento vendas',amt:23.65,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_de444c1d',date:'2026-09-08',hora:'14:48',desc:'Pix | Maquininha | Daniella Jacinto Gomes',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Daniella Jacinto Gomes',meio:'PIX'},
+  {id:'st_a164758b',date:'2026-09-08',hora:'14:40',desc:'Transferência | Pix | L H DA COSTA COMBUSTIVEIS',amt:83.0,type:'DEBIT',conta:'Stone',cat:'4.6.1',cli:'L H DA COSTA COMBUSTIVEIS',meio:'PIX'},
+  {id:'st_d0b1ff1a',date:'2026-09-08',hora:'14:36',desc:'Transferência | Pix | João Paulo Melo da Costa',amt:66.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'João Paulo Melo da Costa',meio:'PIX'},
+  {id:'st_6ac7815c',date:'2026-09-08',hora:'14:27',desc:'Transferência | Pix | LUCIANA BARBOSA DA SILVA',amt:59.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LUCIANA BARBOSA DA SILVA',meio:'PIX'},
+  {id:'st_3073d9f8',date:'2026-09-08',hora:'14:17',desc:'Transferência | Pix | ALEX DE ANDRADE REGES',amt:99.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ALEX DE ANDRADE REGES',meio:'PIX'},
+  {id:'st_6aa0669c',date:'2026-09-08',hora:'14:02',desc:'Antecipação | Recebimento vendas',amt:56.77,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c2b8db0e',date:'2026-09-08',hora:'14:02',desc:'Antecipação | Recebimento vendas',amt:113.53,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_3b884997',date:'2026-09-08',hora:'13:58',desc:'Transferência | Pix | JEAN MARCOS SOUZA DIAS',amt:2407.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JEAN MARCOS SOUZA DIAS',meio:'PIX'},
+  {id:'st_58aa8477',date:'2026-09-08',hora:'13:42',desc:'Antecipação | Recebimento vendas',amt:72.46,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c82e81b2',date:'2026-09-08',hora:'13:41',desc:'Transferência | Pix | JOAO VITOR GOMES DA SILVA',amt:255.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOAO VITOR GOMES DA SILVA',meio:'PIX'},
+  {id:'st_ad310e5a',date:'2026-09-08',hora:'13:35',desc:'Antecipação | Recebimento vendas',amt:4.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_33e2851c',date:'2026-09-08',hora:'13:21',desc:'Transferência | Pix | Andriele Tavares De Sousa',amt:108.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Andriele Tavares De Sousa',meio:'PIX'},
+  {id:'st_9c8379ef',date:'2026-09-08',hora:'13:18',desc:'Transferência | Pix | PAGGPIX-GESTAO DE RECEBIVEIS LTDA',amt:84.36,type:'DEBIT',conta:'Stone',cat:'4.4.1',cli:'PAGGPIX-GESTAO DE RECEBIVEIS LTDA',meio:'PIX'},
+  {id:'st_6d7a84b0',date:'2026-09-08',hora:'12:53',desc:'Antecipação | Recebimento vendas',amt:4.83,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_b460db4c',date:'2026-09-08',hora:'12:44',desc:'Transferência | Pix | Claude Lucia Medeiros de Souza',amt:20.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Claude Lucia Medeiros de Souza',meio:'PIX'},
+  {id:'st_9732990f',date:'2026-09-08',hora:'12:21',desc:'Antecipação | Recebimento vendas',amt:35.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_14c2d5c3',date:'2026-09-08',hora:'12:21',desc:'Antecipação | Recebimento vendas',amt:35.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_5ed1cbbb',date:'2026-09-08',hora:'12:04',desc:'Transferência | Pix | Otoniel de Oliveira Nascimento',amt:100.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Otoniel de Oliveira Nascimento',meio:'PIX'},
+  {id:'st_79a8e68b',date:'2026-09-08',hora:'12:03',desc:'Transferência | Pix | ATENDE TUDO SOLUCOES AMBIENTAIS LTDA',amt:915.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'ATENDE TUDO SOLUCOES AMBIENTAIS LTDA',meio:'PIX'},
+  {id:'st_c5f0d6bb',date:'2026-09-08',hora:'11:53',desc:'Antecipação | Recebimento vendas',amt:106.81,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_f95fd646',date:'2026-09-08',hora:'09:30',desc:'Transferência | Conta Stone | PAGAR.ME PAGAMENTOS S.A.',amt:408.76,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PAGAR.ME PAGAMENTOS S.A.',meio:'PIX'},
+  {id:'st_62f86c78',date:'2026-09-08',hora:'07:00',desc:'Transferência | Conta Stone | PAGAR.ME PAGAMENTOS S.A.',amt:1044.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PAGAR.ME PAGAMENTOS S.A.',meio:'PIX'},
+  {id:'st_7f14178d',date:'2026-09-08',hora:'06:38',desc:'Antecipação | Crédito | Recebimento vendas',amt:160.4,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_296c6846',date:'2026-09-08',hora:'06:38',desc:'Antecipação | Crédito | Recebimento vendas',amt:66.38,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_45653eda',date:'2026-09-08',hora:'00:01',desc:'Transferência | Pix | Pedro Erick Franca da Camara',amt:84.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Pedro Erick Franca da Camara',meio:'PIX'},
+  {id:'st_a5ae20bc',date:'2026-09-07',hora:'23:32',desc:'Transferência | Pix | Joao Maria Moura De Melo Elias',amt:250.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Joao Maria Moura De Melo Elias',meio:'PIX'},
+  {id:'st_aa05276f',date:'2026-09-07',hora:'18:04',desc:'Transferência | Pix | Gerlane Teixeira',amt:120.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Gerlane Teixeira',meio:'PIX'},
+  {id:'st_3fc6f9f3',date:'2026-09-07',hora:'17:46',desc:'Pix | Maquininha | Felipe da Silva Alves',amt:129.35,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Felipe da Silva Alves',meio:'PIX'},
+  {id:'st_08ce6f33',date:'2026-09-07',hora:'17:24',desc:'Antecipação | Recebimento vendas',amt:155.56,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_2672cbd3',date:'2026-09-07',hora:'17:21',desc:'Pix | Maquininha | David Felix dos Santos',amt:189.05,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'David Felix dos Santos',meio:'PIX'},
+  {id:'st_73fb7931',date:'2026-09-07',hora:'17:09',desc:'Transferência | Pix | Rosilene Candido da Silva',amt:174.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Rosilene Candido da Silva',meio:'PIX'},
+  {id:'st_bb31e725',date:'2026-09-07',hora:'17:01',desc:'Pix | Maquininha | Jhonyffer Cosme Soares Da Silva',amt:24.88,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Jhonyffer Cosme Soares Da Silva',meio:'PIX'},
+  {id:'st_b8a67d97',date:'2026-09-07',hora:'16:46',desc:'Pix | Maquininha | Israel Sousa Do Nascimento',amt:9.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Israel Sousa Do Nascimento',meio:'PIX'},
+  {id:'st_ed2f592d',date:'2026-09-07',hora:'16:34',desc:'Transferência | Pix | Gliciane da Silva Pereira Melo',amt:155.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Gliciane da Silva Pereira Melo',meio:'PIX'},
+  {id:'st_0f16d814',date:'2026-09-07',hora:'16:21',desc:'Transferência | Pix | JANAINA GONCALVES DE MENEZES',amt:48.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JANAINA GONCALVES DE MENEZES',meio:'PIX'},
+  {id:'st_6c59d070',date:'2026-09-07',hora:'16:15',desc:'Transferência | Pix | RAMINNY WERUSKA SANTOS SILVA',amt:59.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'RAMINNY WERUSKA SANTOS SILVA',meio:'PIX'},
+  {id:'st_cf30f14a',date:'2026-09-07',hora:'15:46',desc:'Antecipação | Recebimento vendas',amt:100.85,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_8938c41a',date:'2026-09-07',hora:'15:46',desc:'Antecipação | Recebimento vendas',amt:50.43,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_7bab8738',date:'2026-09-07',hora:'14:46',desc:'Transferência | Pix | higor ruan lopes de souza',amt:42.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'higor ruan lopes de souza',meio:'PIX'},
+  {id:'st_71282cf8',date:'2026-09-07',hora:'14:35',desc:'Antecipação | Recebimento vendas',amt:35.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_dfad728a',date:'2026-09-07',hora:'14:35',desc:'Antecipação | Recebimento vendas',amt:35.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_797d9ed3',date:'2026-09-07',hora:'13:49',desc:'Transferência | Pix | ITALO BRUNO TAVARES DA SILVA',amt:498.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ITALO BRUNO TAVARES DA SILVA',meio:'PIX'},
+  {id:'st_0d1ac65a',date:'2026-09-07',hora:'13:22',desc:'Antecipação | Recebimento vendas',amt:85.86,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_bdbe4109',date:'2026-09-07',hora:'13:22',desc:'Antecipação | Recebimento vendas',amt:85.86,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_deb88aa4',date:'2026-09-07',hora:'13:18',desc:'Transferência | Pix | DORGIVAL DE OLIVEIRA FILHO',amt:100.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DORGIVAL DE OLIVEIRA FILHO',meio:'PIX'},
+  {id:'st_7b8314af',date:'2026-09-07',hora:'13:12',desc:'Transferência | Pix | DANIEL LUCAS DA SILVA SOUZA',amt:179.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DANIEL LUCAS DA SILVA SOUZA',meio:'PIX'},
+  {id:'st_80c403ca',date:'2026-09-07',hora:'12:24',desc:'Transferência | Pix | MARIANA LOUREIRO TEIXEIRA',amt:225.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIANA LOUREIRO TEIXEIRA',meio:'PIX'},
+  {id:'st_1d5fbde3',date:'2026-09-07',hora:'12:00',desc:'Transferência | Pix | JOSIELSON RODRIGUES DA SILVA',amt:100.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSIELSON RODRIGUES DA SILVA',meio:'PIX'},
+  {id:'st_22e1896f',date:'2026-09-06',hora:'19:03',desc:'Antecipação | Recebimento vendas',amt:18.88,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_fbd6c6e6',date:'2026-09-06',hora:'19:03',desc:'Antecipação | Recebimento vendas',amt:37.79,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_2995de09',date:'2026-09-06',hora:'18:21',desc:'Antecipação | Recebimento vendas',amt:57.14,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_ae5dce74',date:'2026-09-06',hora:'17:22',desc:'Antecipação | Recebimento vendas',amt:18.91,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_f1ddc4bf',date:'2026-09-06',hora:'17:22',desc:'Antecipação | Recebimento vendas',amt:37.84,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_bca6f8e7',date:'2026-09-06',hora:'14:26',desc:'Pix | Maquininha | RAFAEL DA SILVA PIRES STUDIO TIO RAFA',amt:89.55,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'RAFAEL DA SILVA PIRES STUDIO TIO RAFA',meio:'PIX'},
+  {id:'st_865b923f',date:'2026-09-06',hora:'14:02',desc:'Transferência | Pix | higor ruan lopes de souza',amt:54.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'higor ruan lopes de souza',meio:'PIX'},
+  {id:'st_28ceacff',date:'2026-09-06',hora:'12:56',desc:'Transferência | Pix | LUIZ HENRIQUE ANDRADE DA SILVA',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LUIZ HENRIQUE ANDRADE DA SILVA',meio:'PIX'},
+  {id:'st_0ffaed52',date:'2026-09-06',hora:'00:42',desc:'Antecipação | Recebimento vendas',amt:154.58,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  // SYNC 09/09/2026 (tarde)
+  {id:'st_5f4a65ff',date:'2026-09-09',hora:'16:05',desc:'Pix | Maquininha | ROSANE MARIA DE GOIS MARQUES',amt:26.87,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ROSANE MARIA DE GOIS MARQUES',meio:'PIX'},
+  {id:'st_03a79682',date:'2026-09-09',hora:'16:03',desc:'Antecipação | Recebimento vendas',amt:71.29,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_0f470a60',date:'2026-09-09',hora:'15:47',desc:'Antecipação | Recebimento vendas',amt:53.14,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_18e45eef',date:'2026-09-09',hora:'15:43',desc:'Antecipação | Recebimento vendas',amt:116.87,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_aca12fa2',date:'2026-09-09',hora:'15:43',desc:'Antecipação | Recebimento vendas',amt:116.87,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_5eeb50e2',date:'2026-09-09',hora:'15:33',desc:'Antecipação | Recebimento vendas',amt:59.45,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_e3ee0705',date:'2026-09-09',hora:'15:31',desc:'Pix | Maquininha | Josenilton Silva dos Santos',amt:123.58,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Josenilton Silva dos Santos',meio:'PIX'},
+  {id:'st_8865122a',date:'2026-09-09',hora:'15:21',desc:'Antecipação | Recebimento vendas',amt:54.49,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_e2a2e4af',date:'2026-09-09',hora:'15:07',desc:'Pix | Maquininha | Maria Eduarda Gomes de Araújo',amt:99.5,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Maria Eduarda Gomes de Araújo',meio:'PIX'},
+  {id:'st_affcc97d',date:'2026-09-09',hora:'14:53',desc:'Pix | Maquininha | LENO RODRIGUES DE LIMA',amt:54.73,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LENO RODRIGUES DE LIMA',meio:'PIX'},
+  {id:'st_ce1b5ae7',date:'2026-09-09',hora:'14:43',desc:'Débito | Físico | POSTO MACACO',amt:100.85,type:'DEBIT',conta:'Stone',cat:'4.6.1',cli:'POSTO MACACO',meio:'Cartão'},
+  {id:'st_68cc5802',date:'2026-09-09',hora:'14:42',desc:'Antecipação | Recebimento vendas',amt:44.59,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_14ad64ee',date:'2026-09-09',hora:'14:33',desc:'Antecipação | Recebimento vendas',amt:129.26,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_9ab52fe4',date:'2026-09-09',hora:'14:28',desc:'Transferência | Pix | Maria Fernanda Silva dos Santos',amt:65.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Maria Fernanda Silva dos Santos',meio:'PIX'},
+  {id:'st_8a649973',date:'2026-09-09',hora:'14:21',desc:'Transferência | Pix | Felipe Teixeira de lira',amt:37.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Felipe Teixeira de lira',meio:'PIX'},
+  {id:'st_6a06d7cb',date:'2026-09-09',hora:'14:12',desc:'Antecipação | Recebimento vendas',amt:40.55,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_1309a516',date:'2026-09-09',hora:'14:12',desc:'Antecipação | Recebimento vendas',amt:121.64,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_eed721ab',date:'2026-09-09',hora:'13:55',desc:'Transferência | Pix | Ismael Paulo Da Silveira',amt:4.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Ismael Paulo Da Silveira',meio:'PIX'},
+  {id:'st_5ec28a73',date:'2026-09-09',hora:'13:46',desc:'Transferência | Pix | Willijane Alves da Rocha',amt:126.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Willijane Alves da Rocha',meio:'PIX'},
+  {id:'st_b47d9994',date:'2026-09-09',hora:'13:36',desc:'Transferência | Pix | Ygor Ferreira Lima de Oliveira',amt:300.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Ygor Ferreira Lima de Oliveira',meio:'PIX'},
+  {id:'st_2006f50a',date:'2026-09-09',hora:'13:31',desc:'Antecipação | Recebimento vendas',amt:225.14,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_85841c43',date:'2026-09-09',hora:'13:31',desc:'Antecipação | Recebimento vendas',amt:75.05,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_697a92fd',date:'2026-09-09',hora:'13:27',desc:'Antecipação | Recebimento vendas',amt:57.24,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_00631809',date:'2026-09-09',hora:'13:26',desc:'Transferência | TED | BANCO TOPAZIO S.A.',amt:169.76,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'BANCO TOPAZIO S.A.',meio:'TED'},
+  {id:'st_cbe9283b',date:'2026-09-09',hora:'13:25',desc:'Pix | Maquininha | Joanderson Silva de Lima',amt:9.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Joanderson Silva de Lima',meio:'PIX'},
+  {id:'st_918c9f96',date:'2026-09-09',hora:'13:18',desc:'Transferência | Pix | LAIZE GOMES DA FE',amt:560.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LAIZE GOMES DA FE',meio:'PIX'},
+  {id:'st_8c565fd7',date:'2026-09-09',hora:'13:14',desc:'Pix | Maquininha | JOAO BATISTA MATIAS',amt:129.26,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOAO BATISTA MATIAS',meio:'PIX'},
+  {id:'st_f0630d49',date:'2026-09-09',hora:'13:06',desc:'Antecipação | Recebimento vendas',amt:50.09,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_9c6b8dcc',date:'2026-09-09',hora:'13:06',desc:'Antecipação | Recebimento vendas',amt:50.09,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_347f345c',date:'2026-09-09',hora:'13:04',desc:'Pix | Maquininha | Samara Borja da Silva Belisio',amt:54.73,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Samara Borja da Silva Belisio',meio:'PIX'},
+  {id:'st_64f908e0',date:'2026-09-09',hora:'12:52',desc:'Antecipação | Recebimento vendas',amt:218.11,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c02d2a5c',date:'2026-09-09',hora:'12:52',desc:'Antecipação | Recebimento vendas',amt:72.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
 ];
 
 // Estado
@@ -1248,7 +1434,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-09-06';
+  const hoje = '2026-09-09';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -1784,7 +1970,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-09-06';
+const HOJE_SISTEMA = '2026-09-09';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -2429,7 +2615,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-09-06';
+  const hoje = '2026-09-09';
 
   let txData;
   if(cfMes){
