@@ -1492,10 +1492,12 @@ function saveEd(id, data){
 const REGRAS_AUTO = [
   {nome:'D T Suplementos → Fornecedor', tipo:'DEBIT', pix:true, termos:['D T SUPLEMENTOS DISTRIBUIDORA'], cat:'4.2.1'},
   {nome:'João Maria Moura de Melo Elias → Motoboy Terceirizado', tipo:'DEBIT', pix:true, termos:['JOAO MARIA MOURA DE MELO ELIAS'], cat:'4.4.6'},
+  {nome:'Toda entrada → Receita de Vendas', tipo:'CREDIT', pix:false, termos:[], exceto:['DEVOLUCAO'], cat:'3.1.8'},
 ];
 function regraAuto(r){
   const d = String(r.desc||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-  return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.pix || d.indexOf('PIX')>=0) && g.termos.some(x=>d.indexOf(x)>=0)) || null;
+  if(r.status_fixo || String(r.cat||'').indexOf('13')===0 || r.transf || r.previsto) return null; // saldo inicial, transferências, previstos
+  return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.pix || d.indexOf('PIX')>=0) && (g.termos.length===0 || g.termos.some(x=>d.indexOf(x)>=0)) && !(g.exceto||[]).some(x=>d.indexOf(x)>=0)) || null;
 }
 
 function buildTX(){
