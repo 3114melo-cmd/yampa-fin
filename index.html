@@ -288,6 +288,10 @@ tr:hover td{background:var(--sur2)}
       <span>Clientes / Fornecedores</span>
     </button>
     <div class="ng" style="margin-top:6px">Resultado</div>
+    <button class="ni" id="ni-dre" onclick="go('dre',this)">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+      <span>DRE</span>
+    </button>
     <button class="ni" id="ni-metas" onclick="go('metas',this)">
       <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       <span>Metas</span>
@@ -335,10 +339,11 @@ tr:hover td{background:var(--sur2)}
         <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-18"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
-      <div class="fr" id="m-conta-row">
+      <div class="fr fr2" id="m-conta-row">
         <div class="fg"><label>Conta</label>
           <select id="m-conta"><option>Stone</option><option>Caixa (Dinheiro)</option></select>
         </div>
+        <div class="fg"><label style="color:var(--red)">Competência *</label><input type="month" id="m-comp" value=""></div>
       </div>
       <div class="fr fr2" id="m-transf-row" style="display:none">
         <div class="fg"><label>De (sai da conta)</label>
@@ -1504,6 +1509,7 @@ function buildTX(){
       status: ed.status || statusDefault,
       amt: (ed.amt!==undefined) ? ed.amt : r.amt,
       date: ed.date || r.date,
+      comp: ed.comp || r.comp || '',
       conta: ed.conta || r.conta,
       editado: !!EDITED[r.id],
       contaTransf: r.transf || ed.contaTransf || null,
@@ -1518,7 +1524,7 @@ function buildTX(){
       const ci = c==='transf' ? {code:'TRF', nome:'Transferência entre Contas', cor:'#0369a1', grupo:'Transferência'} : cat(c);
       TX.unshift({id,date:ed.date||HOJE_SISTEMA,hora:ed.hora||'--:--',desc:ed.desc||'',
         amt:Math.abs(ed.amt||0),type:ed.type||'CREDIT',cat:c,catInfo:ci,conta:ed.conta||'Stone',
-        cli:ed.cli||'',obs:ed.obs||'',meio:ed.meio||'PIX',status:ed.status||'conciliado',editado:true,
+        cli:ed.cli||'',obs:ed.obs||'',meio:ed.meio||'PIX',status:ed.status||'conciliado',editado:true,comp:ed.comp||'',
         espelhoDe:ed.espelhoDe||null,contaTransf:ed.contaTransf||null});
     }
   });
@@ -1541,10 +1547,12 @@ buildTX();
 // NAV
 // ════════════════════════════════
 function go(p, el){
+  if(!window._keepCompFiltro){ window._jourCompFiltro=null; window._jourCompCats=null; }
+  window._keepCompFiltro=false;
   PAGE=p; openId=null; filtro=p==='conc'?'pendente':'todos'; busca='';
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
   if(el) el.classList.add('act');
-  const T={dash:['Painel','Visão geral · Sicredi · 01-18/07/2026'],conc:['Conciliação','Revise e confirme cada lançamento do dia'],jour:['Livro Diário','Todos os lançamentos de hoje'],cf:['Fluxo de Caixa','Jan–Jun 2026'],metas:['Metas e Ações','Acompanhe seus objetivos']};
+  const T={dash:['Painel','Visão geral · Sicredi · 01-18/07/2026'],conc:['Conciliação','Revise e confirme cada lançamento do dia'],jour:['Livro Diário','Todos os lançamentos de hoje'],cf:['Fluxo de Caixa','Jan–Jun 2026'],metas:['Metas e Ações','Acompanhe seus objetivos'],dre:['DRE','Demonstração do Resultado · regime de competência']};
   const t=T[p]||['',''];
   document.getElementById('pt').textContent=t[0];
   document.getElementById('ps').textContent=t[1];
@@ -1589,7 +1597,7 @@ function render(){
   // Preencher select do modal
   document.getElementById('m-cat').innerHTML=catOpts();
   if(PAGE==='conc') ct.outerHTML='<div id="ct"></div>'; // reset scroll trick
-  document.getElementById('ct').innerHTML = PAGE==='dash'?renderDash():PAGE==='conc'?renderConc():PAGE==='jour'?renderJour():PAGE==='cf'?renderCF():PAGE==='cad'?renderCad():PAGE==='forn'?renderForn():renderMetas();
+  document.getElementById('ct').innerHTML = PAGE==='dash'?renderDash():PAGE==='conc'?renderConc():PAGE==='jour'?renderJour():PAGE==='cf'?renderCF():PAGE==='cad'?renderCad():PAGE==='forn'?renderForn():PAGE==='dre'?renderDRE():renderMetas();
 }
 
 // ════════════════════════════════
@@ -1900,7 +1908,7 @@ function renderConc(){
   return `<div class="conc-page">
     <!-- KPIs -->
     <div class="conc-kpis">
-      <div class="kpi"><div class="kl">Saldo Sicredi</div><div class="kv n">R$ 432,06</div></div>
+      <div class="kpi"><div class="kl">Sem competência</div><div class="kv" style="color:var(--red)">${TX.filter(t=>t.status!=='ignorado'&&semComp(t)).length}</div><div class="ks">obrigatória p/ conciliar</div></div>
       <div class="kpi"><div class="kl">Entradas hoje</div><div class="kv g">${fmtR(tE)}</div><div class="ks">${ents.length} lançamentos</div></div>
       <div class="kpi"><div class="kl">Saídas hoje</div><div class="kv r">${fmtR(tS)}</div><div class="ks">${sais.length} lançamentos</div></div>
       <div class="kpi"><div class="kl">Pendentes</div><div class="kv y">${pend}</div><div class="ks">${conc} conciliados</div></div>
@@ -1916,6 +1924,7 @@ function renderConc(){
       <button class="fchip${filtro==='conciliado'?' on':''}" onclick="filtro='conciliado';render()" style="${filtro!=='conciliado'?'border-color:var(--grn);color:var(--grn)':''}">✓ Conciliados (${conc})</button>
       <button class="fchip${filtro==='ignorado'?' on':''}" onclick="filtro='ignorado';render()">Ignorados</button>
       <input class="srch" placeholder="Buscar descrição ou cliente..." value="${busca}" oninput="busca=this.value;render()">
+      <span style="display:inline-flex;align-items:center;gap:4px;border:1px solid var(--bor);border-radius:6px;padding:2px 4px 2px 8px;background:var(--sur)" title="Define a competência de todos os pendentes sem competência (respeita a busca)"><span style="font-size:11px;color:var(--tx3)">Competência</span><input type="month" id="comp-lote" value="${HOJE_SISTEMA.substring(0,7)}" style="border:none;background:transparent;font-size:12px;font-family:inherit"><button class="btn" style="padding:4px 8px" onclick="aplicarCompLote()">Aplicar (${TX.filter(t=>t.status==='pendente'&&semComp(t)).length})</button></span>
       <button class="btn grn" onclick="concTodos()">✓ Conciliar todos</button>
       <button class="btn pri" onclick="openModal()">+ Lançamento</button>
     </div>
@@ -2018,6 +2027,7 @@ function txItem(t){
   // Meta da linha do TX
   const metaSpans = (t.cli?'<span>· '+t.cli+'</span>':'')
     + (t.obs?'<span>· 📝 '+t.obs+'</span>':'')
+    + (t.comp?'<span style="color:#6d28d9;font-weight:600">· comp. '+fmtComp(t.comp)+'</span>':(precisaComp(t)?'<span style="color:var(--red);font-weight:600">· ⚠ sem competência</span>':''))
     + (t.editado?'<span style="color:var(--sacc)">· editado</span>':'')
     + (t.status==='transferencia'&&t._contaTransf?'<span style="color:#0369a1">· de '+t._contaTransf+'</span>':'');
 
@@ -2041,13 +2051,14 @@ function txItem(t){
     +'<div class="eg"><label>Cliente / Fornecedor</label><input type="text" data-id="'+t.id+'" data-field="cli" value="'+(t.cli||'').replace(/"/g,'&quot;')+'" placeholder="Nome ou CNPJ" onchange="updEl(this)"></div>'
     +'<div class="eg"><label>Observação</label><input type="text" data-id="'+t.id+'" data-field="obs" value="'+(t.obs||'').replace(/"/g,'&quot;')+'" placeholder="Nota interna" onchange="updEl(this)"></div>'
     +'</div>'
-    +'<div class="edit-row edit-2">'
+    +'<div class="edit-row edit-3">'
     +'<div class="eg"><label>Plano de Conta (Categoria)</label>'+catSelect+'</div>'
     +'<div class="eg"><label>Meio de Pagamento</label>'+meioSelect+'</div>'
+    +(precisaComp(t)?'<div class="eg"><label style="color:'+(t.comp?'inherit':'var(--red)')+'">Competência *</label><input type="month" data-id="'+t.id+'" data-field="comp" value="'+(t.comp||'')+'" onchange="updEl(this)" style="'+(t.comp?'':'border:1.5px solid var(--red);background:var(--rbg)')+'"></div>':'<div class="eg"><label>Competência</label><div style="font-size:11px;color:var(--tx3);padding:6px 0">não se aplica</div></div>')
     +'</div>'
     +'<div class="edit-btns">'
     +btnAcao(t)
-    +'<span style="font-size:10px;color:var(--tx3);margin-left:auto">Sicredi · '+fmtD(t.date)+' · '+(t.type==='CREDIT'?'Entrada':'Saída')+'</span>'
+    +'<span style="font-size:10px;color:var(--tx3);margin-left:auto">'+(t.conta||'Stone')+' · '+fmtD(t.date)+' · '+(t.type==='CREDIT'?'Entrada':'Saída')+'</span>'
     +'</div>'
     +(t._showTransf?renderTransfPanel(t):'')
     +'</div>'
@@ -2245,6 +2256,8 @@ function updJourEl(el){
   if(field==='amt'){ val = Math.abs(parseFloat(val)||0); }
   const t = TX.find(x=>x.id===id);
   if(!t) return;
+  if(field==='status' && val==='conciliado' && semComp(t)){ toast('⚠ Informe a COMPETÊNCIA antes de marcar como realizado!','warn'); render(); return; }
+  if(field==='comp' && !val && precisaComp(t) && t.status==='conciliado'){ toast('⚠ Competência é obrigatória','warn'); render(); return; }
   t[field] = val;
   if(field==='cat') t.catInfo = cat(val);
   t.editado = true;
@@ -2357,10 +2370,42 @@ function upd(id, field, value){
   if(el) el.outerHTML=txItem(t);
 }
 
+// ── COMPETÊNCIA (obrigatória em toda entrada/saída) ──
+const MESES_NOME = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+function precisaComp(t){
+  if(!t) return false;
+  if(t.status==='transferencia' || t.cat==='transf' || t.espelhoDe) return false;
+  if(String(t.cat||'').indexOf('13')===0 || t.cat==='99.98') return false;
+  return true;
+}
+function fmtComp(c){ if(!c) return ''; const p=c.split('-'); return MESES_NOME[parseInt(p[1],10)-1]+'/'+p[0]; }
+function semComp(t){ return precisaComp(t) && !t.comp; }
+function exigirComp(t){
+  if(semComp(t)){
+    toast('⚠ Informe a COMPETÊNCIA antes de conciliar!','warn');
+    if(PAGE==='conc'){ openId=t.id; render(); }
+    return true;
+  }
+  return false;
+}
+function aplicarCompLote(){
+  const el=document.getElementById('comp-lote');
+  const v=el?el.value:'';
+  if(!v){ toast('Escolha o mês de competência','warn'); return; }
+  const alvo=TX.filter(t=>t.status==='pendente' && semComp(t) && (!busca||t.desc.toLowerCase().includes(busca.toLowerCase())||(t.cli||'').toLowerCase().includes(busca.toLowerCase())));
+  if(!alvo.length){ toast('Nenhum pendente sem competência neste filtro'); return; }
+  if(!confirm('Aplicar competência '+fmtComp(v)+' em '+alvo.length+' lançamento(s) pendente(s) sem competência'+(busca?' (busca: "'+busca+'")':'')+'?')) return;
+  alvo.forEach(t=>{ t.comp=v; EDITED[t.id]={...(EDITED[t.id]||{}),comp:v}; });
+  try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){}
+  toast('✓ Competência '+fmtComp(v)+' aplicada em '+alvo.length,'ok');
+  render();
+}
+
 function conc(id){
   const t=TX.find(x=>x.id===id);
   if(!t) return;
   if(t.cat==='OUT'){ toast('⚠ Defina a categoria antes de conciliar!','warn'); return; }
+  if(exigirComp(t)) return;
   t.status='conciliado';
   saveEd(id,{status:'conciliado'});
   openId=null; // fecha o painel — item some da lista (filtro=pendente)
@@ -2398,6 +2443,8 @@ function ign(id){
 function concTodos(){
   const semCat=TX.filter(t=>t.status==='pendente'&&t.cat==='OUT');
   if(semCat.length){ toast(`⚠ ${semCat.length} sem categoria — classifique antes`,'warn'); openId=semCat[0].id; filtro='pendente'; render(); return; }
+  const semC=TX.filter(t=>t.status==='pendente'&&semComp(t));
+  if(semC.length){ toast(`⚠ ${semC.length} sem COMPETÊNCIA — informe antes (use "Aplicar competência")`,'warn'); openId=semC[0].id; filtro='pendente'; render(); return; }
   TX.filter(t=>t.status==='pendente').forEach(t=>{ t.status='conciliado'; saveEd(t.id,{status:'conciliado'}); });
   toast('✓ Todos conciliados!','ok');
   render();
@@ -3291,6 +3338,9 @@ function renderJour(){
     txData = TX;
   }
 
+  if(window._jourCompFiltro){
+    txData = TX.filter(t=>t.comp===window._jourCompFiltro && (!window._jourCompCats || window._jourCompCats.includes(t.cat)) && t.status!=='ignorado' && t.status!=='transferencia' && (window._dreBase!=='realizado' || t.status==='conciliado'));
+  }
   const filtroContaJour = window._jourConta || 'todas';
   if(filtroContaJour!=='todas') txData = txData.filter(t=>t.conta===filtroContaJour);
 
@@ -3416,11 +3466,16 @@ function renderJour(){
 
   <!-- TOOLBAR -->
   <div class="card" style="padding:10px 14px">
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:${window._cfFiltroMes?'8px':'0'}">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:${(window._cfFiltroMes||window._jourCompFiltro)?'8px':'0'}">
       ${window._cfFiltroMes?`<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:#e0f2fe;border:1px solid #7dd3fc;border-radius:var(--r)">
         <span style="font-size:12px;color:#0369a1">📊 Fluxo de Caixa · ${window._cfFiltroMes}</span>
         <button class="btn" onclick="window._cfFiltroMes=null;window._cfFiltroCats=null;window.dataFiltroMes=null;go('cf',document.getElementById('ni-cf'))">← Voltar</button>
         <button class="btn" onclick="window._cfFiltroMes=null;window._cfFiltroCats=null;window.dataFiltroMes=null;render()">✕ Limpar</button>
+      </div>`:''}
+      ${window._jourCompFiltro?`<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:#ede9fe;border:1px solid #c4b5fd;border-radius:var(--r)">
+        <span style="font-size:12px;color:#6d28d9">📑 DRE · competência ${fmtComp(window._jourCompFiltro)}</span>
+        <button class="btn" onclick="go('dre',document.getElementById('ni-dre'))">← Voltar</button>
+        <button class="btn" onclick="window._jourCompFiltro=null;window._jourCompCats=null;render()">✕ Limpar</button>
       </div>`:''}
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -3455,6 +3510,7 @@ function renderJour(){
         <thead><tr>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Data agend. <span style="cursor:pointer;color:${(window._colFiltros['date']?'var(--sacc)':'var(--tx3)')}" onclick="abrirFiltroColuna('date',event)" title="Filtrar/Ordenar">&#9661;${window._colFiltros['date']?' &bull;':''}</span></th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Data realiz.</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Competência</th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Plano de conta <span style="cursor:pointer;color:${(window._colFiltros['cat']?'var(--sacc)':'var(--tx3)')}" onclick="abrirFiltroColuna('cat',event)" title="Filtrar/Ordenar">&#9661;${window._colFiltros['cat']?' &bull;':''}</span></th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Descrição <span style="cursor:pointer;color:${(window._colFiltros['desc']?'var(--sacc)':'var(--tx3)')}" onclick="abrirFiltroColuna('desc',event)" title="Filtrar/Ordenar">&#9661;${window._colFiltros['desc']?' &bull;':''}</span></th>
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Sequência</th>
@@ -3468,7 +3524,7 @@ function renderJour(){
           <th style="padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;z-index:1">Centro de custo</th>
         </tr></thead>
         <tbody>
-          ${rows.length===0?`<tr><td colspan="13" style="text-align:center;padding:30px;color:var(--tx3)">Nenhum lançamento encontrado</td></tr>`:
+          ${rows.length===0?`<tr><td colspan="14" style="text-align:center;padding:30px;color:var(--tx3)">Nenhum lançamento encontrado</td></tr>`:
           rows.map(t=>{
             const st = getStatusInfo(t);
             const isRealizado = t.status==='conciliado'||t.status==='transferencia';
@@ -3483,6 +3539,7 @@ function renderJour(){
                 <input type="date" value="${t.date}" data-id="${t.id}" data-field="date" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle}" ${inpFocus}>
               </td>
               <td style="padding:6px 10px;color:var(--tx3)">${isRealizado?fmtDataCurta(t.date):'—'}</td>
+              <td style="padding:6px 10px;color:var(--tx3)">${precisaComp(t)?`<input type="month" value="${t.comp||''}" data-id="${t.id}" data-field="comp" onclick="event.stopPropagation()" onchange="updJourEl(this)" title="Competência (obrigatória)" style="width:118px;font-size:11px;font-family:inherit;padding:2px;border-radius:3px;${t.comp?'border:none;background:transparent':'border:1.5px solid var(--red);background:var(--rbg)'}">`:'<span style="color:var(--tx3)">—</span>'}</td>
               <td style="padding:2px 6px;min-width:170px">
                 <button onclick="abrirCatPicker('${t.id}')" style="width:100%;text-align:left;border:1px solid var(--bor2);background:var(--sur);font-size:11px;font-family:inherit;color:var(--txt);padding:4px 7px;border-radius:5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="Clique para trocar categoria">
                   <span style="color:${t.catInfo.cor};font-weight:600">${t.catInfo.code}</span> ${t.catInfo.nome}
@@ -3959,6 +4016,161 @@ function renderCF(){
 // ════════════════════════════════
 // METAS
 // ════════════════════════════════
+
+// ════════════════════════════════
+// DRE — regime de competência
+// ════════════════════════════════
+window._dreAno = window._dreAno || parseInt(HOJE_SISTEMA.substring(0,4),10);
+window._dreBase = window._dreBase || 'realizado'; // realizado | todos
+window._dreExp = window._dreExp || {};
+const DRE_LINHAS = [
+  {k:'rb',   nome:'RECEITA BRUTA',                        pref:['3.1'], sinal:1,  tipo:'grupo'},
+  {k:'ded',  nome:'(−) Deduções / Impostos sobre vendas', pref:['4.1'], sinal:-1, tipo:'grupo'},
+  {k:'rl',   nome:'= RECEITA LÍQUIDA',                    calc:['rb','ded'], tipo:'total'},
+  {k:'cmv',  nome:'(−) Custo das mercadorias (Fornecedores)', pref:['4.2'], sinal:-1, tipo:'grupo'},
+  {k:'cv',   nome:'(−) Custos variáveis de venda',        pref:['4.3','4.4','4.6','4.7'], sinal:-1, tipo:'grupo'},
+  {k:'mc',   nome:'= MARGEM DE CONTRIBUIÇÃO',             calc:['rl','cmv','cv'], tipo:'total'},
+  {k:'dfin', nome:'(−) Despesas financeiras',             pref:['5.1'], sinal:-1, tipo:'grupo'},
+  {k:'dadm', nome:'(−) Despesas administrativas',         pref:['5.2'], sinal:-1, tipo:'grupo'},
+  {k:'dpes', nome:'(−) Despesas com pessoal',             pref:['5.3'], sinal:-1, tipo:'grupo'},
+  {k:'dvei', nome:'(−) Despesas com veículos',            pref:['5.5'], sinal:-1, tipo:'grupo'},
+  {k:'dout', nome:'(−) Marketing e outras despesas',      pref:['5.8'], sinal:-1, tipo:'grupo'},
+  {k:'ro',   nome:'= RESULTADO OPERACIONAL',              calc:['mc','dfin','dadm','dpes','dvei','dout'], tipo:'total'},
+  {k:'rfin', nome:'(+) Receitas financeiras',             pref:['3.3'], sinal:1,  tipo:'grupo'},
+  {k:'inv',  nome:'(−) Investimentos',                    pref:['6'],   sinal:-1, tipo:'grupo'},
+  {k:'nop',  nome:'(±) Movimentações não operacionais',   pref:['7'],   sinal:1,  tipo:'grupo'},
+  {k:'rliq', nome:'= RESULTADO LÍQUIDO',                  calc:['ro','rfin','inv','nop'], tipo:'final'},
+];
+function dreMatch(code, prefs){ return prefs.some(p=>code===p || code.indexOf(p+'.')===0); }
+function dreValor(t){
+  // valor com sinal econômico: crédito +, débito −
+  return t.type==='CREDIT' ? t.amt : -t.amt;
+}
+function dreBaseTx(){
+  return TX.filter(t=>{
+    if(!t.comp || !precisaComp(t)) return false;
+    if(t.status==='ignorado' || t.status==='transferencia') return false;
+    if(window._dreBase==='realizado') return t.status==='conciliado';
+    return true;
+  });
+}
+function dreIrDiario(el){
+  const comp = el.dataset.comp, cats = (el.dataset.cats||'').split(',').filter(Boolean);
+  window._jourCompFiltro = comp||null;
+  window._jourCompCats = cats.length?cats:null;
+  window._keepCompFiltro = true;
+  go('jour', document.getElementById('ni-jour'));
+}
+function dreToggle(el){ const k=el.dataset.k; window._dreExp[k]=!window._dreExp[k]; render(); }
+function renderDRE(){
+  const ano = window._dreAno;
+  const meses = MESES_NOME.map((n,i)=>({comp:ano+'-'+String(i+1).padStart(2,'0'), lbl:n}));
+  const base = dreBaseTx().filter(t=>t.comp.substring(0,4)===String(ano));
+  // soma por linha/mês e por conta nível 3
+  const V = {}, CONTAS = {};
+  DRE_LINHAS.filter(l=>l.pref).forEach(l=>{
+    V[l.k] = {}; CONTAS[l.k] = {};
+    meses.forEach(m=>V[l.k][m.comp]=0);
+  });
+  const naoClass = {}; meses.forEach(m=>naoClass[m.comp]=0);
+  base.forEach(t=>{
+    const l = DRE_LINHAS.find(x=>x.pref && dreMatch(t.cat, x.pref));
+    const v = dreValor(t);
+    if(!l){ naoClass[t.comp]=(naoClass[t.comp]||0)+v; return; }
+    V[l.k][t.comp] += v;
+    if(!CONTAS[l.k][t.cat]){ CONTAS[l.k][t.cat]={}; meses.forEach(m=>CONTAS[l.k][t.cat][m.comp]=0); }
+    CONTAS[l.k][t.cat][t.comp] += v;
+  });
+  DRE_LINHAS.filter(l=>l.calc).forEach(l=>{
+    V[l.k]={}; meses.forEach(m=>{ V[l.k][m.comp]=l.calc.reduce((s,k)=>s+(V[k]?V[k][m.comp]:0),0); });
+    if(l.k==='rliq') meses.forEach(m=>{ V[l.k][m.comp]+=naoClass[m.comp]||0; });
+  });
+  const tot = k => meses.reduce((s,m)=>s+V[k][m.comp],0);
+  const comMov = meses.filter(m=>base.some(t=>t.comp===m.comp));
+  const cols = comMov.length ? comMov : meses.filter(m=>m.comp===HOJE_SISTEMA.substring(0,7));
+  const rbTot = tot('rb');
+  const fmtV = v => Math.abs(v)<0.005 ? '<span style="color:var(--tx3)">—</span>' : (v<0?'<span style="color:var(--red)">('+fmtR(v).replace('R$ ','')+')</span>':fmtR(v).replace('R$ ',''));
+  const pct = (v, b) => b ? ((v/b)*100).toFixed(1).replace('.',',')+'%' : '—';
+  const pendSemComp = TX.filter(t=>t.status!=='ignorado' && semComp(t)).length;
+  const pendTot = TX.filter(t=>t.status==='pendente').length;
+
+  const tdS = 'padding:7px 10px;text-align:right;border-bottom:1px solid var(--bor);font-variant-numeric:tabular-nums;white-space:nowrap';
+  let head = '<th style="text-align:left;padding:9px 12px;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;color:var(--tx3);text-transform:uppercase;position:sticky;left:0;z-index:2;min-width:290px">Conta</th>';
+  cols.forEach(m=>{ head += '<th style="padding:9px 10px;text-align:right;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;color:var(--tx3);text-transform:uppercase">'+m.lbl+'/'+String(ano).slice(2)+'</th>'; });
+  head += '<th style="padding:9px 10px;text-align:right;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;color:var(--txt);text-transform:uppercase;border-left:2px solid var(--bor2)">Total</th><th style="padding:9px 10px;text-align:right;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;color:var(--tx3);text-transform:uppercase">AV%</th>';
+
+  let body = '';
+  DRE_LINHAS.forEach(l=>{
+    const isTot = l.tipo!=='grupo';
+    const bg = l.tipo==='final' ? 'background:#1e293b;color:#fff' : isTot ? 'background:var(--sur2);font-weight:700' : '';
+    const contas = l.pref ? Object.keys(CONTAS[l.k]).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})) : [];
+    const exp = !!window._dreExp[l.k];
+    const seta = (!isTot && contas.length) ? '<span style="display:inline-block;width:14px;color:var(--tx3)">'+(exp?'▾':'▸')+'</span>' : '<span style="display:inline-block;width:14px"></span>';
+    const nomeCell = '<td style="padding:7px 12px;border-bottom:1px solid var(--bor);position:sticky;left:0;'+(bg||'background:var(--sur)')+';'+(isTot?'font-weight:700;':'font-weight:600;')+(contas.length&&!isTot?'cursor:pointer':'')+'" '+(contas.length&&!isTot?'data-k="'+l.k+'" onclick="dreToggle(this)"':'')+'>'+seta+l.nome+'</td>';
+    let row = '<tr style="'+bg+'">'+nomeCell;
+    cols.forEach(m=>{
+      const v = V[l.k][m.comp];
+      const click = l.pref && Math.abs(v)>0.004 ? ' data-comp="'+m.comp+'" data-cats="'+contas.join(',')+'" onclick="dreIrDiario(this)" title="Ver lançamentos" ' : '';
+      row += '<td style="'+tdS+';'+(click?'cursor:pointer;':'')+(isTot?'font-weight:700;':'')+(l.tipo==='final'?'color:#fff;border-bottom-color:#1e293b':'')+'"'+click+'>'+(l.tipo==='final'&&v<0?'<span style="color:#fca5a5">('+fmtR(v).replace('R$ ','')+')</span>':fmtV(v))+'</td>';
+    });
+    const T = tot(l.k);
+    row += '<td style="'+tdS+';font-weight:700;border-left:2px solid var(--bor2);'+(l.tipo==='final'?'color:#fff':'')+'">'+(l.tipo==='final'&&T<0?'<span style="color:#fca5a5">('+fmtR(T).replace('R$ ','')+')</span>':fmtV(T))+'</td><td style="'+tdS+';color:'+(l.tipo==='final'?'#cbd5e1':'var(--tx3)')+';font-size:11px">'+pct(T,rbTot)+'</td></tr>';
+    body += row;
+    if(exp && !isTot){
+      contas.forEach(c=>{
+        const ci = cat(c);
+        let r = '<tr><td style="padding:6px 12px 6px 38px;border-bottom:1px solid var(--bor);position:sticky;left:0;background:var(--sur);font-size:12px;color:var(--tx2)"><span style="font-size:10px;color:var(--tx3);margin-right:6px">'+c+'</span>'+ci.nome+'</td>';
+        cols.forEach(m=>{
+          const v = CONTAS[l.k][c][m.comp];
+          const click = Math.abs(v)>0.004 ? ' data-comp="'+m.comp+'" data-cats="'+c+'" onclick="dreIrDiario(this)" title="Ver lançamentos" ' : '';
+          r += '<td style="'+tdS+';font-size:12px;color:var(--tx2);'+(click?'cursor:pointer':'')+'"'+click+'>'+fmtV(v)+'</td>';
+        });
+        const T2 = meses.reduce((s,m)=>s+CONTAS[l.k][c][m.comp],0);
+        r += '<td style="'+tdS+';font-size:12px;border-left:2px solid var(--bor2)">'+fmtV(T2)+'</td><td style="'+tdS+';font-size:11px;color:var(--tx3)">'+pct(T2,rbTot)+'</td></tr>';
+        body += r;
+      });
+    }
+  });
+
+  const kp = (lbl, v, sub, cor) => '<div class="kpi"><div class="kl">'+lbl+'</div><div class="kv" style="color:'+(cor||'var(--txt)')+'">'+(v<0?'− ':'')+fmtR(v)+'</div><div class="ks">'+sub+'</div></div>';
+  const rl = tot('rliq'), mc = tot('mc'), ro = tot('ro');
+  const btnB = (v,lbl) => '<button class="fchip'+(window._dreBase===v?' on':'')+'" onclick="window._dreBase=\''+v+'\';render()">'+lbl+'</button>';
+
+  return '<div style="padding:18px 22px">'
+    +'<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">'
+    +'<div style="display:flex;align-items:center;gap:6px;border:1px solid var(--bor);border-radius:8px;padding:3px 6px;background:var(--sur)">'
+    +'<button class="btn" style="padding:3px 9px" onclick="window._dreAno--;render()">‹</button><strong style="min-width:44px;text-align:center">'+ano+'</strong><button class="btn" style="padding:3px 9px" onclick="window._dreAno++;render()">›</button></div>'
+    +btnB('realizado','✓ Somente conciliados')+btnB('todos','Todos lançados (inclui pendentes)')
+    +'<span style="font-size:11px;color:var(--tx3)">Agrupado pela <strong>competência</strong> de cada lançamento · transferências e saldo inicial não entram</span>'
+    +'<button class="btn" style="margin-left:auto" onclick="exportarDRE()">⬇ Exportar CSV</button>'
+    +'</div>'
+    +(pendSemComp ? '<div style="padding:9px 12px;border:1px solid var(--ybr,#fcd34d);background:var(--ybg);color:#92400e;border-radius:8px;font-size:12px;margin-bottom:12px;cursor:pointer" onclick="go(\'conc\',document.getElementById(\'ni-conc\'))">⚠ <strong>'+pendSemComp+'</strong> lançamento(s) ainda sem competência não aparecem na DRE ('+pendTot+' pendentes de conciliação). Clique para ir à Conciliação.</div>' : '')
+    +'<div class="conc-kpis" style="margin-bottom:14px">'
+    +kp('Receita bruta', rbTot, 'ano '+ano, 'var(--grn)')
+    +kp('Margem de contribuição', mc, pct(mc,rbTot)+' da receita', mc<0?'var(--red)':'var(--txt)')
+    +kp('Resultado operacional', ro, pct(ro,rbTot)+' da receita', ro<0?'var(--red)':'var(--txt)')
+    +kp('Resultado líquido', rl, pct(rl,rbTot)+' da receita', rl<0?'var(--red)':'var(--grn)')
+    +'</div>'
+    +'<div style="border:1px solid var(--bor);border-radius:10px;overflow:auto;background:var(--sur)">'
+    +'<table style="border-collapse:collapse;width:100%;font-size:13px"><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>'
+    +'<div style="font-size:11px;color:var(--tx3);margin-top:8px">Clique numa linha (▸) para abrir as contas · clique num valor para ver os lançamentos no Livro Diário. Valores entre parênteses são negativos.</div>'
+    +'</div>';
+}
+function exportarDRE(){
+  const ano = window._dreAno;
+  const base = dreBaseTx().filter(t=>t.comp.substring(0,4)===String(ano));
+  const meses = MESES_NOME.map((n,i)=>ano+'-'+String(i+1).padStart(2,'0'));
+  const V={};
+  DRE_LINHAS.forEach(l=>{ V[l.k]={}; meses.forEach(m=>V[l.k][m]=0); });
+  base.forEach(t=>{ const l=DRE_LINHAS.find(x=>x.pref&&dreMatch(t.cat,x.pref)); if(l) V[l.k][t.comp]+=dreValor(t); });
+  DRE_LINHAS.filter(l=>l.calc).forEach(l=>meses.forEach(m=>{ V[l.k][m]=l.calc.reduce((s,k)=>s+V[k][m],0); }));
+  const f=v=>v.toFixed(2).replace('.',',');
+  let csv='Conta;'+MESES_NOME.map(n=>n+'/'+ano).join(';')+';Total\n';
+  DRE_LINHAS.forEach(l=>{ const T=meses.reduce((s,m)=>s+V[l.k][m],0); csv+='"'+l.nome+'";'+meses.map(m=>f(V[l.k][m])).join(';')+';'+f(T)+'\n'; });
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='DRE_'+ano+'.csv'; a.click();
+}
+
 function renderMetas(){
   const metas=[
     {t:'Receita Diária',meta:5000,atual:TX.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0),st:''},
@@ -4024,10 +4236,13 @@ function salvarManual(){
   }
 
   if(!desc){ toast('Preencha a descrição!','err'); return; }
+  const comp=document.getElementById('m-comp').value;
+  if(!comp && String(c).indexOf('13')!==0){ toast('⚠ Informe a COMPETÊNCIA (mês/ano a que se refere)!','err'); document.getElementById('m-comp').focus(); return; }
   const conta=document.getElementById('m-conta').value;
   const isC=tipoModal==='entrada';
   const id='m'+Date.now();
-  saveEd(id,{manual:true,date:data,hora,desc,amt:valor,type:isC?'CREDIT':'DEBIT',cat:c,cli,meio,conta,status:'conciliado'});
+  saveEd(id,{manual:true,date:data,hora,desc,amt:valor,type:isC?'CREDIT':'DEBIT',cat:c,cli,meio,conta,status:'conciliado',comp});
+  document.getElementById('m-comp').value='';
   closeModal();
   toast('✓ Lançamento salvo em '+conta+'!','ok');
   render();
