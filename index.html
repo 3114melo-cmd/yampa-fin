@@ -1494,12 +1494,14 @@ const REGRAS_AUTO = [
   {nome:'João Maria Moura de Melo Elias → Motoboy Terceirizado', tipo:'DEBIT', pix:true, termos:['JOAO MARIA MOURA DE MELO ELIAS'], cat:'4.4.6'},
   {nome:'Facebook → Tráfego Pago', tipo:'DEBIT', pix:false, termos:['FACEBOOK SERVICOS ONLINE DO BRASIL'], cat:'5.8.1'},
   {nome:'Metta Fit → Fornecedor', tipo:'DEBIT', pix:false, termos:['METTA FIT NUTRICAO ESPORTIVA'], cat:'4.2.1'},
+  {nome:'Fornecedores (Supley, Canibal, Body Food, Fitoway, BRG, Rainha)', tipo:'DEBIT', pix:false, termos:['SUPLEY LAB','SUPLEY LABORATORIO','CANIBAL INC','BODY FOOD FABR','FITOWAY LABORATORIO','BRG SUPL','RAINHA LABORATORIO NUTRACEUT'], cat:'4.2.1'},
+  {nome:'Devolução de fornecedor → estorno em Fornecedores', tipo:'CREDIT', pix:false, termos:['SUPLEY LAB','SUPLEY LABORATORIO','CANIBAL INC','BODY FOOD FABR','FITOWAY LABORATORIO','BRG SUPL','RAINHA LABORATORIO NUTRACEUT'], so:['DEVOLUCAO'], cat:'4.2.1'},
   {nome:'Toda entrada → Receita de Vendas', tipo:'CREDIT', pix:false, termos:[], exceto:['DEVOLUCAO'], cat:'3.1.8'},
 ];
 function regraAuto(r){
   const d = String(r.desc||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
   if(r.status_fixo || String(r.cat||'').indexOf('13')===0 || r.transf || r.previsto) return null; // saldo inicial, transferências, previstos
-  return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.pix || d.indexOf('PIX')>=0) && (g.termos.length===0 || g.termos.some(x=>d.indexOf(x)>=0)) && !(g.exceto||[]).some(x=>d.indexOf(x)>=0)) || null;
+  return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.pix || d.indexOf('PIX')>=0) && (g.termos.length===0 || g.termos.some(x=>d.indexOf(x)>=0)) && !(g.exceto||[]).some(x=>d.indexOf(x)>=0) && (!g.so || g.so.some(x=>d.indexOf(x)>=0))) || null;
 }
 
 function buildTX(){
