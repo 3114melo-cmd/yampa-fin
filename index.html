@@ -1486,6 +1486,17 @@ function saveEd(id, data){
   try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){}
 }
 
+// ── REGRAS DE CONCILIAÇÃO AUTOMÁTICA ──
+// Cada regra: tipo (DEBIT/CREDIT), meio, termos na descrição → categoria, status conciliado,
+// competência = mês da data em que o dinheiro saiu/entrou da conta.
+const REGRAS_AUTO = [
+  {nome:'D T Suplementos → Fornecedor', tipo:'DEBIT', pix:true, termos:['D T SUPLEMENTOS DISTRIBUIDORA'], cat:'4.2.1'},
+];
+function regraAuto(r){
+  const d = String(r.desc||'').toUpperCase();
+  return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.pix || d.indexOf('PIX')>=0) && g.termos.some(x=>d.indexOf(x)>=0)) || null;
+}
+
 function buildTX(){
   // Preservar estado temporário (painel transferência) do TX anterior + _transfState global
   const prevState = {};
@@ -1493,8 +1504,10 @@ function buildTX(){
   // Mesclar com _transfState global (sobrescreve para garantir persistência)
   if(window._transfState){ Object.assign(prevState, window._transfState); }
 
-  TX = RAW.map(r=>{
-    const ed = EDITED[r.id]||{};
+  TX = RAW.map(r0=>{
+    const ed = EDITED[r0.id]||{};
+    const rg = regraAuto(r0);
+    const r = rg ? {...r0, cat:rg.cat, status_fixo:'conciliado', comp:String(ed.date||r0.date).substring(0,7), autoRegra:rg.nome} : r0;
     const c = ed.cat || r.cat || (r.transf ? '4.9.9' : autocat(r.desc, r.type));
     const statusDefault = r.status_fixo || (r.previsto ? 'previsto' : (r.transf ? 'transferencia' : 'pendente'));
     const prev = prevState[r.id]||{};
@@ -2028,6 +2041,7 @@ function txItem(t){
   const metaSpans = (t.cli?'<span>· '+t.cli+'</span>':'')
     + (t.obs?'<span>· 📝 '+t.obs+'</span>':'')
     + (t.comp?'<span style="color:#6d28d9;font-weight:600">· comp. '+fmtComp(t.comp)+'</span>':(precisaComp(t)?'<span style="color:var(--red);font-weight:600">· ⚠ sem competência</span>':''))
+    + (t.autoRegra?'<span style="color:#0369a1;font-weight:600">· ⚡ auto</span>':'')
     + (t.editado?'<span style="color:var(--sacc)">· editado</span>':'')
     + (t.status==='transferencia'&&t._contaTransf?'<span style="color:#0369a1">· de '+t._contaTransf+'</span>':'');
 
