@@ -249,7 +249,7 @@ tr:hover td{background:var(--sur2)}
       Novo Lançamento
     </button>
   </div>
-  <div class="sc-live">
+  <div class="sc-live" style="cursor:pointer" onclick="abrirConferencia()" title="Conferir saldo com o banco">
     <div class="sc-dot"></div>
     <span class="sc-txt">Stone</span>
     <span class="sc-saldo" id="sb-saldo-matriz">R$ 0,00</span>
@@ -1942,6 +1942,7 @@ function renderConc(){
         <div style="height:4px;background:var(--bor);border-radius:2px;margin-top:5px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${pct===100?'var(--grn)':'var(--sacc)'};border-radius:2px"></div></div>
       </div>
     </div>
+    ${(()=>{ const d=diagnosticoSaldo(); return Math.abs(d.diff)>0.004 && pend===0 ? '<div onclick="abrirConferencia()" style="cursor:pointer;margin-bottom:10px;padding:10px 14px;border-radius:8px;background:var(--rbg);border:1px solid var(--rbr);color:var(--red);font-size:13px">⚠ Tudo conciliado, mas o saldo da Stone no sistema ('+fmtR(d.app)+') está diferente do banco ('+fmtR(d.banco)+'). Diferença de <strong>'+(d.diff<0?'− ':'+ ')+fmtR(d.diff)+'</strong>. <u>Clique para ver o que causa e corrigir</u>.</div>' : ''; })()}
     <!-- TOOLBAR -->
     <div class="conc-toolbar">
       <button class="fchip${filtro==='todos'?' on':''}" onclick="filtro='todos';render()">Todos (${TX.length})</button>
@@ -1950,6 +1951,7 @@ function renderConc(){
       <button class="fchip${filtro==='ignorado'?' on':''}" onclick="filtro='ignorado';render()">Ignorados</button>
       <input class="srch" placeholder="Buscar descrição ou cliente..." value="${busca}" oninput="busca=this.value;render()">
       <span style="display:inline-flex;align-items:center;gap:4px;border:1px solid var(--bor);border-radius:6px;padding:2px 4px 2px 8px;background:var(--sur)" title="Define a competência de todos os pendentes sem competência (respeita a busca)"><span style="font-size:11px;color:var(--tx3)">Competência</span><input type="month" id="comp-lote" value="${HOJE_SISTEMA.substring(0,7)}" style="border:none;background:transparent;font-size:12px;font-family:inherit"><button class="btn" style="padding:4px 8px" onclick="aplicarCompLote()">Aplicar (${TX.filter(t=>t.status==='pendente'&&semComp(t)).length})</button></span>
+      <button class="btn" onclick="abrirConferencia()" title="Comparar saldo do sistema com o banco">⚖ Conferir saldo</button>
       <button class="btn grn" onclick="concTodos()">✓ Conciliar todos</button>
       <button class="btn pri" onclick="openModal()">+ Lançamento</button>
     </div>
@@ -1992,7 +1994,7 @@ function renderConc(){
 }
 
 function renderTransfPanel(t){
-  const contas = ['Stone','Caixa (Dinheiro)'];
+  const contas = ['Stone','Caixa (Dinheiro)'].filter(c=>c!==(t.conta||'Stone'));
   const id = t.id;
   const sentido = t.type==='CREDIT'?'origem (saída)':'destino (entrada)';
 
@@ -4195,6 +4197,106 @@ function exportarDRE(){
   DRE_LINHAS.forEach(l=>{ const T=meses.reduce((s,m)=>s+V[l.k][m],0); csv+='"'+l.nome+'";'+meses.map(m=>f(V[l.k][m])).join(';')+';'+f(T)+'\n'; });
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='DRE_'+ano+'.csv'; a.click();
+}
+
+// ════════════════════════════════
+// CONFERÊNCIA DE SALDO (sistema x banco)
+// ════════════════════════════════
+const SALDO_BANCO = {Stone:{valor:5605.67, em:'19/10/2026 00:25'}};
+function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
+function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
+function diagnosticoSaldo(){
+  const conta='Stone';
+  const banco = SALDO_BANCO[conta].valor;
+  let app=0; TX.forEach(t=>{ if(t.conta===conta) app+=_conta(t); });
+  const itens=[];
+  const rawIds = new Set(RAW.map(r=>r.id));
+  RAW.filter(r=>r.conta===conta).forEach(r=>{
+    const t = TX.find(x=>x.id===r.id);
+    const esperado = r.type==='CREDIT'?r.amt:-r.amt;
+    const atual = t && t.conta===conta ? _conta(t) : 0;
+    if(Math.abs(esperado-atual)>0.004){
+      let motivo = !t ? 'removido' : t.conta!==conta ? 'conta trocada para '+t.conta
+        : t.status==='ignorado' ? 'marcado como IGNORADO' : (t.status==='pendente'||t.status==='previsto') ? 'ainda '+t.status.toUpperCase()
+        : Math.abs(t.amt-r.amt)>0.004 ? 'valor alterado de '+fmtR(r.amt)+' para '+fmtR(t.amt) : 'alterado';
+      itens.push({id:r.id, tipo:'raw', t:t||r, motivo, impacto:atual-esperado});
+    }
+  });
+  TX.filter(t=>t.conta===conta && !rawIds.has(t.id)).forEach(t=>{
+    const v=_conta(t); if(Math.abs(v)<0.005) return;
+    const orig = t.espelhoDe ? TX.find(x=>x.id===t.espelhoDe) : null;
+    const motivo = t.espelhoDe ? (orig && orig.conta===conta ? 'transferência da Stone para ela mesma (duplica o valor)' : 'espelho de transferência vinda de '+(orig?orig.conta:'outra conta')) : 'lançamento manual (não existe no extrato do banco)';
+    itens.push({id:t.id, tipo:'extra', t, motivo, impacto:v});
+  });
+  return {conta, banco, app, diff: app-banco, itens};
+}
+function corrigirItemSaldo(id){
+  const r = RAW.find(x=>x.id===id);
+  if(r){
+    const ed = {...(EDITED[id]||{})};
+    delete ed.amt; delete ed.conta;
+    if(!ed.status || ['ignorado','pendente','previsto'].includes(ed.status)) ed.status='conciliado';
+    if(ed.cat==='transf' && ed.status!=='transferencia') delete ed.cat;
+    const t = TX.find(x=>x.id===id);
+    if(!ed.comp && !(t&&t.comp) && String(r.cat||'').indexOf('13')!==0) ed.comp = r.date.substring(0,7);
+    EDITED[id]=ed;
+  } else {
+    const t = TX.find(x=>x.id===id);
+    if(t && t.espelhoDe){
+      const o = EDITED[t.espelhoDe];
+      if(o && !o.manual){ // transferência marcada num lançamento do banco: volta a ser lançamento normal
+        delete o.contaTransf; if(o.cat==='transf') delete o.cat; o.status='conciliado';
+        const ro=RAW.find(x=>x.id===t.espelhoDe); if(ro && !o.comp) o.comp=ro.date.substring(0,7);
+      } else if(o && o.manual){ delete EDITED[t.espelhoDe]; }
+    }
+    delete EDITED[id];
+  }
+  try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){}
+  render(); abrirConferencia();
+}
+function corrigirItemSaldoEl(el){
+  const extra = el.dataset.tipo==='extra';
+  if(extra && !confirm('Excluir este lançamento da conta Stone? Ele não existe no extrato do banco.')) return;
+  corrigirItemSaldo(el.dataset.id);
+}
+function corrigirTudoSaldo(){
+  const d=diagnosticoSaldo();
+  if(!d.itens.length) return;
+  if(!confirm('Corrigir os '+d.itens.length+' lançamento(s) para o sistema bater com o banco?\n\n• Ignorados/pendentes voltam a conciliados\n• Valores e contas voltam ao original do banco\n• Lançamentos manuais/espelhos na Stone que não existem no banco são excluídos')) return;
+  d.itens.forEach(i=>{ try{ corrigirItemSaldo(i.id); }catch(e){} });
+  fecharConferencia(); toast('✓ Saldo da Stone corrigido','ok');
+}
+function fecharConferencia(){ const m=document.getElementById('conf-modal'); if(m) m.remove(); }
+function abrirConferencia(){
+  buildTX();
+  fecharConferencia();
+  const d = diagnosticoSaldo();
+  const ok = Math.abs(d.diff)<0.005;
+  const linhas = d.itens.sort((a,b)=>Math.abs(b.impacto)-Math.abs(a.impacto)).map(i=>{
+    const t=i.t;
+    return '<tr>'
+      +'<td style="padding:7px 8px;border-bottom:1px solid var(--bor);white-space:nowrap">'+fmtD(t.date)+'</td>'
+      +'<td style="padding:7px 8px;border-bottom:1px solid var(--bor)"><div style="font-weight:600">'+(t.desc||'')+'</div><div style="font-size:11px;color:var(--red)">'+i.motivo+'</div></td>'
+      +'<td style="padding:7px 8px;border-bottom:1px solid var(--bor);text-align:right;white-space:nowrap;color:'+(t.type==='CREDIT'?'var(--grn)':'var(--red)')+'">'+(t.type==='CREDIT'?'+':'−')+fmtR(t.amt)+'</td>'
+      +'<td style="padding:7px 8px;border-bottom:1px solid var(--bor);text-align:right;white-space:nowrap;font-weight:700">'+(i.impacto<0?'− ':'+ ')+fmtR(i.impacto)+'</td>'
+      +'<td style="padding:7px 8px;border-bottom:1px solid var(--bor);text-align:right"><button class="btn" style="padding:4px 9px;font-size:11px" data-id="'+i.id+'" data-tipo="'+i.tipo+'" onclick="corrigirItemSaldoEl(this)">'+(i.tipo==='extra'?'Excluir':'Restaurar')+'</button></td>'
+      +'</tr>';
+  }).join('');
+  const html = '<div id="conf-modal" class="modal-bg open" onclick="if(event.target===this)fecharConferencia()">'
+    +'<div class="modal" style="width:820px">'
+    +'<div class="mh"><span class="mt">⚖ Conferência de saldo · Stone</span><button class="mc" onclick="fecharConferencia()">×</button></div>'
+    +'<div class="mb">'
+    +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">'
+    +'<div class="kpi"><div class="kl">Saldo no banco</div><div class="kv n">'+fmtR(d.banco)+'</div><div class="ks">atualizado '+SALDO_BANCO.Stone.em+'</div></div>'
+    +'<div class="kpi"><div class="kl">Saldo no sistema</div><div class="kv n">'+(d.app<0?'− ':'')+fmtR(d.app)+'</div><div class="ks">conciliados + transferências</div></div>'
+    +'<div class="kpi" style="border-left:3px solid '+(ok?'var(--grn)':'var(--red)')+'"><div class="kl">Diferença</div><div class="kv" style="color:'+(ok?'var(--grn)':'var(--red)')+'">'+(ok?'✓ R$ 0,00':(d.diff<0?'− ':'+ ')+fmtR(d.diff))+'</div><div class="ks">'+(ok?'saldo bate com o banco':d.itens.length+' lançamento(s) causando')+'</div></div>'
+    +'</div>'
+    +(d.itens.length ? '<div style="max-height:46vh;overflow:auto;border:1px solid var(--bor);border-radius:8px"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--sur2);text-align:left;font-size:10px;text-transform:uppercase;color:var(--tx3)"><th style="padding:7px 8px">Data</th><th style="padding:7px 8px">Lançamento / motivo</th><th style="padding:7px 8px;text-align:right">Valor</th><th style="padding:7px 8px;text-align:right">Efeito no saldo</th><th></th></tr></thead><tbody>'+linhas+'</tbody></table></div>'
+      : '<div style="padding:20px;text-align:center;color:var(--grn);font-weight:600">✓ Nenhuma divergência. O saldo do sistema bate com o banco.</div>')
+    +'</div>'
+    +'<div class="mf"><button class="btn" onclick="fecharConferencia()">Fechar</button>'+(d.itens.length?'<button class="btn pri" onclick="corrigirTudoSaldo()">Corrigir tudo para bater com o banco</button>':'')+'</div>'
+    +'</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
 }
 
 function renderMetas(){
