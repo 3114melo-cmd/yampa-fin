@@ -1498,6 +1498,7 @@ const REGRAS_AUTO = [
   {nome:'Devolução de fornecedor → estorno em Fornecedores', tipo:'CREDIT', pix:false, termos:['SUPLEY LAB','SUPLEY LABORATORIO','CANIBAL INC','BODY FOOD FABR','FITOWAY LABORATORIO','BRG SUPL','RAINHA LABORATORIO NUTRACEUT'], so:['DEVOLUCAO'], cat:'4.2.1'},
   {nome:'LWSA → Sistema Bling', tipo:'DEBIT', pix:false, termos:['LWSA S A','LWSA S/A','LWSA SA'], cat:'5.2.99', desc:'SISTEMA BLING'},
   {nome:'Smartplus → Contador (competência mês anterior)', tipo:'DEBIT', pix:false, termos:['SMARTPLUS CONTABILIDADE'], cat:'5.2.11', compMesAnterior:true},
+  {nome:'Brisanet → Internet (competência mês anterior)', tipo:'DEBIT', pix:false, termos:['BRISANET'], cat:'5.2.1', compMesAnterior:true},
   {nome:'Toda entrada → Receita de Vendas', tipo:'CREDIT', pix:false, termos:[], exceto:['DEVOLUCAO'], cat:'3.1.8'},
 ];
 function mesAnterior(c){ let y=parseInt(c.substring(0,4),10), m=parseInt(c.substring(5,7),10)-1; if(m<1){m=12;y--;} return y+'-'+String(m).padStart(2,'0'); }
