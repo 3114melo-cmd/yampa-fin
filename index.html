@@ -2212,7 +2212,7 @@ function renderConc(){
           </div>
         </div>
         <div class="col-list">
-          ${ef.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma entrada</div>':ef.map(t=>txItem(t)).join('')}
+          ${ef.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma entrada</div>':listaPorData(ef)}
         </div>
       </div>
       <!-- SAÍDAS -->
@@ -2228,11 +2228,40 @@ function renderConc(){
           </div>
         </div>
         <div class="col-list">
-          ${sf.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma saída</div>':sf.map(t=>txItem(t)).join('')}
+          ${sf.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma saída</div>':listaPorData(sf)}
         </div>
       </div>
     </div>
   </div>`;
+}
+
+
+// ── AGRUPAR POR DATA ──
+const DIAS_SEMANA = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+function rotuloData(d){
+  const dt = new Date(d+'T12:00:00');
+  const hoje = HOJE_SISTEMA;
+  const ontem = (()=>{ const x=new Date(hoje+'T12:00:00'); x.setDate(x.getDate()-1); return x.toISOString().slice(0,10); })();
+  const pre = d===hoje ? 'Hoje · ' : d===ontem ? 'Ontem · ' : '';
+  return pre + DIAS_SEMANA[dt.getDay()] + ', ' + fmtD(d);
+}
+function listaPorData(list){
+  const ord = [...list].sort((a,b)=>b.date.localeCompare(a.date)||String(b.hora||'').localeCompare(String(a.hora||'')));
+  let html='', atual=null;
+  const grupos = {};
+  ord.forEach(t=>{ (grupos[t.date]=grupos[t.date]||[]).push(t); });
+  Object.keys(grupos).sort((a,b)=>b.localeCompare(a)).forEach(d=>{
+    const g = grupos[d];
+    const tot = g.reduce((s,t)=>s+t.amt,0);
+    const pend = g.filter(t=>t.status==='pendente').length;
+    html += '<div style="position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--sur2);border-bottom:1px solid var(--bor);border-top:1px solid var(--bor);font-size:11px">'
+      +'<strong style="color:var(--txt)">📅 '+rotuloData(d)+'</strong>'
+      +'<span style="color:var(--tx3)">'+g.length+' lançamento'+(g.length!==1?'s':'')+(pend?' · <span style="color:var(--yel);font-weight:600">'+pend+' pendente'+(pend!==1?'s':'')+'</span>':'')+'</span>'
+      +'<span style="margin-left:auto;font-weight:700;color:var(--tx2)">'+fmtR(tot)+'</span>'
+      +'</div>';
+    html += g.map(t=>txItem(t)).join('');
+  });
+  return html;
 }
 
 function renderTransfPanel(t){
@@ -3795,7 +3824,7 @@ function renderJour(){
         </tr></thead>
         <tbody>
           ${rows.length===0?`<tr><td colspan="14" style="text-align:center;padding:30px;color:var(--tx3)">Nenhum lançamento encontrado</td></tr>`:
-          rows.map(t=>{
+          rows.map((t,ix)=>{
             const st = getStatusInfo(t);
             const isRealizado = t.status==='conciliado'||t.status==='transferencia';
             const showReceber = t.type==='CREDIT'&&t.status==='pendente';
@@ -3804,7 +3833,9 @@ function renderJour(){
             const showPago = t.type==='DEBIT'&&isRealizado;
             const inpStyle = 'width:100%;border:none;background:transparent;font-size:11px;font-family:inherit;color:inherit;padding:2px;border-radius:3px';
             const inpFocus = 'onfocus="this.style.background=\'var(--sur2)\';this.style.border=\'1px solid var(--sacc)\'" onblur="this.style.background=\'transparent\';this.style.border=\'none\'"';
-            return `<tr style="border-bottom:1px solid var(--bor)">
+            const _porData = !window._colSort || !window._colSort.campo || window._colSort.campo==='date';
+            const _hdr = (_porData && (ix===0 || rows[ix-1].date!==t.date)) ? (()=>{ const g=rows.filter(x=>x.date===t.date); const e=g.filter(x=>x.type==='CREDIT').reduce((s,x)=>s+x.amt,0), sd=g.filter(x=>x.type==='DEBIT').reduce((s,x)=>s+x.amt,0); return '<tr><td colspan="14" style="padding:6px 10px;background:var(--sur2);border-top:2px solid var(--bor2);border-bottom:1px solid var(--bor);font-size:11px"><strong>📅 '+rotuloData(t.date)+'</strong> <span style="color:var(--tx3);margin-left:8px">'+g.length+' lançamento'+(g.length!==1?'s':'')+'</span><span style="float:right"><span style="color:var(--grn);font-weight:600">+'+fmtR(e)+'</span> &nbsp; <span style="color:var(--red);font-weight:600">−'+fmtR(sd)+'</span></span></td></tr>'; })() : '';
+            return _hdr + `<tr style="border-bottom:1px solid var(--bor)">
               <td style="padding:2px 6px">
                 <input type="date" value="${t.date}" data-id="${t.id}" data-field="date" onclick="event.stopPropagation()" onchange="updJourEl(this)" style="${inpStyle}" ${inpFocus}>
               </td>
