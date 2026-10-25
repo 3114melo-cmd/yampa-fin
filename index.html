@@ -4665,8 +4665,16 @@ function getCMV(comp){
   try{ const m = JSON.parse(localStorage.getItem('yf_cmv_manual')||'{}'); if(m[comp]!==undefined && m[comp]!==null && m[comp]!=='') return parseFloat(m[comp])||0; }catch(e){}
   return CMV_ERP[comp]||0;
 }
+// Lê "110.000,00", "110000,5", "110000.50" ou "110000" → número
+function lerValorBR(txt){
+  let t = String(txt||'').replace(/[R$\s]/g,'');
+  if(!t) return NaN;
+  if(t.indexOf(',')>=0) t = t.replace(/\./g,'').replace(',','.');
+  else if((t.match(/\./g)||[]).length>1 || /\.\d{3}$/.test(t)) t = t.replace(/\./g,'');
+  return parseFloat(t);
+}
 function salvarCMV(el){
-  const comp = el.dataset.comp; const v = parseFloat(String(el.value).replace(/\./g,'').replace(',','.'));
+  const comp = el.dataset.comp; const v = lerValorBR(el.value);
   let m={}; try{ m=JSON.parse(localStorage.getItem('yf_cmv_manual')||'{}'); }catch(e){}
   if(isNaN(v) || el.value===''){ delete m[comp]; } else { m[comp]=Math.abs(v); }
   try{ localStorage.setItem('yf_cmv_manual', JSON.stringify(m)); }catch(e){}
@@ -4746,7 +4754,7 @@ function renderDRE(){
     if(l.manual){
       cols.forEach(m=>{
         const v=getCMV(m.comp);
-        row += '<td style="'+tdS+';background:#fffbeb"><input type="number" step="0.01" min="0" data-comp="'+m.comp+'" value="'+(v?v.toFixed(2):'')+'" placeholder="digite" onchange="salvarCMV(this)" title="CMV de '+m.lbl+' (valor do ERP)" style="width:110px;text-align:right;font:inherit;font-size:12.5px;font-weight:600;color:var(--red);border:1px solid #fcd34d;border-radius:6px;padding:4px 6px;background:#fff"></td>';
+        row += '<td style="'+tdS+';background:#fffbeb"><input type="text" inputmode="decimal" data-comp="'+m.comp+'" value="'+(v?v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'')+'" placeholder="0,00" onfocus="this.select()" onchange="salvarCMV(this)" title="CMV de '+m.lbl+' (valor do ERP)" style="width:110px;text-align:right;font:inherit;font-size:12.5px;font-weight:600;color:var(--red);border:1px solid #fcd34d;border-radius:6px;padding:4px 6px;background:#fff"></td>';
       });
       const T = tot(l.k);
       row += '<td style="'+tdS+';font-weight:700;border-left:2px solid var(--bor2)">'+fmtV(T)+'</td><td style="'+tdS+';color:var(--tx3);font-size:11px">'+pct(T,rbTot)+'</td></tr>';
