@@ -5195,6 +5195,18 @@ function salvarMetaForn(val){
   }
 }
 
+// Fornecedores: termos que identificam → razão social exibida
+const RAZAO_SOCIAL = [
+  [['RAINHA LAB'],'RAINHA LABORATORIO NUTRACEUTICO LTDA.'],
+  [['SUPLEY','MAX TITANIUM','PROBIOTICA','NF-E 1056079','NF-E 1056069','NFE 1.062.053','NFE 1.062.387'],'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA'],
+  [['CANIBAL'],'CANIBAL INC LTDA'],
+  [['FITOWAY','FITWAY'],'FITOWAY LABORATORIO NUTRICIONAL LTDA'],
+  [['BODY FOOD'],'BODY FOOD FABRICANTES DE ALIMENTOS SAUDAVEIS LTDA.'],
+  [['METTA FIT'],'METTA FIT NUTRICAO ESPORTIVA LTDA'],
+  [['D T SUPLEMENTOS'],'D T SUPLEMENTOS DISTRIBUIDORA LTDA'],
+  [['BRG SUPL'],'BRG SUPLEMENTOS NUTRICIONAIS LTDA'],
+  [['DUX COMPANY','RENEGOCIACAO DUX'],'DUX COMPANY LTDA'],
+];
 function renderForn(){
   const cores=['#dc2626','#ea580c','#d97706','#16a34a','#0284c7','#7c3aed','#db2777','#0891b2','#65a30d','#059669'];
   const hoje = HOJE_SISTEMA;
@@ -5228,10 +5240,9 @@ function renderForn(){
     txs.forEach(t=>{
       let nome = t.cli&&t.cli.length>2 ? t.cli
         : t.desc.replace(/PAGAMENTO PIX \d+ /g,'').replace(/BOLETO NF \d+\.\d+ - /g,'').split(' - ')[0].trim().substring(0,40);
-      // mesmo fornecedor com nomes diferentes (extrato x provisão)
-      const NU = nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-      const ALIAS = [['CANIBAL','Canibal'],['FITOWAY','Fitoway'],['FITWAY','Fitoway'],['BODY FOOD','Body Food'],['BODYACTION','Bodyaction'],['METTA FIT','Metta Fit'],['D T SUPLEMENTOS','D T Suplementos'],['RAINHA LAB','Rainha Laboratório'],['SUPLEY','Supley'],['BRG SUPL','BRG Suplementos'],['NUTRATA','Nutrata'],['UNDERLABZ','Underlabz'],['DR PEANUT','Dr Peanut'],['MAX TITANIUM','Max Titanium'],['PROBIOTICA','Probiótica'],['VELIK','Velik'],['DUX','DUX Company']];
-      const al = ALIAS.find(([k])=>NU.indexOf(k)===0); if(al) nome = al[1];
+      // mesmo fornecedor com nomes diferentes (extrato x provisão x edição) → sempre a RAZÃO SOCIAL
+      const NU = (nome+' | '+(t.cli||'')+' | '+(t.desc||'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+      const al = RAZAO_SOCIAL.find(([ks])=>ks.some(k=>NU.indexOf(k)>=0)); if(al) nome = al[1];
       if(!g[nome]) g[nome]={nome,realizado:0,previsto:0,txs:[]};
       if(pago(t)) g[nome].realizado+=t.amt;
       else g[nome].previsto+=t.amt;
@@ -5560,9 +5571,11 @@ function renderForn(){
             txSel.sort((a,b)=>a.date.localeCompare(b.date)).map(t=>{
               const nf=t.desc.match(/NF[\s\-e°º]*N?[°º]?\s*([\d.]+)/i);
               const nome=t.cli&&t.cli.length>2?t.cli:t.desc.replace(/PAGAMENTO PIX \d+ |BOLETO /g,'').split(' - ')[0].substring(0,35);
+              const _NU=(nome+' | '+(t.desc||'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(); const _al=RAZAO_SOCIAL.find(([ks])=>ks.some(k=>_NU.indexOf(k)>=0));
+              const nomeRS=_al?_al[1]:nome;
               return`<tr style="border-bottom:1px solid var(--bor);${t.status==='previsto'?'background:#fafbff':''}">
                 <td style="padding:7px 12px;font-size:11px;color:var(--tx3);white-space:nowrap">${fmtD(t.date)}</td>
-                <td style="padding:7px 12px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nome}</td>
+                <td style="padding:7px 12px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nomeRS}</td>
                 <td style="padding:7px 12px;font-size:11px;color:var(--tx3)">${nf?nf[1]:'—'}</td>
                 <td style="padding:7px 12px;text-align:right;font-size:12px;font-weight:700;color:var(--red)">−${fmtR(t.amt)}</td>
                 <td style="padding:7px 12px;text-align:center">
