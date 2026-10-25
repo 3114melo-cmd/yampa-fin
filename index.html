@@ -5207,6 +5207,12 @@ function salvarCad(id){
 // ════════════════════════════════
 let metaForn = parseFloat(localStorage.getItem('yf_meta_forn')||'150000');
 let editandoMeta = false;
+let tetoGeralForn = (()=>{ try{ return parseFloat(localStorage.getItem('yf_teto_geral_forn')||'480000'); }catch(e){ return 480000; } })();
+let editandoTetoGeral = false;
+function salvarTetoGeral(val){
+  const v = parseFloat(val);
+  if(!isNaN(v) && v>0){ tetoGeralForn=v; try{ localStorage.setItem('yf_teto_geral_forn', v); }catch(e){} editandoTetoGeral=false; toast('✓ Teto geral de fornecedor atualizado!','ok'); render(); }
+}
 
 function salvarMetaForn(val){
   const v = parseFloat(val);
@@ -5327,7 +5333,7 @@ function renderForn(){
       arcs+='<path d="M'+P(R,a0)+' A'+R+' '+R+' 0 '+lg+' 1 '+P(R,a1)+' L'+P(RI,a1)+' A'+RI+' '+RI+' 0 '+lg+' 0 '+P(RI,a0)+' Z" fill="'+g.cor+'"><title>'+g.nome+' · '+(g.tot/total*100).toFixed(1).replace('.',',')+'% · '+fmtR(g.tot)+'</title></path>';
       ang=ea;
     });
-    const pTeto = meta>0 ? Math.round(total/(periodoSel==='panorama'?meta*porMes.length:meta)*100) : 0;
+    const pTeto = Math.round(total/(periodoSel==='panorama'?tetoGeralForn:meta)*100) || 0;
     const rosca = '<div style="position:relative;width:'+S+'px;height:'+S+'px;flex-shrink:0">'
       +'<svg width="'+S+'" height="'+S+'" viewBox="0 0 '+S+' '+S+'">'+arcs+'</svg>'
       +'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none">'
@@ -5462,6 +5468,17 @@ function renderForn(){
           <button class="btn" style="padding:3px 8px;font-size:11px" onclick="editandoMeta=true;render()">✏</button>
         </div>
       `}
+      ${editandoTetoGeral?`
+        <input type="number" id="inp-teto-geral" value="${tetoGeralForn}" step="10000" style="padding:6px 10px;border:1.5px solid var(--sacc);border-radius:var(--r);font-size:13px;font-weight:700;width:150px">
+        <button class="btn pri" onclick="salvarTetoGeral(document.getElementById('inp-teto-geral').value)">✓ Salvar</button>
+        <button class="btn" onclick="editandoTetoGeral=false;render()">✕</button>
+      `:`
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--sur);border:1px solid var(--bor2);border-radius:var(--r)">
+          <span style="font-size:11px;color:var(--tx3)">Teto geral:</span>
+          <span style="font-size:14px;font-weight:700">${fmtR(tetoGeralForn)}</span>
+          <button class="btn" style="padding:3px 8px;font-size:11px" onclick="editandoTetoGeral=true;render()">✏</button>
+        </div>
+      `}
     </div>
   </div>
 
@@ -5482,10 +5499,14 @@ function renderForn(){
       <div class="kv" style="font-size:16px;font-weight:700;color:var(--yel)">${fmtR(totalGeral)}</div>
       <div class="ks">${periodoSel==='panorama'?'soma de '+porMes.length+' meses':pct+'% do teto'}</div>
     </div>
-    <div class="kpi" style="border-left:3px solid ${sobra<0?'var(--red)':'var(--grn)'}">
+    <div class="kpi" style="border-left:3px solid ${(periodoSel==='panorama'?tetoGeralForn-totalGeral:sobra)<0?'var(--red)':'var(--grn)'}">
+      ${periodoSel==='panorama' ? `
+      <div class="kl">${tetoGeralForn-totalGeral>=0?'Falta para o teto geral':'Passou do teto geral'}</div>
+      <div class="kv" style="font-size:16px;font-weight:700;color:${tetoGeralForn-totalGeral<0?'var(--red)':'var(--grn)'}">${tetoGeralForn-totalGeral<0?'+ ':''}${fmtR(Math.abs(tetoGeralForn-totalGeral))}</div>
+      <div class="ks">Teto geral: ${fmtR(tetoGeralForn)} · usado ${fmtR(totalGeral)} (${Math.round(totalGeral/tetoGeralForn*100)}%)</div>` : `
       <div class="kl">${sobra>=0?'Falta para o teto':'Passou do teto'} · ${lblMes(mesRef)}</div>
       <div class="kv" style="font-size:16px;font-weight:700;color:${sobra<0?'var(--red)':'var(--grn)'}">${sobra<0?'+ ':''}${fmtR(Math.abs(sobra))}</div>
-      <div class="ks">Teto: ${fmtR(meta)} · usado ${fmtR(totMesRef)} (${meta>0?Math.round(totMesRef/meta*100):0}%)</div>
+      <div class="ks">Teto: ${fmtR(meta)} · usado ${fmtR(totMesRef)} (${meta>0?Math.round(totMesRef/meta*100):0}%)</div>`}
     </div>
     <div class="kpi" style="border-left:3px solid var(--sacc)">
       <div class="kl">Fornecedores</div>
@@ -5494,11 +5515,11 @@ function renderForn(){
     </div>
   </div>
 
-  ${(()=>{ window._tetoB = periodoSel==='panorama' ? meta*porMes.length : meta; return ''; })()}
+  ${(()=>{ window._tetoB = periodoSel==='panorama' ? tetoGeralForn : meta; return ''; })()}
   <!-- BARRA GERAL -->
   <div class="card cp" style="margin-bottom:14px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-size:13px;font-weight:700">Utilização do Teto de Fornecedor ${periodoSel==='panorama'?'(Acumulado '+lblMes(MESES_PANORAMA[0])+'–'+lblMes(MESES_PANORAMA[MESES_PANORAMA.length-1])+')':periodoSel==='mes'?'(Mês Atual)':'('+labelPeriodo+')'}</span>
+      <span style="font-size:13px;font-weight:700">Utilização do Teto ${periodoSel==='panorama'?'Geral ':''}de Fornecedor ${periodoSel==='panorama'?'(Acumulado '+lblMes(MESES_PANORAMA[0])+'–'+lblMes(MESES_PANORAMA[MESES_PANORAMA.length-1])+')':periodoSel==='mes'?'(Mês Atual)':'('+labelPeriodo+')'}</span>
       <span style="font-size:12px;font-weight:700;color:${Math.round(totalGeral/window._tetoB*100)>100?'var(--red)':Math.round(totalGeral/window._tetoB*100)>80?'var(--yel)':'var(--grn)'}">${Math.round(totalGeral/window._tetoB*100)}%${Math.round(totalGeral/window._tetoB*100)>100?' ⚠ PASSOU DO TETO':''}</span>
     </div>
     <div style="height:16px;background:var(--bor);border-radius:8px;overflow:hidden;position:relative">
@@ -5508,7 +5529,7 @@ function renderForn(){
     <div style="display:flex;gap:16px;margin-top:7px;font-size:11px;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--red)"></div>Realizado: ${fmtR(totalReal)}</div>
       <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>Previsto: ${fmtR(totalPrev)}</div>
-      <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--bor)"></div>${window._tetoB-totalGeral>=0?'Falta para o teto':'Passou do teto'}: ${fmtR(Math.abs(window._tetoB-totalGeral))} · Teto ${periodoSel==='panorama'?porMes.length+' meses × '+fmtR(meta)+' = ':''}${fmtR(window._tetoB)}</div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--bor)"></div>${window._tetoB-totalGeral>=0?'Falta para o teto':'Passou do teto'}: ${fmtR(Math.abs(window._tetoB-totalGeral))} · Teto ${periodoSel==='panorama'?'geral ':''}${fmtR(window._tetoB)}</div>
       ${periodoSel==='panorama'?'<span style="font-size:10px;color:#0369a1;margin-left:auto">* Meses em azul = previsão futura</span>':''}
     </div>
   </div>
