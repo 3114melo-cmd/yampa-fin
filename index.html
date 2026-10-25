@@ -5226,8 +5226,12 @@ function renderForn(){
   function agruparForn(txs){
     const g={};
     txs.forEach(t=>{
-      const nome = t.cli&&t.cli.length>2 ? t.cli
+      let nome = t.cli&&t.cli.length>2 ? t.cli
         : t.desc.replace(/PAGAMENTO PIX \d+ /g,'').replace(/BOLETO NF \d+\.\d+ - /g,'').split(' - ')[0].trim().substring(0,40);
+      // mesmo fornecedor com nomes diferentes (extrato x provisão)
+      const NU = nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+      const ALIAS = [['CANIBAL','Canibal'],['FITOWAY','Fitoway'],['FITWAY','Fitoway'],['BODY FOOD','Body Food'],['BODYACTION','Bodyaction'],['METTA FIT','Metta Fit'],['D T SUPLEMENTOS','D T Suplementos'],['RAINHA LAB','Rainha Laboratório'],['SUPLEY','Supley'],['BRG SUPL','BRG Suplementos'],['NUTRATA','Nutrata'],['UNDERLABZ','Underlabz'],['DR PEANUT','Dr Peanut'],['MAX TITANIUM','Max Titanium'],['PROBIOTICA','Probiótica'],['VELIK','Velik'],['DUX','DUX Company']];
+      const al = ALIAS.find(([k])=>NU.indexOf(k)===0); if(al) nome = al[1];
       if(!g[nome]) g[nome]={nome,realizado:0,previsto:0,txs:[]};
       if(pago(t)) g[nome].realizado+=t.amt;
       else g[nome].previsto+=t.amt;
@@ -5265,6 +5269,59 @@ function renderForn(){
   }
   const porMes = dadosPorMes();
   const maxVal = Math.max(...porMes.map(m=>m.total), meta, 1);
+
+
+  // ── PARTICIPAÇÃO POR FORNECEDOR (rosca + ranking) ──
+  function cardParticipacao(lista, total, titulo){
+    const PAL = ['#4f46e5','#0ea5e9','#14b8a6','#22c55e','#eab308','#f97316','#ef4444','#ec4899','#a855f7','#0891b2'];
+    const N = 9;
+    const top = lista.slice(0,N).map((g,i)=>({...g, cor:PAL[i%PAL.length], tot:g.realizado+g.previsto}));
+    const resto = lista.slice(N);
+    if(resto.length){ const o={nome:'Outros ('+resto.length+')', realizado:resto.reduce((s,g)=>s+g.realizado,0), previsto:resto.reduce((s,g)=>s+g.previsto,0), txs:resto.flatMap(g=>g.txs), cor:'#cbd5e1', outros:true}; o.tot=o.realizado+o.previsto; top.push(o); }
+    if(total<=0) return '<div class="card cp" style="margin-bottom:14px"><div style="font-size:14px;font-weight:700">'+titulo+'</div><div style="padding:30px;text-align:center;color:var(--tx3)">Nenhum lançamento neste período</div></div>';
+    // rosca
+    const S=230, cx=S/2, cy=S/2, R=104, RI=68;
+    let ang=-Math.PI/2, arcs='';
+    top.forEach(g=>{
+      if(g.tot<=0) return;
+      let a=(g.tot/total)*2*Math.PI; if(a>=2*Math.PI) a=2*Math.PI-0.0001;
+      const ea=ang+a, lg=a>Math.PI?1:0, gap=top.length>1?0.012:0;
+      const a0=ang+gap/2, a1=ea-gap/2;
+      const P=(rr,t)=>(cx+rr*Math.cos(t)).toFixed(2)+' '+(cy+rr*Math.sin(t)).toFixed(2);
+      arcs+='<path d="M'+P(R,a0)+' A'+R+' '+R+' 0 '+lg+' 1 '+P(R,a1)+' L'+P(RI,a1)+' A'+RI+' '+RI+' 0 '+lg+' 0 '+P(RI,a0)+' Z" fill="'+g.cor+'"><title>'+g.nome+' · '+(g.tot/total*100).toFixed(1).replace('.',',')+'% · '+fmtR(g.tot)+'</title></path>';
+      ang=ea;
+    });
+    const pTeto = meta>0 ? Math.round(total/(periodoSel==='panorama'?meta*porMes.length:meta)*100) : 0;
+    const rosca = '<div style="position:relative;width:'+S+'px;height:'+S+'px;flex-shrink:0">'
+      +'<svg width="'+S+'" height="'+S+'" viewBox="0 0 '+S+' '+S+'">'+arcs+'</svg>'
+      +'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none">'
+      +'<div style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#667085">Total</div>'
+      +'<div style="font-size:'+(fmtR(total).length>12?15:18)+'px;font-weight:800;color:#101828;margin:2px 0">'+fmtR(total)+'</div>'
+      +'<div style="font-size:12px;font-weight:600;color:'+(pTeto>100?'#b42318':'#067647')+'">'+pTeto+'% do teto</div>'
+      +'<div style="font-size:11px;color:#667085;margin-top:2px">'+lista.length+' fornecedores</div>'
+      +'</div></div>';
+    // ranking
+    const maxShare = Math.max(...top.map(g=>g.tot/total));
+    const linhas = top.map((g,i)=>{
+      const sh = g.tot/total*100;
+      const wBar = maxShare>0 ? (g.tot/total)/maxShare*100 : 0;
+      const wPago = g.tot>0 ? g.realizado/g.tot*100 : 0;
+      return '<div style="display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #f2f4f7">'
+        +'<div style="width:24px;height:24px;border-radius:7px;background:'+g.cor+'1f;color:'+(g.outros?'#475467':g.cor)+';font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center">'+(g.outros?'…':(i+1))+'</div>'
+        +'<div style="min-width:0">'
+          +'<div style="display:flex;align-items:baseline;gap:8px;min-width:0"><span style="font-size:13px;font-weight:600;color:#101828;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+g.nome.replace(/"/g,'&quot;')+'">'+g.nome+'</span>'
+          +'<span style="font-size:11px;color:#667085;white-space:nowrap">'+g.txs.length+' lanç.</span></div>'
+          +'<div style="margin-top:5px;height:8px;border-radius:999px;background:#f2f4f7;overflow:hidden"><div style="height:100%;width:'+wBar.toFixed(1)+'%;border-radius:999px;background:'+g.cor+'33;position:relative"><div style="position:absolute;left:0;top:0;bottom:0;width:'+wPago.toFixed(1)+'%;background:'+g.cor+';border-radius:999px"></div></div></div>'
+          +'<div style="margin-top:3px;font-size:11px;color:#667085">pago '+fmtR(g.realizado)+(g.previsto>0?' · <span style="color:#b54708">a pagar '+fmtR(g.previsto)+'</span>':'')+'</div>'
+        +'</div>'
+        +'<div style="text-align:right;min-width:92px"><div style="font-size:18px;font-weight:800;color:'+(g.outros?'#475467':g.cor)+';line-height:1.1">'+sh.toFixed(1).replace('.',',')+'%</div><div style="font-size:12px;font-weight:600;color:#344054">'+fmtR(g.tot)+'</div></div>'
+        +'</div>';
+    }).join('');
+    return '<div class="card cp" style="margin-bottom:14px">'
+      +'<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:14px"><span style="font-size:14px;font-weight:700">'+titulo+'</span><span style="font-size:12px;color:#667085">quanto cada fornecedor representa do total · cor forte = pago, cor clara = a pagar</span></div>'
+      +'<div style="display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap">'+rosca
+      +'<div style="flex:1;min-width:320px;max-height:420px;overflow-y:auto;padding-right:6px">'+linhas+'</div></div></div>';
+  }
 
   // SVG DONUT
   function donut(lista, total){
@@ -5438,6 +5495,8 @@ function renderForn(){
       </div>
     </div>
 
+    ${cardParticipacao(lista,totalGeral,'Participação por fornecedor — '+labelPeriodo)}
+
     <!-- TABELA RESUMO PANORAMA -->
     <div class="card" style="overflow:hidden;margin-bottom:14px">
       <div style="padding:10px 14px;border-bottom:1px solid var(--bor);font-size:13px;font-weight:700">Resumo por Mês</div>
@@ -5477,56 +5536,8 @@ function renderForn(){
       </table>
     </div>
   `:`
-    <!-- MÊS ESPECÍFICO: DONUT + BARRAS -->
-    <div style="display:grid;grid-template-columns:280px 1fr;gap:14px;margin-bottom:14px">
-      <div class="card cp">
-        <div style="font-size:13px;font-weight:700;margin-bottom:12px">Por Fornecedor</div>
-        <div style="display:flex;align-items:center;gap:16px">
-          <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink:0">
-            ${donut(lista,totalGeral)}
-          </svg>
-          <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
-            ${lista.slice(0,8).map((g,i)=>{
-              const tot=g.realizado+g.previsto;
-              const p=totalGeral>0?Math.round(tot/totalGeral*100):0;
-              return`<div style="display:flex;align-items:center;gap:6px">
-                <div style="width:9px;height:9px;border-radius:2px;background:${cores[i%cores.length]};flex-shrink:0"></div>
-                <div style="flex:1;min-width:0">
-                  <div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.nome.substring(0,22)}</div>
-                  <div style="font-size:9px;color:var(--tx3)">${p}% · ${fmtR(tot)}</div>
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>
-      </div>
-      <div class="card cp">
-        <div style="font-size:13px;font-weight:700;margin-bottom:12px">Detalhamento — ${labelPeriodo}</div>
-        <div style="max-height:300px;overflow-y:auto">
-          ${lista.length===0?'<div style="text-align:center;padding:30px;color:var(--tx3);font-size:12px">Nenhum lançamento neste período</div>':
-            lista.map((g,i)=>{
-              const tot=g.realizado+g.previsto;
-              const pctR=meta>0?Math.min(100,Math.round(g.realizado/meta*100)):0;
-              const pctP=meta>0?Math.min(100-pctR,Math.round(g.previsto/meta*100)):0;
-              const cor=cores[i%cores.length];
-              return`<div style="margin-bottom:12px">
-                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-                  <span style="font-size:12px;font-weight:600;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.nome}</span>
-                  <div style="text-align:right;flex-shrink:0">
-                    <span style="font-size:12px;font-weight:700;color:var(--red)">${fmtR(g.realizado)}</span>
-                    ${g.previsto>0?`<span style="font-size:10px;color:#dc2626;opacity:.6"> +${fmtR(g.previsto)}</span>`:''}
-                  </div>
-                </div>
-                <div style="height:10px;background:var(--bor);border-radius:5px;overflow:hidden">
-                  <div style="height:100%;width:${pctR}%;background:${cor};float:left;border-radius:5px 0 0 5px"></div>
-                  ${g.previsto>0?`<div style="height:100%;width:${pctP}%;background:${cor};opacity:.35;float:left"></div>`:''}
-                </div>
-                <div style="font-size:9px;color:var(--tx3);margin-top:2px">${meta>0?Math.round(tot/meta*100):0}% do teto · ${g.txs.length} lançamento${g.txs.length!==1?'s':''}</div>
-              </div>`;
-            }).join('')}
-        </div>
-      </div>
-    </div>
+    <!-- MÊS ESPECÍFICO: PARTICIPAÇÃO POR FORNECEDOR -->
+    ${cardParticipacao(lista,totalGeral,'Participação por fornecedor — '+labelPeriodo)}
   `}
 
   <!-- TABELA DE LANÇAMENTOS -->
