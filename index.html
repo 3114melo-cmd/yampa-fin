@@ -4644,10 +4644,10 @@ const DRE_LINHAS = [
   {k:'rb',   nome:'RECEITA BRUTA',                        pref:['3.1'], sinal:1,  tipo:'grupo'},
   {k:'ded',  nome:'(−) Deduções / Impostos sobre vendas', pref:['4.1'], sinal:-1, tipo:'grupo'},
   {k:'rl',   nome:'= RECEITA LÍQUIDA',                    calc:['rb','ded'], tipo:'total'},
-  {k:'cmv',  nome:'(−) Custo das mercadorias (Fornecedores)', pref:['4.2'], sinal:-1, tipo:'grupo'},
+  {k:'cmv',  nome:'(−) CMV — Custo das mercadorias vendidas (ERP)', manual:true, sinal:-1, tipo:'grupo'},
   {k:'cv',   nome:'(−) Custos variáveis de venda',        pref:['4.3','4.4','4.6','4.7'], sinal:-1, tipo:'grupo'},
   {k:'mc',   nome:'= MARGEM DE CONTRIBUIÇÃO',             calc:['rl','cmv','cv'], tipo:'total'},
-  {k:'dfin', nome:'(−) Despesas financeiras',             pref:['5.1'], sinal:-1, tipo:'grupo'},
+  {k:'dfin', nome:'(−) Despesas financeiras',             pref:['5.1','4.2.4'], sinal:-1, tipo:'grupo'},
   {k:'dadm', nome:'(−) Despesas administrativas',         pref:['5.2'], sinal:-1, tipo:'grupo'},
   {k:'dpes', nome:'(−) Despesas com pessoal',             pref:['5.3'], sinal:-1, tipo:'grupo'},
   {k:'dvei', nome:'(−) Despesas com veículos',            pref:['5.5'], sinal:-1, tipo:'grupo'},
@@ -4658,6 +4658,22 @@ const DRE_LINHAS = [
   {k:'nop',  nome:'(±) Movimentações não operacionais',   pref:['7'],   sinal:1,  tipo:'grupo'},
   {k:'rliq', nome:'= RESULTADO LÍQUIDO',                  calc:['ro','rfin','inv','nop'], tipo:'final'},
 ];
+// CMV informado manualmente (valor do ERP), por competência 'AAAA-MM'. Valores fixos aqui valem em qualquer navegador;
+// o que for digitado na DRE fica salvo no navegador e tem prioridade.
+const CMV_ERP = {};
+function getCMV(comp){
+  try{ const m = JSON.parse(localStorage.getItem('yf_cmv_manual')||'{}'); if(m[comp]!==undefined && m[comp]!==null && m[comp]!=='') return parseFloat(m[comp])||0; }catch(e){}
+  return CMV_ERP[comp]||0;
+}
+function salvarCMV(el){
+  const comp = el.dataset.comp; const v = parseFloat(String(el.value).replace(/\./g,'').replace(',','.'));
+  let m={}; try{ m=JSON.parse(localStorage.getItem('yf_cmv_manual')||'{}'); }catch(e){}
+  if(isNaN(v) || el.value===''){ delete m[comp]; } else { m[comp]=Math.abs(v); }
+  try{ localStorage.setItem('yf_cmv_manual', JSON.stringify(m)); }catch(e){}
+  toast('✓ CMV de '+fmtComp(comp)+' salvo','ok'); render();
+}
+// Pagamentos a fornecedores são CAIXA, não custo: não entram na DRE (o CMV vem do ERP)
+function dreExcluido(t){ return t.cat==='4.2.1' || (String(t.cat).indexOf('4.2')===0 && t.cat!=='4.2.4'); }
 function dreMatch(code, prefs){ return prefs.some(p=>code===p || code.indexOf(p+'.')===0); }
 function dreValor(t){
   // valor com sinal econômico: crédito +, débito −
@@ -4690,7 +4706,9 @@ function renderDRE(){
     meses.forEach(m=>V[l.k][m.comp]=0);
   });
   const naoClass = {}; meses.forEach(m=>naoClass[m.comp]=0);
+  V['cmv'] = {}; CONTAS['cmv'] = {}; meses.forEach(m=>V['cmv'][m.comp] = -getCMV(m.comp));
   base.forEach(t=>{
+    if(dreExcluido(t)) return;
     const l = DRE_LINHAS.find(x=>x.pref && dreMatch(t.cat, x.pref));
     const v = dreValor(t);
     if(!l){ naoClass[t.comp]=(naoClass[t.comp]||0)+v; return; }
@@ -4703,7 +4721,7 @@ function renderDRE(){
     if(l.k==='rliq') meses.forEach(m=>{ V[l.k][m.comp]+=naoClass[m.comp]||0; });
   });
   const tot = k => meses.reduce((s,m)=>s+V[k][m.comp],0);
-  const comMov = meses.filter(m=>base.some(t=>t.comp===m.comp));
+  const comMov = meses.filter(m=>base.some(t=>t.comp===m.comp && !dreExcluido(t)) || getCMV(m.comp)>0 || m.comp===HOJE_SISTEMA.substring(0,7));
   const cols = comMov.length ? comMov : meses.filter(m=>m.comp===HOJE_SISTEMA.substring(0,7));
   const rbTot = tot('rb');
   const fmtV = v => Math.abs(v)<0.005 ? '<span style="color:var(--tx3)">—</span>' : (v<0?'<span style="color:var(--red)">('+fmtR(v).replace('R$ ','')+')</span>':fmtR(v).replace('R$ ',''));
@@ -4725,6 +4743,15 @@ function renderDRE(){
     const seta = (!isTot && contas.length) ? '<span style="display:inline-block;width:14px;color:var(--tx3)">'+(exp?'▾':'▸')+'</span>' : '<span style="display:inline-block;width:14px"></span>';
     const nomeCell = '<td style="padding:7px 12px;border-bottom:1px solid var(--bor);position:sticky;left:0;'+(bg||'background:var(--sur)')+';'+(isTot?'font-weight:700;':'font-weight:600;')+(contas.length&&!isTot?'cursor:pointer':'')+'" '+(contas.length&&!isTot?'data-k="'+l.k+'" onclick="dreToggle(this)"':'')+'>'+seta+l.nome+'</td>';
     let row = '<tr style="'+bg+'">'+nomeCell;
+    if(l.manual){
+      cols.forEach(m=>{
+        const v=getCMV(m.comp);
+        row += '<td style="'+tdS+';background:#fffbeb"><input type="number" step="0.01" min="0" data-comp="'+m.comp+'" value="'+(v?v.toFixed(2):'')+'" placeholder="digite" onchange="salvarCMV(this)" title="CMV de '+m.lbl+' (valor do ERP)" style="width:110px;text-align:right;font:inherit;font-size:12.5px;font-weight:600;color:var(--red);border:1px solid #fcd34d;border-radius:6px;padding:4px 6px;background:#fff"></td>';
+      });
+      const T = tot(l.k);
+      row += '<td style="'+tdS+';font-weight:700;border-left:2px solid var(--bor2)">'+fmtV(T)+'</td><td style="'+tdS+';color:var(--tx3);font-size:11px">'+pct(T,rbTot)+'</td></tr>';
+      body += row; return;
+    }
     cols.forEach(m=>{
       const v = V[l.k][m.comp];
       const click = l.pref && Math.abs(v)>0.004 ? ' data-comp="'+m.comp+'" data-cats="'+contas.join(',')+'" onclick="dreIrDiario(this)" title="Ver lançamentos" ' : '';
@@ -4770,7 +4797,7 @@ function renderDRE(){
     +'</div>'
     +'<div style="border:1px solid var(--bor);border-radius:10px;overflow:auto;background:var(--sur)">'
     +'<table style="border-collapse:collapse;width:100%;font-size:13px"><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>'
-    +'<div style="font-size:11px;color:var(--tx3);margin-top:8px">Clique numa linha (▸) para abrir as contas · clique num valor para ver os lançamentos no Livro Diário. Valores entre parênteses são negativos.</div>'
+    +'<div style="font-size:11px;color:var(--tx3);margin-top:8px">Clique numa linha (▸) para abrir as contas · clique num valor para ver os lançamentos no Livro Diário. Valores entre parênteses são negativos.<br><strong>CMV:</strong> digite o valor do ERP em cada mês (campo amarelo). Pagamentos a fornecedores (4.2.1) não entram na DRE — eles aparecem no Fluxo de Caixa e em Fornecedores.</div>'
     +'</div>';
 }
 function exportarDRE(){
@@ -4779,7 +4806,8 @@ function exportarDRE(){
   const meses = MESES_NOME.map((n,i)=>ano+'-'+String(i+1).padStart(2,'0'));
   const V={};
   DRE_LINHAS.forEach(l=>{ V[l.k]={}; meses.forEach(m=>V[l.k][m]=0); });
-  base.forEach(t=>{ const l=DRE_LINHAS.find(x=>x.pref&&dreMatch(t.cat,x.pref)); if(l) V[l.k][t.comp]+=dreValor(t); });
+  meses.forEach(m=>{ V['cmv'][m]=-getCMV(m); });
+  base.forEach(t=>{ if(dreExcluido(t)) return; const l=DRE_LINHAS.find(x=>x.pref&&dreMatch(t.cat,x.pref)); if(l) V[l.k][t.comp]+=dreValor(t); });
   DRE_LINHAS.filter(l=>l.calc).forEach(l=>meses.forEach(m=>{ V[l.k][m]=l.calc.reduce((s,k)=>s+V[k][m],0); }));
   const f=v=>v.toFixed(2).replace('.',',');
   let csv='Conta;'+MESES_NOME.map(n=>n+'/'+ano).join(';')+';Total\n';
