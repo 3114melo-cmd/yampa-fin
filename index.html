@@ -2039,6 +2039,25 @@ function buildTX(){
       obs:'', editado:true, espelhoDe:t.id, contaTransf:t.conta||null,
       desc:(tipoEsp==='CREDIT'?'Transferência recebida de ':'Transferência enviada para ')+(t.conta||'')});
   });
+  // CAIXA NEGATIVO → ENTRADA EM DINHEIRO automática (vendas em espécie), dia a dia
+  (function(){
+    const CX='Caixa (Dinheiro)';
+    const movs = TX.filter(t=>t.conta===CX && (t.status==='conciliado'||t.status==='transferencia'))
+      .sort((a,b)=>a.date.localeCompare(b.date)||String(a.hora||'').localeCompare(String(b.hora||'')));
+    const dias = [...new Set(movs.map(t=>t.date))].sort();
+    let saldo = 0;
+    dias.forEach(d=>{
+      movs.filter(t=>t.date===d).forEach(t=>{ saldo += t.type==='CREDIT'?t.amt:-t.amt; });
+      if(saldo < -0.004){
+        const v = Math.round(-saldo*100)/100;
+        const ci = cat('3.1.8');
+        TX.push({id:'cxauto_'+d, date:d, hora:'23:59', desc:'Entrada em dinheiro (vendas em espécie) — completa o Caixa negativo',
+          amt:v, type:'CREDIT', conta:CX, cat:'3.1.8', catInfo:ci, cli:'Vendas em dinheiro', obs:'Gerada automaticamente: o Caixa ficou negativo em '+fmtD(d),
+          meio:'Dinheiro', status:'conciliado', comp:d.substring(0,7), editado:false, autoRegra:'Caixa negativo → Entrada em dinheiro', contaTransf:null});
+        saldo = 0;
+      }
+    });
+  })();
 }
 buildTX();
 
