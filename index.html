@@ -1894,7 +1894,9 @@ const RAW = [
   {id:'st_c89b18a5',date:'2026-10-22',hora:'15:26',desc:'Transferência | Pix | NATACHA SCARLETH SILVA DE AGUIAR VILAR',amt:225.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'NATACHA SCARLETH SILVA DE AGUIAR VILAR',meio:'PIX'},
   {id:'st_39ce269d',date:'2026-10-22',hora:'15:13',desc:'Valor referente à liquidação de suas vendas de cartão. | Recebimento de vendas',amt:48.21,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Cartão'},
   {id:'st_bee8fb92',date:'2026-10-22',hora:'14:58',desc:'Valor referente à liquidação de suas vendas de cartão. | Recebimento de vendas',amt:293.29,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Cartão'},
-  {id:'st_22b1babc',date:'2026-10-22',hora:'14:48',desc:'Transferência | Pix | Mayara Priscila da Silva',amt:152.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Mayara Priscila da Silva',meio:'PIX'}
+  {id:'st_22b1babc',date:'2026-10-22',hora:'14:48',desc:'Transferência | Pix | Mayara Priscila da Silva',amt:152.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Mayara Priscila da Silva',meio:'PIX'},
+  // CAIXA (DINHEIRO) - lançamentos manuais
+  {id:'cx_20261024_adj',date:'2026-10-24',hora:'22:01',desc:'Adiantamento Jhonathan (espécie)',amt:350.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Jhonathan',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'}
 ];
 
 // Estado
@@ -1968,7 +1970,7 @@ function buildTX(){
       desc: ed.desc || r.desc,
       cli: ed.cli || r.cli || (r.transf ? r.transf : ''),
       obs: ed.obs || r.obs || '',
-      meio: ed.meio || (r.previsto?'Boleto':'PIX'),
+      meio: ed.meio || r.meio || (r.previsto?'Boleto':'PIX'),
       status: ed.status || statusDefault,
       amt: (ed.amt!==undefined) ? ed.amt : r.amt,
       date: ed.date || r.date,
@@ -2031,8 +2033,9 @@ function updateSaldoBadges(){
   const calcS = txs => txs.filter(t=>t.type==='CREDIT').reduce((s,t)=>s+t.amt,0) - txs.filter(t=>t.type==='DEBIT').reduce((s,t)=>s+t.amt,0);
   const elM = document.getElementById('sb-saldo-matriz');
   const elD = document.getElementById('sb-saldo-dist');
-  if(elM) elM.textContent = fmtR(calcS(sm));
-  if(elD) elD.textContent = fmtR(calcS(sd));
+  const fmtS = v => (v<-0.004?'− ':'')+fmtR(v);
+  if(elM){ elM.textContent = fmtS(calcS(sm)); elM.style.color = calcS(sm)<-0.004?'#f87171':''; }
+  if(elD){ elD.textContent = fmtS(calcS(sd)); elD.style.color = calcS(sd)<-0.004?'#f87171':''; }
 }
 
 function updateBadge(){
