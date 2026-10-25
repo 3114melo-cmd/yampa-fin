@@ -5197,8 +5197,11 @@ function salvarMetaForn(val){
 
 function renderForn(){
   const cores=['#dc2626','#ea580c','#d97706','#16a34a','#0284c7','#7c3aed','#db2777','#0891b2','#65a30d','#059669'];
-  const mesHoje = '2026-10';
-  const hoje = '2026-10-24';
+  const hoje = HOJE_SISTEMA;
+  const mesHoje = hoje.substring(0,7);
+  // Mesma regra do Fluxo de Caixa: ignorados ficam fora; PAGO = conciliado; A PAGAR = previsto + pendente de conciliação
+  const ehForn = t => (t.cat==='4.2.1'||t.cat==='4.2.4') && t.type==='DEBIT' && t.status!=='ignorado';
+  const pago = t => t.status==='conciliado' || t.status==='transferencia';
 
   // Período selecionado
   const periodoSel = window._fornPeriodo || 'panorama';
@@ -5208,15 +5211,15 @@ function renderForn(){
 
   // Todos os meses com dados
   const todosMeses = [...new Set([
-    ...TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT').map(t=>t.date.substring(0,7)),
+    ...TX.filter(t=>ehForn(t)).map(t=>t.date.substring(0,7)),
     ...MESES_PANORAMA
   ])].sort();
 
   // Filtrar TX pelo período
   function txDoPeriodo(){
-    if(periodoSel==='mes') return TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.date.startsWith(mesHoje));
-    if(periodoSel==='panorama') return TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT');
-    return TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.date.startsWith(periodoSel));
+    if(periodoSel==='mes') return TX.filter(t=>ehForn(t)&&t.date.startsWith(mesHoje));
+    if(periodoSel==='panorama') return TX.filter(t=>ehForn(t));
+    return TX.filter(t=>ehForn(t)&&t.date.startsWith(periodoSel));
   }
 
   // Agrupar por fornecedor
@@ -5226,8 +5229,8 @@ function renderForn(){
       const nome = t.cli&&t.cli.length>2 ? t.cli
         : t.desc.replace(/PAGAMENTO PIX \d+ /g,'').replace(/BOLETO NF \d+\.\d+ - /g,'').split(' - ')[0].trim().substring(0,40);
       if(!g[nome]) g[nome]={nome,realizado:0,previsto:0,txs:[]};
-      if(t.status==='previsto') g[nome].previsto+=t.amt;
-      else g[nome].realizado+=t.amt;
+      if(pago(t)) g[nome].realizado+=t.amt;
+      else g[nome].previsto+=t.amt;
       g[nome].txs.push(t);
     });
     return Object.values(g).sort((a,b)=>(b.realizado+b.previsto)-(a.realizado+a.previsto));
@@ -5245,9 +5248,9 @@ function renderForn(){
   // Dados por mês para gráfico panorama (mês atual + 6 à frente)
   function dadosPorMes(){
     return MESES_PANORAMA.map(m=>{
-      const txm = TX.filter(t=>t.cat==='4.2.1'&&t.type==='DEBIT'&&t.date.startsWith(m));
-      const real = txm.filter(t=>t.status!=='previsto').reduce((s,t)=>s+t.amt,0);
-      const prev = txm.filter(t=>t.status==='previsto').reduce((s,t)=>s+t.amt,0);
+      const txm = TX.filter(t=>ehForn(t)&&t.date.startsWith(m));
+      const real = txm.filter(t=>pago(t)).reduce((s,t)=>s+t.amt,0);
+      const prev = txm.filter(t=>!pago(t)).reduce((s,t)=>s+t.amt,0);
       const mo = +m.split('-')[1];
       const lbl = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mo];
       const isFut = m > mesHoje;
@@ -5390,12 +5393,12 @@ function renderForn(){
     <div class="kpi" style="border-left:3px solid var(--red)">
       <div class="kl">Realizado ${periodoSel==='panorama'?'(Total)':periodoSel==='mes'?'(Jul)':labelPeriodo}</div>
       <div class="kv r">${fmtR(totalReal)}</div>
-      <div class="ks">${txSel.filter(t=>t.status!=='previsto').length} lançamentos</div>
+      <div class="ks">${txSel.filter(t=>pago(t)).length} lançamentos</div>
     </div>
     <div class="kpi" style="border-left:3px solid #fca5a5">
       <div class="kl">Previsto</div>
       <div class="kv" style="font-size:16px;font-weight:700;color:#dc2626">${fmtR(totalPrev)}</div>
-      <div class="ks">${txSel.filter(t=>t.status==='previsto').length} parcelas</div>
+      <div class="ks">${txSel.filter(t=>!pago(t)).length} parcelas</div>
     </div>
     <div class="kpi" style="border-left:3px solid var(--yel)">
       <div class="kl">Total Geral</div>
