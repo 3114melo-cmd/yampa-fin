@@ -2092,7 +2092,7 @@ function buildTX(){
   });
   // PREVISÕES COM TETO (ex.: tráfego pago): o previsto vira só o que falta do teto do mês
   (function(){
-    const CATS_TETO = ['5.8.1'];
+    const CATS_TETO = ['5.8.1','5.3.2']; // tráfego pago, pró-labore
     TX.filter(t=>t.status==='previsto' && t.type==='DEBIT' && CATS_TETO.includes(t.cat)).forEach(p=>{
       const mes = p.comp || p.date.substring(0,7);
       const pago = TX.filter(x=>x.cat===p.cat && x.type==='DEBIT' && x.id!==p.id && (x.status==='conciliado'||x.status==='pendente')
