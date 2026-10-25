@@ -65,7 +65,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 .ct{flex:1;overflow-y:auto;padding:16px 20px}
 
 /* CONCILIAÇÃO LAYOUT */
-.conc-page{display:flex;flex-direction:column;height:calc(100vh - 50px);padding:12px 16px;gap:10px;overflow:hidden}
+.conc-page{display:flex;flex-direction:column;height:calc(100vh - 50px);padding:12px 16px;gap:10px;overflow-y:auto}
 .conc-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;flex-shrink:0}
 .kpi{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:10px 14px;box-shadow:var(--sh)}
 .kl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;font-weight:600;margin-bottom:3px}
@@ -2433,39 +2433,63 @@ function renderConc(){
       <button class="btn grn" onclick="concTodos()">✓ Conciliar todos</button>
       <button class="btn pri" onclick="openModal()">+ Lançamento</button>
     </div>
-    <!-- COLUNAS -->
-    <div class="conc-cols">
-      <!-- ENTRADAS -->
+    <!-- LINHA 1: SAÍDAS AUTOMÁTICAS x SAÍDAS PENDENTES -->
+    ${(()=>{
+      const okBusca = t => !busca || t.desc.toLowerCase().includes(busca.toLowerCase()) || (t.cli||'').toLowerCase().includes(busca.toLowerCase());
+      const autoS = sais.filter(t=>t.autoRegra && t.status==='conciliado' && okBusca(t));
+      const outrasS = sf.filter(t=>!(t.autoRegra && t.status==='conciliado'));
+      const tAuto = autoS.reduce((s,t)=>s+t.amt,0), tOut = outrasS.reduce((s,t)=>s+t.amt,0);
+      // resumo por regra
+      const porRegra = {}; autoS.forEach(t=>{ const k=t.autoRegra; (porRegra[k]=porRegra[k]||{n:0,v:0}); porRegra[k].n++; porRegra[k].v+=t.amt; });
+      const chipsRegra = Object.entries(porRegra).sort((a,b)=>b[1].v-a[1].v).map(([k,v])=>'<span title="'+k.replace(/"/g,'&quot;')+'" style="display:inline-flex;gap:4px;align-items:center;font-size:10.5px;padding:2px 8px;border-radius:999px;background:#e0f2fe;color:#075985;white-space:nowrap">'+k.split(' → ')[0].slice(0,26)+' <strong>'+v.n+'</strong></span>').join(' ');
+      const tituloOut = filtro==='pendente' ? '⏳ Saídas pendentes' : filtro==='conciliado' ? '✓ Saídas conciliadas manualmente' : filtro==='ignorado' ? 'Saídas ignoradas' : '↓ Saídas (sem as automáticas)';
+      return `<div class="conc-cols" style="flex:none;height:64vh;min-height:420px">
       <div class="col-box">
-        <div class="col-head" style="background:var(--gbg);border-bottom-color:var(--gbr)">
-          <div>
-            <div class="col-title" style="color:var(--grn)">↑ Entradas</div>
-            <div class="col-sub">${ef.length} de ${ents.length} registros · ${ents.filter(t=>t.status==='conciliado').length} conciliados · Matriz + Distribuidora</div>
+        <div class="col-head" style="background:#eff8ff;border-bottom-color:#b2ddff">
+          <div style="min-width:0">
+            <div class="col-title" style="color:#175cd3">⚡ Saídas conciliadas automaticamente</div>
+            <div class="col-sub">${autoS.length} lançamentos · confira se a categoria e a competência estão certas</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">${chipsRegra}</div>
           </div>
-          <div style="text-align:right">
-            <div class="col-total" style="color:var(--grn)">${fmtR(tE)}</div>
-            <div class="col-sub">${ents.filter(t=>t.status==='pendente').length} pendentes</div>
+          <div style="text-align:right;flex-shrink:0">
+            <div class="col-total" style="color:#175cd3">${fmtR(tAuto)}</div>
+            <div class="col-sub">abra o lançamento para corrigir</div>
           </div>
         </div>
         <div class="col-list">
-          ${ef.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma entrada</div>':listaPorData(ef)}
+          ${autoS.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma saída automática</div>':listaPorData(autoS)}
         </div>
       </div>
-      <!-- SAÍDAS -->
       <div class="col-box">
         <div class="col-head" style="background:var(--rbg);border-bottom-color:var(--rbr)">
           <div>
-            <div class="col-title" style="color:var(--red)">↓ Saídas</div>
-            <div class="col-sub">${sf.length} de ${sais.length} registros · ${sais.filter(t=>t.status==='conciliado').length} conciliadas</div>
+            <div class="col-title" style="color:var(--red)">${tituloOut}</div>
+            <div class="col-sub">${outrasS.length} lançamentos · ${sais.filter(t=>t.status==='pendente').length} pendentes no total</div>
           </div>
           <div style="text-align:right">
-            <div class="col-total" style="color:var(--red)">${fmtR(tS)}</div>
-            <div class="col-sub">${sais.filter(t=>t.status==='pendente').length} pendentes</div>
+            <div class="col-total" style="color:var(--red)">${fmtR(tOut)}</div>
+            <div class="col-sub">saídas: ${fmtR(tS)}</div>
           </div>
         </div>
         <div class="col-list">
-          ${sf.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma saída</div>':listaPorData(sf)}
+          ${outrasS.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--grn);font-size:12px">✓ Nenhuma saída '+(filtro==='pendente'?'pendente':'neste filtro')+'</div>':listaPorData(outrasS)}
         </div>
+      </div>
+    </div>`; })()}
+    <!-- LINHA 2: ENTRADAS -->
+    <div class="col-box" style="flex:none;height:56vh;min-height:360px">
+      <div class="col-head" style="background:var(--gbg);border-bottom-color:var(--gbr)">
+        <div>
+          <div class="col-title" style="color:var(--grn)">↑ Entradas</div>
+          <div class="col-sub">${ef.length} de ${ents.length} registros · ${ents.filter(t=>t.status==='conciliado').length} conciliados</div>
+        </div>
+        <div style="text-align:right">
+          <div class="col-total" style="color:var(--grn)">${fmtR(tE)}</div>
+          <div class="col-sub">${ents.filter(t=>t.status==='pendente').length} pendentes</div>
+        </div>
+      </div>
+      <div class="col-list">
+        ${ef.length===0?'<div style="text-align:center;padding:30px 20px;color:var(--tx3);font-size:12px">Nenhuma entrada neste filtro</div>':listaPorData(ef)}
       </div>
     </div>
   </div>`;
@@ -2562,7 +2586,7 @@ function txItem(t){
   const metaSpans = (t.cli?'<span>· '+t.cli+'</span>':'')
     + (t.obs?'<span>· 📝 '+t.obs+'</span>':'')
     + (t.comp?'<span style="color:#6d28d9;font-weight:600">· comp. '+fmtComp(t.comp)+'</span>':(precisaComp(t)?'<span style="color:var(--red);font-weight:600">· ⚠ sem competência</span>':''))
-    + (t.autoRegra?'<span style="color:#0369a1;font-weight:600">· ⚡ auto</span>':'')
+    + (t.autoRegra?'<span style="color:#0369a1;font-weight:600" title="Regra: '+String(t.autoRegra).replace(/"/g,'&quot;')+'">· ⚡ '+t.catInfo.code+' '+t.catInfo.nome+'</span>':'')
     + (t.editado?'<span style="color:var(--sacc)">· editado</span>':'')
     + (t.status==='transferencia'&&t._contaTransf?'<span style="color:#0369a1">· de '+t._contaTransf+'</span>':'');
 
