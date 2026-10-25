@@ -1948,6 +1948,9 @@ function regraAuto(r){
   return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.pix || d.indexOf('PIX')>=0) && (g.termos.length===0 || g.termos.some(x=>d.indexOf(x)>=0)) && !(g.exceto||[]).some(x=>d.indexOf(x)>=0) && (!g.so || g.so.some(x=>d.indexOf(x)>=0))) || null;
 }
 
+// Pix enviados e devolvidos (se anulam): ficam IGNORADOS e fora do saldo/DRE
+const PARES_ANULADOS = new Set(['st_50b9a840','st_06a0a1d2','st_fd04a895','st_c77d6a80','st_c39dfdfa','st_65212dda']);
+
 function buildTX(){
   // Preservar estado temporário (painel transferência) do TX anterior + _transfState global
   const prevState = {};
@@ -1969,9 +1972,9 @@ function buildTX(){
       catInfo: r.transf ? {code:'TRF', nome:'Transferência entre Contas', cor:'#0369a1', grupo:'Transferência'} : cat(c),
       desc: ed.desc || r.desc,
       cli: ed.cli || r.cli || (r.transf ? r.transf : ''),
-      obs: ed.obs || r.obs || '',
+      obs: PARES_ANULADOS.has(r.id) ? 'Pix BRG enviado e devolvido no mesmo dia (anulado)' : (ed.obs || r.obs || ''),
       meio: ed.meio || r.meio || (r.previsto?'Boleto':'PIX'),
-      status: ed.status || statusDefault,
+      status: PARES_ANULADOS.has(r.id) ? 'ignorado' : (ed.status || statusDefault),
       amt: (ed.amt!==undefined) ? ed.amt : r.amt,
       date: ed.date || r.date,
       comp: ed.comp || r.comp || '',
@@ -4742,7 +4745,7 @@ function diagnosticoSaldo(){
   const itens=[];
   const rawIds = new Set(RAW.map(r=>r.id));
   const prevIds = new Set(RAW.filter(r=>r.previsto).map(r=>r.id));
-  RAW.filter(r=>r.conta===conta && !r.previsto).forEach(r=>{
+  RAW.filter(r=>r.conta===conta && !r.previsto && !PARES_ANULADOS.has(r.id)).forEach(r=>{
     const t = TX.find(x=>x.id===r.id);
     const esperado = r.type==='CREDIT'?r.amt:-r.amt;
     const atual = t && t.conta===conta ? _conta(t) : 0;
