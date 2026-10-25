@@ -1958,6 +1958,12 @@ function regraAuto(r){
 // Pix enviados e devolvidos (se anulam): ficam IGNORADOS e fora do saldo/DRE
 const PARES_ANULADOS = new Set(['st_50b9a840','st_06a0a1d2','st_fd04a895','st_c77d6a80','st_c39dfdfa','st_65212dda']);
 
+// Contas a pagar (previstas) já pagas: id do previsto -> [data do pagamento, id do lançamento do extrato]
+const BAIXAS_PREV = {
+  'pv_2dc627e0': ['2026-10-23','st_d2d817f6'], // FITOWAY 3/5 — Pix 23/10 R$ 3.079,87
+  'pv_68112f19': ['2026-10-23','st_963c30e5'], // CANIBAL 3/11 — Pix 23/10 R$ 2.886,61
+};
+
 function buildTX(){
   // Preservar estado temporário (painel transferência) do TX anterior + _transfState global
   const prevState = {};
@@ -1979,9 +1985,9 @@ function buildTX(){
       catInfo: r.transf ? {code:'TRF', nome:'Transferência entre Contas', cor:'#0369a1', grupo:'Transferência'} : cat(c),
       desc: ed.desc || r.desc,
       cli: ed.cli || r.cli || (r.transf ? r.transf : ''),
-      obs: PARES_ANULADOS.has(r.id) ? 'Pix BRG enviado e devolvido no mesmo dia (anulado)' : (ed.obs || r.obs || ''),
+      obs: PARES_ANULADOS.has(r.id) ? 'Pix BRG enviado e devolvido no mesmo dia (anulado)' : BAIXAS_PREV[r.id] ? 'Baixado: pago em '+BAIXAS_PREV[r.id][0].split('-').reverse().join('/')+' (Pix do extrato)' : (ed.obs || r.obs || ''),
       meio: ed.meio || r.meio || (r.previsto?'Boleto':'PIX'),
-      status: PARES_ANULADOS.has(r.id) ? 'ignorado' : (ed.status || statusDefault),
+      status: (PARES_ANULADOS.has(r.id) || BAIXAS_PREV[r.id]) ? 'ignorado' : (ed.status || statusDefault),
       amt: (ed.amt!==undefined) ? ed.amt : r.amt,
       date: ed.date || r.date,
       comp: ed.comp || r.comp || '',
