@@ -5190,7 +5190,7 @@ function salvarMetaForn(val){
     metaForn = v;
     localStorage.setItem('yf_meta_forn', v);
     editandoMeta = false;
-    toast('✓ Meta atualizada!','ok');
+    toast('✓ Teto de fornecedor atualizado!','ok');
     render();
   }
 }
@@ -5243,7 +5243,13 @@ function renderForn(){
   const totalGeral = totalReal+totalPrev;
   const meta = metaForn;
   const pct = meta>0?Math.min(200,Math.round(totalGeral/meta*100)):0;
-  const sobra = meta-totalGeral;
+  const NM = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const lblMes = m => NM[+m.split('-')[1]]+'/'+m.split('-')[0].slice(2);
+  // Quanto falta para o teto: no mês selecionado (ou mês atual no panorama)
+  const mesRef = periodoSel==='panorama'||periodoSel==='mes' ? mesHoje : periodoSel;
+  const totMesRef = TX.filter(t=>ehForn(t)&&t.date.startsWith(mesRef)).reduce((s,t)=>s+t.amt,0);
+  const sobra = meta-totMesRef;
+  const fmtK = v => (Math.abs(v)/1000).toFixed(1).replace('.',',')+'k';
 
   // Dados por mês para gráfico panorama (mês atual + 6 à frente)
   function dadosPorMes(){
@@ -5280,7 +5286,7 @@ function renderForn(){
     svgs+=`<circle cx="70" cy="70" r="33" fill="var(--sur)"/>
       <text x="70" y="64" text-anchor="middle" font-size="8" fill="var(--tx3)" font-family="sans-serif">TOTAL</text>
       <text x="70" y="77" text-anchor="middle" font-size="${vC.length>8?'9':'11'}" fill="var(--txt)" font-weight="700" font-family="sans-serif">R$${vC}</text>
-      <text x="70" y="89" text-anchor="middle" font-size="8" fill="${pct>100?'#dc2626':'var(--tx3)'}" font-family="sans-serif">${pct}% meta</text>`;
+      <text x="70" y="89" text-anchor="middle" font-size="8" fill="${pct>100?'#dc2626':'var(--tx3)'}" font-family="sans-serif">${pct}% do teto</text>`;
     return svgs;
   }
 
@@ -5305,7 +5311,8 @@ function renderForn(){
     // Linha da meta mensal
     const yMeta = baseY - escala(meta);
     svg+=`<line x1="${padL}" y1="${yMeta}" x2="${W-padR}" y2="${yMeta}" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.8"/>`;
-    svg+=`<text x="${W-padR+4}" y="${yMeta+4}" font-size="9" fill="#dc2626" font-weight="700">Meta</text>`;
+    svg+=`<text x="${W-padR+4}" y="${yMeta+4}" font-size="9" fill="#dc2626" font-weight="700">Teto</text>`;
+    svg+=`<text x="${W-padR+4}" y="${yMeta+14}" font-size="7" fill="#dc2626">${fmtK(meta)}</text>`;
 
     porMes.forEach((m,i)=>{
       const x = padL + i*(barW+6);
@@ -5342,6 +5349,13 @@ function renderForn(){
         const valTxt = (m.total/1000).toFixed(1)+'k';
         svg+=`<text x="${x+barW/2}" y="${yTopo < padT+10 ? padT+10 : yTopo}" text-anchor="middle" font-size="8" fill="${m.total>meta?'#dc2626':'#4a5568'}" font-weight="600">${valTxt}</text>`;
       }
+      if(meta>0){
+        const dif = meta - m.total;
+        const yF = Math.min(baseY-6, (m.total>0 ? (baseY - hReal - hPrev) : baseY) + 13);
+        const corF = dif>=0 ? '#15803d' : '#b91c1c';
+        const txtF = dif>=0 ? 'falta '+fmtK(dif) : 'estourou '+fmtK(dif);
+        svg+=`<text x="${x+barW/2}" y="${(baseY-hReal-hPrev)>padT+24 ? (baseY-hReal-hPrev-14) : yF}" text-anchor="middle" font-size="7" fill="${corF}" font-weight="700">${txtF}</text>`;
+      }
     });
 
     // Linha de base
@@ -5351,7 +5365,7 @@ function renderForn(){
     return svg;
   }
 
-  const labelPeriodo = periodoSel==='mes'?'Mês Atual (Jul)':periodoSel==='panorama'?'Panorama (Jul–Jan/27)':
+  const labelPeriodo = periodoSel==='mes'?'Mês Atual ('+lblMes(mesHoje)+')':periodoSel==='panorama'?'Panorama ('+lblMes(MESES_PANORAMA[0])+'–'+lblMes(MESES_PANORAMA[MESES_PANORAMA.length-1])+')':
     (['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][+periodoSel.split('-')[1]]||periodoSel)+'/'+periodoSel.split('-')[0].slice(2);
 
   return `
@@ -5359,7 +5373,7 @@ function renderForn(){
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
     <div>
       <div style="font-size:16px;font-weight:700">🏭 Controle de Fornecedores</div>
-      <div style="font-size:12px;color:var(--tx3)">Monitore gastos, metas e panorama futuro</div>
+      <div style="font-size:12px;color:var(--tx3)">Monitore gastos, teto de fornecedor e panorama futuro</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
       <!-- PERÍODO -->
@@ -5380,7 +5394,7 @@ function renderForn(){
         <button class="btn" onclick="editandoMeta=false;render()">✕</button>
       `:`
         <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--sur);border:1px solid var(--bor2);border-radius:var(--r)">
-          <span style="font-size:11px;color:var(--tx3)">Meta mensal:</span>
+          <span style="font-size:11px;color:var(--tx3)">Teto de fornecedor (por mês):</span>
           <span style="font-size:14px;font-weight:700">${fmtR(metaForn)}</span>
           <button class="btn" style="padding:3px 8px;font-size:11px" onclick="editandoMeta=true;render()">✏</button>
         </div>
@@ -5391,7 +5405,7 @@ function renderForn(){
   <!-- KPIs -->
   <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px">
     <div class="kpi" style="border-left:3px solid var(--red)">
-      <div class="kl">Realizado ${periodoSel==='panorama'?'(Total)':periodoSel==='mes'?'(Jul)':labelPeriodo}</div>
+      <div class="kl">Realizado ${periodoSel==='panorama'?'(Total)':periodoSel==='mes'?'('+lblMes(mesHoje)+')':labelPeriodo}</div>
       <div class="kv r">${fmtR(totalReal)}</div>
       <div class="ks">${txSel.filter(t=>pago(t)).length} lançamentos</div>
     </div>
@@ -5403,12 +5417,12 @@ function renderForn(){
     <div class="kpi" style="border-left:3px solid var(--yel)">
       <div class="kl">Total Geral</div>
       <div class="kv" style="font-size:16px;font-weight:700;color:var(--yel)">${fmtR(totalGeral)}</div>
-      <div class="ks">${pct}% da meta${periodoSel==='panorama'?' acumulada':''}</div>
+      <div class="ks">${periodoSel==='panorama'?'soma de '+porMes.length+' meses':pct+'% do teto'}</div>
     </div>
     <div class="kpi" style="border-left:3px solid ${sobra<0?'var(--red)':'var(--grn)'}">
-      <div class="kl">${sobra>=0?'Disponível':'Estourou'}</div>
-      <div class="kv" style="font-size:16px;font-weight:700;color:${sobra<0?'var(--red)':'var(--grn)'}">${fmtR(Math.abs(sobra))}</div>
-      <div class="ks">Meta: ${fmtR(meta)}${periodoSel==='panorama'?'/mês':''}</div>
+      <div class="kl">${sobra>=0?'Falta para o teto':'Passou do teto'} · ${lblMes(mesRef)}</div>
+      <div class="kv" style="font-size:16px;font-weight:700;color:${sobra<0?'var(--red)':'var(--grn)'}">${sobra<0?'+ ':''}${fmtR(Math.abs(sobra))}</div>
+      <div class="ks">Teto: ${fmtR(meta)} · usado ${fmtR(totMesRef)} (${meta>0?Math.round(totMesRef/meta*100):0}%)</div>
     </div>
     <div class="kpi" style="border-left:3px solid var(--sacc)">
       <div class="kl">Fornecedores</div>
@@ -5417,20 +5431,21 @@ function renderForn(){
     </div>
   </div>
 
+  ${(()=>{ window._tetoB = periodoSel==='panorama' ? meta*porMes.length : meta; return ''; })()}
   <!-- BARRA GERAL -->
   <div class="card cp" style="margin-bottom:14px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-size:13px;font-weight:700">Utilização da Meta ${periodoSel==='panorama'?'(Acumulado Jul–Jan/27)':periodoSel==='mes'?'(Mês Atual)':'('+labelPeriodo+')'}</span>
-      <span style="font-size:12px;font-weight:700;color:${pct>100?'var(--red)':pct>80?'var(--yel)':'var(--grn)'}">${pct}%${pct>100?' ⚠ ESTOUROU!':''}</span>
+      <span style="font-size:13px;font-weight:700">Utilização do Teto de Fornecedor ${periodoSel==='panorama'?'(Acumulado '+lblMes(MESES_PANORAMA[0])+'–'+lblMes(MESES_PANORAMA[MESES_PANORAMA.length-1])+')':periodoSel==='mes'?'(Mês Atual)':'('+labelPeriodo+')'}</span>
+      <span style="font-size:12px;font-weight:700;color:${Math.round(totalGeral/window._tetoB*100)>100?'var(--red)':Math.round(totalGeral/window._tetoB*100)>80?'var(--yel)':'var(--grn)'}">${Math.round(totalGeral/window._tetoB*100)}%${Math.round(totalGeral/window._tetoB*100)>100?' ⚠ PASSOU DO TETO':''}</span>
     </div>
     <div style="height:16px;background:var(--bor);border-radius:8px;overflow:hidden;position:relative">
-      <div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(100,Math.round(totalReal/meta*100))}%;background:var(--red);border-radius:8px;transition:width .5s"></div>
-      <div style="position:absolute;left:${Math.min(100,Math.round(totalReal/meta*100))}%;top:0;height:100%;width:${Math.min(100-Math.round(totalReal/meta*100),Math.round(totalPrev/meta*100))}%;background:#fca5a5"></div>
+      <div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(100,Math.round(totalReal/window._tetoB*100))}%;background:var(--red);border-radius:8px;transition:width .5s"></div>
+      <div style="position:absolute;left:${Math.min(100,Math.round(totalReal/window._tetoB*100))}%;top:0;height:100%;width:${Math.min(100-Math.round(totalReal/window._tetoB*100),Math.round(totalPrev/window._tetoB*100))}%;background:#fca5a5"></div>
     </div>
     <div style="display:flex;gap:16px;margin-top:7px;font-size:11px;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--red)"></div>Realizado: ${fmtR(totalReal)}</div>
       <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>Previsto: ${fmtR(totalPrev)}</div>
-      <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--bor)"></div>Disponível: ${fmtR(Math.max(0,sobra))}</div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:var(--bor)"></div>${window._tetoB-totalGeral>=0?'Falta para o teto':'Passou do teto'}: ${fmtR(Math.abs(window._tetoB-totalGeral))} · Teto ${periodoSel==='panorama'?porMes.length+' meses × '+fmtR(meta)+' = ':''}${fmtR(window._tetoB)}</div>
       ${periodoSel==='panorama'?'<span style="font-size:10px;color:#0369a1;margin-left:auto">* Meses em azul = previsão futura</span>':''}
     </div>
   </div>
@@ -5440,7 +5455,7 @@ function renderForn(){
     <!-- PANORAMA: GRÁFICO DE BARRAS MENSAIS -->
     <div class="card cp" style="margin-bottom:14px">
       <div style="font-size:13px;font-weight:700;margin-bottom:14px">
-        Gastos mensais com Fornecedores — Jul/2026 a Jan/2027
+        Gastos mensais com Fornecedores — ${lblMes(MESES_PANORAMA[0])} a ${lblMes(MESES_PANORAMA[MESES_PANORAMA.length-1])}
         <span style="font-size:11px;color:var(--tx3);font-weight:400;margin-left:8px">Clique no mês para detalhar · * = previsto</span>
       </div>
       <div style="width:100%;overflow-x:auto">
@@ -5448,8 +5463,8 @@ function renderForn(){
       </div>
       <div style="display:flex;gap:14px;margin-top:10px;font-size:11px;flex-wrap:wrap">
         <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626"></div>Realizado</div>
-        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>Previsto (BRG + outros)</div>
-        <div style="display:flex;align-items:center;gap:5px"><div style="width:2px;height:10px;background:#dc2626;opacity:.6"></div><span style="border-top:1px dashed #dc2626;width:16px;display:inline-block;margin:0 2px"></span>Meta mensal</div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>A pagar (previsto + pendente)</div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:2px;height:10px;background:#dc2626;opacity:.6"></div><span style="border-top:1px dashed #dc2626;width:16px;display:inline-block;margin:0 2px"></span>Teto de fornecedor</div>
       </div>
     </div>
 
@@ -5462,20 +5477,22 @@ function renderForn(){
           <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Realizado</th>
           <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Previsto</th>
           <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Total</th>
-          <th style="padding:7px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">vs Meta</th>
+          <th style="padding:7px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">vs Teto</th>
+          <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px">Falta p/ o teto</th>
         </tr></thead>
         <tbody>
           ${porMes.map(m=>{
             const p=Math.round(m.total/metaForn*100);
             const sc=p>100?'var(--red)':p>80?'var(--yel)':'var(--grn)';
             return`<tr style="border-bottom:1px solid var(--bor);cursor:pointer${m.isFut?';background:#fafbff':''}" onclick="window._fornPeriodo='${m.mes}';render()">
-              <td style="padding:8px 12px;font-weight:600;color:${m.isFut?'#0369a1':'var(--txt)'}">${m.lbl}/26${m.isFut?' *':''}</td>
+              <td style="padding:8px 12px;font-weight:600;color:${m.isFut?'#0369a1':'var(--txt)'}">${lblMes(m.mes)}${m.isFut?' *':''}</td>
               <td style="padding:8px 12px;text-align:right;color:var(--red)">${m.real>0?fmtR(m.real):'—'}</td>
               <td style="padding:8px 12px;text-align:right;color:#dc2626;opacity:.7">${m.prev>0?fmtR(m.prev):'—'}</td>
               <td style="padding:8px 12px;text-align:right;font-weight:700;color:var(--red)">${m.total>0?fmtR(m.total):'—'}</td>
               <td style="padding:8px 12px;text-align:center">
                 ${m.total>0?`<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${sc}22;color:${sc};font-weight:700">${p}%</span>`:'<span style="color:var(--tx3);font-size:11px">—</span>'}
               </td>
+              <td style="padding:8px 12px;text-align:right;font-weight:700;color:${metaForn-m.total>=0?'var(--grn)':'var(--red)'}">${metaForn-m.total>=0?fmtR(metaForn-m.total):'estourou '+fmtR(m.total-metaForn)}</td>
             </tr>`;
           }).join('')}
           <tr style="background:var(--sur2);font-weight:700;border-top:2px solid var(--bor)">
@@ -5484,6 +5501,7 @@ function renderForn(){
             <td style="padding:8px 12px;text-align:right;color:#dc2626;opacity:.7">${fmtR(porMes.reduce((s,m)=>s+m.prev,0))}</td>
             <td style="padding:8px 12px;text-align:right;color:var(--red)">${fmtR(porMes.reduce((s,m)=>s+m.total,0))}</td>
             <td style="padding:8px 12px;text-align:center"><span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#dc262622;color:var(--red);font-weight:700">${Math.round(porMes.reduce((s,m)=>s+m.total,0)/metaForn/porMes.length*100)}%/mês</span></td>
+            <td></td>
           </tr>
         </tbody>
       </table>
@@ -5533,7 +5551,7 @@ function renderForn(){
                   <div style="height:100%;width:${pctR}%;background:${cor};float:left;border-radius:5px 0 0 5px"></div>
                   ${g.previsto>0?`<div style="height:100%;width:${pctP}%;background:${cor};opacity:.35;float:left"></div>`:''}
                 </div>
-                <div style="font-size:9px;color:var(--tx3);margin-top:2px">${meta>0?Math.round(tot/meta*100):0}% da meta · ${g.txs.length} lançamento${g.txs.length!==1?'s':''}</div>
+                <div style="font-size:9px;color:var(--tx3);margin-top:2px">${meta>0?Math.round(tot/meta*100):0}% do teto · ${g.txs.length} lançamento${g.txs.length!==1?'s':''}</div>
               </div>`;
             }).join('')}
         </div>
