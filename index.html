@@ -5292,77 +5292,47 @@ function renderForn(){
 
   // SVG BARRAS PANORAMA
   function barrasMeses(){
-    const W=560, H=220, padL=56, padR=50, padB=28, padT=24;
-    const areaH = H - padB - padT;
-    const barW = Math.floor((W-padL-padR)/porMes.length)-6;
-    const escala = v => v>0 ? Math.round((v/maxVal)*areaH) : 0;
-    const baseY = H - padB; // linha de base
-
-    let svg=`<svg width="100%" viewBox="0 0 ${W} ${H}" font-family="sans-serif" style="overflow:visible">`;
-
-    // Linhas de grade
-    [0.25,0.5,0.75,1].forEach(f=>{
-      const y = baseY - Math.round(f*areaH);
-      const v = maxVal*f;
-      svg+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#e2e6eb" stroke-width="1"/>`;
-      svg+=`<text x="${padL-4}" y="${y+3}" text-anchor="end" font-size="8" fill="#9aa5b4">${(v/1000).toFixed(0)}k</text>`;
-    });
-
-    // Linha da meta mensal
-    const yMeta = baseY - escala(meta);
-    svg+=`<line x1="${padL}" y1="${yMeta}" x2="${W-padR}" y2="${yMeta}" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.8"/>`;
-    svg+=`<text x="${W-padR+4}" y="${yMeta+4}" font-size="9" fill="#dc2626" font-weight="700">Teto</text>`;
-    svg+=`<text x="${W-padR+4}" y="${yMeta+14}" font-size="7" fill="#dc2626">${fmtK(meta)}</text>`;
-
-    porMes.forEach((m,i)=>{
-      const x = padL + i*(barW+6);
-      const hReal = escala(m.real);
-      const hPrev = escala(m.prev);
-      const isSel = periodoSel===m.mes;
-      const op = isSel?'1':'0.85';
-
-      // Área clicável invisível (inclui label)
-      svg+=`<rect x="${x}" y="${padT}" width="${barW}" height="${H-padT}" fill="transparent" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
-
-      // Barra realizado
-      if(m.real>0){
-        svg+=`<rect x="${x}" y="${baseY-hReal}" width="${barW}" height="${hReal}" fill="#dc2626" opacity="${op}" rx="3 3 0 0" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
-      }
-      // Barra previsto (acima do realizado)
-      if(m.prev>0){
-        svg+=`<rect x="${x}" y="${baseY-hReal-hPrev}" width="${barW}" height="${hPrev}" fill="#fca5a5" opacity="${op}" rx="3 3 0 0" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()"/>`;
-      }
-      // Placeholder se zero
-      if(m.total===0){
-        svg+=`<rect x="${x}" y="${baseY-3}" width="${barW}" height="3" fill="#e2e6eb" rx="2"/>`;
-      }
-
-      // LABEL MÊS — sempre na base, nunca some
-      const isSel2 = periodoSel===m.mes;
-      const lblColor = isSel2?'#2563eb':m.isFut?'#0369a1':'#4a5568';
-      const lblWeight = isSel2?'700':'500';
-      svg+=`<text x="${x+barW/2}" y="${H-8}" text-anchor="middle" font-size="10" fill="${lblColor}" font-weight="${lblWeight}" style="cursor:pointer" onclick="window._fornPeriodo='${m.mes}';render()">${m.lbl}${m.isFut?'*':''}</text>`;
-
-      // Valor no topo da barra — acima das barras com margem
-      if(m.total>0){
-        const yTopo = baseY - hReal - hPrev - 5;
-        const valTxt = (m.total/1000).toFixed(1)+'k';
-        svg+=`<text x="${x+barW/2}" y="${yTopo < padT+10 ? padT+10 : yTopo}" text-anchor="middle" font-size="8" fill="${m.total>meta?'#dc2626':'#4a5568'}" font-weight="600">${valTxt}</text>`;
-      }
-      if(meta>0){
-        const dif = meta - m.total;
-        const yF = Math.min(baseY-6, (m.total>0 ? (baseY - hReal - hPrev) : baseY) + 13);
-        const corF = dif>=0 ? '#15803d' : '#b91c1c';
-        const txtF = dif>=0 ? 'falta '+fmtK(dif) : 'estourou '+fmtK(dif);
-        svg+=`<text x="${x+barW/2}" y="${(baseY-hReal-hPrev)>padT+24 ? (baseY-hReal-hPrev-14) : yF}" text-anchor="middle" font-size="7" fill="${corF}" font-weight="700">${txtF}</text>`;
-      }
-    });
-
-    // Linha de base
-    svg+=`<line x1="${padL}" y1="${baseY}" x2="${W-padR}" y2="${baseY}" stroke="#d0d5dd" stroke-width="1.5"/>`;
-
-    svg+=`</svg>`;
-    return svg;
+    // Gráfico em HTML/CSS (fontes em tamanho real, sem esticar)
+    const C = {pago:'#e5484d', aPagar:'#f9c3c5', teto:'#d92d20', ok:'#067647', okBg:'#ecfdf3', over:'#b42318', overBg:'#fef3f2', txt:'#1d2939', mut:'#667085', grid:'#eaecf0'};
+    const H = 260;                                   // altura da área de barras (px)
+    const maxV = Math.max(...porMes.map(m=>m.total), meta, 1) * 1.25; // folga para os rótulos
+    const passo = [5e3,1e4,2e4,25e3,5e4,1e5,2e5,25e4,5e5,1e6].find(p=>maxV/p<=5) || 1e6;
+    const nLin = Math.ceil(maxV/passo);
+    const topo = passo*nLin;
+    const pct = v => (v/topo*100);
+    const k = v => 'R$ ' + (v>=1000 ? (v/1000).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' mil' : v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}));
+    let grid = '';
+    for(let i=1;i<=nLin;i++){
+      const v = passo*i;
+      grid += '<div style="position:absolute;left:0;right:0;bottom:'+pct(v)+'%;border-top:1px solid '+C.grid+'"></div>'
+            + '<div style="position:absolute;left:-52px;width:44px;text-align:right;bottom:calc('+pct(v)+'% - 7px);font-size:11px;color:'+C.mut+'">'+Math.round(v/1000)+' mil</div>';
+    }
+    const linhaTeto = meta>0 ? '<div style="position:absolute;left:0;right:0;bottom:'+pct(meta)+'%;border-top:2px dashed '+C.teto+';opacity:.85;z-index:3;pointer-events:none"></div>'
+      + '<div style="position:absolute;right:-6px;bottom:calc('+pct(meta)+'% + 4px);z-index:4;font-size:11px;font-weight:600;color:#fff;background:'+C.teto+';padding:2px 8px;border-radius:999px;box-shadow:0 1px 2px rgba(16,24,40,.15)">Teto · '+k(meta)+'</div>' : '';
+    const cols = porMes.map(m=>{
+      const sel = periodoSel===m.mes;
+      const dif = meta - m.total;
+      const chip = meta>0 ? (dif>=0
+        ? '<span style="display:inline-block;font-size:10.5px;font-weight:600;color:'+C.ok+';background:'+C.okBg+';padding:2px 7px;border-radius:999px;white-space:nowrap">faltam '+k(dif)+'</span>'
+        : '<span style="display:inline-block;font-size:10.5px;font-weight:600;color:'+C.over+';background:'+C.overBg+';padding:2px 7px;border-radius:999px;white-space:nowrap">+'+k(-dif)+' acima</span>') : '';
+      const hTot = pct(m.total), hReal = m.total>0 ? (m.real/m.total*100) : 0;
+      const barra = m.total>0
+        ? '<div style="position:absolute;left:14%;right:14%;bottom:0;height:'+hTot+'%;border-radius:8px 8px 3px 3px;overflow:hidden;background:'+C.aPagar+';box-shadow:'+(sel?'0 0 0 2px #2563eb':'none')+';transition:height .4s">'
+          + '<div style="position:absolute;left:0;right:0;bottom:0;height:'+hReal+'%;background:'+C.pago+'"></div></div>'
+        : '<div style="position:absolute;left:14%;right:14%;bottom:0;height:3px;border-radius:2px;background:'+C.grid+'"></div>';
+      const rot = '<div style="position:absolute;left:0;right:0;bottom:calc('+hTot+'% + 6px);text-align:center;z-index:5;line-height:1.25">'
+          + '<div style="display:inline-block;background:#fff;padding:0 6px;border-radius:6px;font-size:13px;font-weight:700;color:'+(dif<0?C.over:C.txt)+'">'+(m.total>0?k(m.total):'—')+'</div>'
+          + '<div style="margin-top:3px">'+chip+'</div></div>';
+      return '<div style="position:relative;flex:1;height:100%;cursor:pointer" onclick="window._fornPeriodo=\''+m.mes+'\';render()" title="'+m.lbl+': pago '+fmtR(m.real)+' · a pagar '+fmtR(m.prev)+'">'+barra+rot+'</div>';
+    }).join('');
+    const eixo = porMes.map(m=>{
+      const sel = periodoSel===m.mes;
+      return '<div style="flex:1;text-align:center;font-size:12.5px;font-weight:'+(sel?'700':'500')+';color:'+(sel?'#2563eb':m.isFut?C.mut:C.txt)+';cursor:pointer" onclick="window._fornPeriodo=\''+m.mes+'\';render()">'+lblMes(m.mes)+'</div>';
+    }).join('');
+    return '<div style="padding:8px 90px 0 60px;font-family:inherit">'
+      + '<div style="position:relative;height:'+H+'px;border-bottom:1px solid #d0d5dd">'+grid+linhaTeto
+      + '<div style="position:absolute;inset:0;display:flex;gap:10px">'+cols+'</div></div>'
+      + '<div style="display:flex;gap:10px;margin-top:8px">'+eixo+'</div></div>';
   }
 
   const labelPeriodo = periodoSel==='mes'?'Mês Atual ('+lblMes(mesHoje)+')':periodoSel==='panorama'?'Panorama ('+lblMes(MESES_PANORAMA[0])+'–'+lblMes(MESES_PANORAMA[MESES_PANORAMA.length-1])+')':
@@ -5462,8 +5432,8 @@ function renderForn(){
         ${barrasMeses()}
       </div>
       <div style="display:flex;gap:14px;margin-top:10px;font-size:11px;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#dc2626"></div>Realizado</div>
-        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:#fca5a5"></div>A pagar (previsto + pendente)</div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:3px;background:#e5484d"></div>Pago (conciliado)</div>
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:3px;background:#f9c3c5"></div>A pagar (previsto + pendente)</div>
         <div style="display:flex;align-items:center;gap:5px"><div style="width:2px;height:10px;background:#dc2626;opacity:.6"></div><span style="border-top:1px dashed #dc2626;width:16px;display:inline-block;margin:0 2px"></span>Teto de fornecedor</div>
       </div>
     </div>
