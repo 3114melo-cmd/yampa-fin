@@ -2090,6 +2090,22 @@ function buildTX(){
       obs:'', editado:true, espelhoDe:t.id, contaTransf:t.conta||null,
       desc:(tipoEsp==='CREDIT'?'Transferência recebida de ':'Transferência enviada para ')+(t.conta||'')});
   });
+  // PREVISÕES COM TETO (ex.: tráfego pago): o previsto vira só o que falta do teto do mês
+  (function(){
+    const CATS_TETO = ['5.8.1'];
+    TX.filter(t=>t.status==='previsto' && t.type==='DEBIT' && CATS_TETO.includes(t.cat)).forEach(p=>{
+      const mes = p.comp || p.date.substring(0,7);
+      const pago = TX.filter(x=>x.cat===p.cat && x.type==='DEBIT' && x.id!==p.id && (x.status==='conciliado'||x.status==='pendente')
+                       && ((x.comp||x.date.substring(0,7))===mes)).reduce((s,x)=>s+x.amt,0);
+      const teto = p.amt;
+      const resta = Math.max(0, Math.round((teto-pago)*100)/100);
+      p.tetoPrev = teto; p.pagoTeto = pago;
+      p.amt = resta;
+      p.obs = 'Teto '+fmtR(teto)+' · já pago '+fmtR(pago)+' · restante '+fmtR(resta) + (p.obs? ' · '+p.obs : '');
+      if(resta<=0.004){ p.status='ignorado'; p.obs='Teto de '+fmtR(teto)+' já atingido (pago '+fmtR(pago)+')'; }
+    });
+  })();
+
   // CAIXA NEGATIVO → ENTRADA EM DINHEIRO automática (vendas em espécie), dia a dia
   (function(){
     const CX='Caixa (Dinheiro)';
