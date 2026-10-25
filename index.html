@@ -322,7 +322,7 @@ tr:hover td{background:var(--sur2)}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 24/10 · 13:50
+        Stone · 24/10 · 19:48
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -343,7 +343,7 @@ tr:hover td{background:var(--sur2)}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-24"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-25"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -1921,7 +1921,23 @@ const RAW = [
   {id:'cx_20261024_14',date:'2026-10-24',hora:'23:53',desc:'Salário Rodrigo (espécie)',amt:1296.8,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'},
   {id:'cx_20261024_15',date:'2026-10-24',hora:'23:53',desc:'Pagamento fornecedor DT (espécie)',amt:510,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.2.1',cli:'D T SUPLEMENTOS DISTRIBUIDORA LTDA',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'},
   {id:'cx_20261024_16',date:'2026-10-24',hora:'23:53',desc:'Alimentação mensal motoboy',amt:400,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.13',cli:'',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'},
-  {id:'cx_20261024_17',date:'2026-10-24',hora:'23:53',desc:'Manutenção de moto',amt:995,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.6.2',cli:'',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'}
+  {id:'cx_20261024_17',date:'2026-10-24',hora:'23:53',desc:'Manutenção de moto',amt:995,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.6.2',cli:'',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'},
+  // SYNC 25/10/2026 - tarde/noite de 24/10
+  {id:'st_a57e4a04',date:'2026-10-24',hora:'19:48',desc:'Transferência | Pix | JONIS NASCIMENTO SOCIEDADE INDIVIDUAL DE ADVOCACIA',amt:2000.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'JONIS NASCIMENTO SOCIEDADE INDIVIDUAL DE ADVOCACIA',meio:'PIX'},
+  {id:'st_9f30a840',date:'2026-10-24',hora:'17:19',desc:'Antecipação | Recebimento vendas',amt:133.56,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_8d68a3c3',date:'2026-10-24',hora:'16:44',desc:'Pix | Maquininha | MARCOS RODRIGUES FRANCISCO',amt:59.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Marcos Rodrigues Francisco',meio:'PIX'},
+  {id:'st_8492f296',date:'2026-10-24',hora:'16:40',desc:'Transferência | Pix | RAQUEL FERNANDA PACHECO DE MORAIS',amt:20.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'RAQUEL FERNANDA PACHECO DE MORAIS',meio:'PIX'},
+  {id:'st_7c2c34de',date:'2026-10-24',hora:'16:29',desc:'Antecipação | Recebimento vendas',amt:43.74,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_ff8fe72a',date:'2026-10-24',hora:'16:29',desc:'Antecipação | Recebimento vendas',amt:128.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c9a2b33f',date:'2026-10-24',hora:'16:29',desc:'Antecipação | Recebimento vendas',amt:43.47,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_eec9d224',date:'2026-10-24',hora:'16:21',desc:'Transferência | Pix | MATEUS CAUA PEREIRA BEVENUTO',amt:140.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MATEUS CAUA PEREIRA BEVENUTO',meio:'PIX'},
+  {id:'st_40bf1471',date:'2026-10-24',hora:'16:07',desc:'Antecipação | Recebimento vendas',amt:110.69,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_3d983d8e',date:'2026-10-24',hora:'15:48',desc:'Pix | Maquininha | ZIRLENE CARLOS DA SILVA',amt:59.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ZIRLENE CARLOS DA SILVA',meio:'PIX'},
+  {id:'st_cbb554df',date:'2026-10-24',hora:'15:34',desc:'Transferência | Pix | BRUNO CARLOS DA CONCEICAO DOS SANTOS',amt:118.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'BRUNO CARLOS DA CONCEICAO DOS SANTOS',meio:'PIX'},
+  {id:'st_8d7e31b0',date:'2026-10-24',hora:'15:17',desc:'Transferência | Pix | 99 TECNOLOGIA LTDA',amt:11.4,type:'DEBIT',conta:'Stone',cat:'4.4.6',cli:'99 TECNOLOGIA LTDA',meio:'PIX'},
+  {id:'st_3234500a',date:'2026-10-24',hora:'15:03',desc:'Antecipação | Recebimento vendas',amt:157.41,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_190309c7',date:'2026-10-24',hora:'14:59',desc:'Antecipação | Recebimento vendas',amt:98.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_2bfcb553',date:'2026-10-24',hora:'14:56',desc:'Transferência | Pix | Maria Erivaneis Rosa',amt:40.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Maria Erivaneis Rosa',meio:'PIX'}
 ];
 
 // Estado
@@ -2736,7 +2752,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-10-24';
+  const hoje = '2026-10-25';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -3317,7 +3333,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-10-24';
+const HOJE_SISTEMA = '2026-10-25';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -3962,7 +3978,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-10-24';
+  const hoje = '2026-10-25';
 
   let txData;
   if(cfMes){
@@ -4864,7 +4880,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:620.71, em:'24/10/2026 21:46'}};
+const SALDO_BANCO = {Stone:{valor:620.71, em:'25/10/2026 12:58'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
