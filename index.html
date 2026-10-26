@@ -1984,7 +1984,8 @@ const RAW = [
   {id:'st_6258014b',date:'2026-10-26',hora:'11:46',desc:'Transferência | Pix | Mikaelly Galvao de Oliveira Teixeira',amt:99.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Mikaelly Galvao de Oliveira Teixeira',meio:'PIX'},
   {id:'st_2a7d15c8',date:'2026-10-26',hora:'11:30',desc:'Transferência | Pix | Geison Pablo Crispim',amt:140.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Geison Pablo Crispim',meio:'PIX'},
   {id:'st_2dbe378f',date:'2026-10-26',hora:'11:27',desc:'Antecipação | Recebimento vendas',amt:115.93,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_db4e51f7',date:'2026-10-26',hora:'11:22',desc:'Pagamento | BODY FOOD FABR DE AL S LTDA ME',amt:1423.97,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'BODY FOOD FABRICANTES DE ALIMENTOS SAUDAVEIS LTDA.',meio:'Boleto'},
+  {id:'st_db4e51f7',date:'2026-10-26',hora:'11:22',desc:'Pagamento | BODY FOOD FABR DE AL S LTDA ME',amt:1392.76,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'BODY FOOD FABRICANTES DE ALIMENTOS SAUDAVEIS LTDA.',meio:'Boleto',obs:'Boleto de R$ 1.423,97 = parcela Dr Peanut 5/7 R$ 1.392,76 + juros R$ 31,21'},
+  {id:'st_db4e51f7_juros',date:'2026-10-26',hora:'11:22',desc:'Juros do boleto em atraso - Dr Peanut parc. 5/7 (venc. 09/10)',amt:31.21,type:'DEBIT',conta:'Stone',cat:'4.2.4',cli:'BODY FOOD FABRICANTES DE ALIMENTOS SAUDAVEIS LTDA.',meio:'Boleto',status_fixo:'conciliado',comp:'2026-10',obs:'Parte de juros do boleto de R$ 1.423,97 de 26/10'},
   {id:'st_c4b2eb22',date:'2026-10-26',hora:'11:14',desc:'Transferência | Pix | Mailson de Oliveira Silva Ferreira Garcia',amt:100.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Mailson de Oliveira Silva Ferreira Garcia',meio:'PIX'},
   {id:'st_cfde39cd',date:'2026-10-26',hora:'10:53',desc:'Pix | Maquininha | Johnatan de Oliveira Coriolano',amt:19.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Johnatan De Oliveira Coriolano',meio:'PIX'},
   {id:'st_fada495b',date:'2026-10-26',hora:'09:58',desc:'Transferência | Pix | Jefferson Elano Teixeira da Silva',amt:59.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Jefferson Elano Teixeira da Silva',meio:'PIX'},
@@ -2055,6 +2056,7 @@ const PARES_ANULADOS = new Set(['st_50b9a840','st_06a0a1d2','st_fd04a895','st_c7
 const BAIXAS_PREV = {
   'pv_2dc627e0': ['2026-10-23','st_d2d817f6'], // FITOWAY 3/5 — Pix 23/10 R$ 3.079,87
   'pv_68112f19': ['2026-10-23','st_963c30e5'], // CANIBAL 3/11 — Pix 23/10 R$ 2.886,61
+  'pv_06442037': ['2026-10-26','st_db4e51f7'], // DR PEANUT 5/7 — boleto Body Food 26/10 R$ 1.423,97 (R$ 1.392,76 + R$ 31,21 juros)
 };
 
 function buildTX(){
