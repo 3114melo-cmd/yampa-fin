@@ -2679,8 +2679,9 @@ function renderConc(){
     <!-- LINHA 1: SAÍDAS AUTOMÁTICAS x SAÍDAS PENDENTES -->
     ${(()=>{
       const okBusca = t => !busca || t.desc.toLowerCase().includes(busca.toLowerCase()) || (t.cli||'').toLowerCase().includes(busca.toLowerCase());
-      const autoS = sais.filter(t=>t.autoRegra && t.status==='conciliado' && okBusca(t));
-      const outrasS = sf.filter(t=>!(t.autoRegra && t.status==='conciliado'));
+      const ehSistema = t => (t.autoRegra || (t.status_fixo && String(t.cat).indexOf('13')!==0)) && t.status==='conciliado';
+      const autoS = sais.filter(t=>ehSistema(t) && okBusca(t));
+      const outrasS = sf.filter(t=>!ehSistema(t));
       const tAuto = autoS.reduce((s,t)=>s+t.amt,0), tOut = outrasS.reduce((s,t)=>s+t.amt,0);
       // resumo por regra
       const porRegra = {}; autoS.forEach(t=>{ const k=t.autoRegra; (porRegra[k]=porRegra[k]||{n:0,v:0}); porRegra[k].n++; porRegra[k].v+=t.amt; });
@@ -2691,7 +2692,7 @@ function renderConc(){
         <div class="col-head" style="background:#eff8ff;border-bottom-color:#b2ddff">
           <div style="min-width:0">
             <div class="col-title" style="color:#175cd3">⚡ Saídas conciliadas automaticamente</div>
-            <div class="col-sub">${autoS.length} lançamentos · confira se a categoria e a competência estão certas</div>
+            <div class="col-sub">${autoS.length} lançamentos (⚡ ${autoS.filter(t=>t.autoRegra).length} por regra · ✍ ${autoS.filter(t=>!t.autoRegra).length} lançados pelo Claude) · confira categoria e competência</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
             <div class="col-total" style="color:#175cd3">${fmtR(tAuto)}</div>
@@ -2834,6 +2835,7 @@ function txItem(t){
   // Meta da linha do TX
   const metaSpans = (t.cli && String(t.desc).toUpperCase().indexOf(String(t.cli).toUpperCase().slice(0,12))<0 ?'<span>· '+t.cli+'</span>':'')
     + (t.obs?'<span>· 📝 '+t.obs+'</span>':'')
+    + (!t.autoRegra && t.status_fixo && t.status==='conciliado' && String(t.cat).indexOf('13')!==0 ? '<span style="color:#7c3aed;font-weight:600" title="Lançado/conciliado pelo Claude a partir das suas instruções">· ✍ Claude</span>' : '')
     + (t.autoRegra?'<span style="color:#0369a1;font-weight:600" title="Regra: '+String(t.autoRegra).replace(/"/g,'&quot;')+'">· ⚡ auto</span>':'')
     + (t.editado?'<span style="color:var(--sacc)">· editado</span>':'')
     + (t.status==='transferencia'&&t._contaTransf?'<span style="color:#0369a1">· de '+t._contaTransf+'</span>':'');
