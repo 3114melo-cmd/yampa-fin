@@ -322,7 +322,7 @@ tr:hover td{background:var(--sur2)}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 27/10 · 12:10
+        Stone · 27/10 · 15:31
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -2058,7 +2058,25 @@ const RAW = [
   {id:'st_dfe684aa',date:'2026-10-27',hora:'09:53',desc:'Antecipação | Recebimento vendas',amt:59.35,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_3d220555',date:'2026-10-27',hora:'09:41',desc:'Pix | Maquininha | MOISES ESTEVAO MOURA LIMA',amt:108.46,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MOISES ESTEVAO MOURA LIMA',meio:'PIX'},
   {id:'st_e2a60348',date:'2026-10-27',hora:'09:24',desc:'Transferência | Pix | MARIA DA CONCEICAO NOGUEIRA DE SANTANA',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIA DA CONCEICAO NOGUEIRA DE SANTANA',meio:'PIX'},
-  {id:'st_b1e093e5',date:'2026-10-27',hora:'09:18',desc:'Transferência | Pix | ROSANGELA SOARES CARNEIRO ARAUJO',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ROSANGELA SOARES CARNEIRO ARAUJO',meio:'PIX'}
+  {id:'st_b1e093e5',date:'2026-10-27',hora:'09:18',desc:'Transferência | Pix | ROSANGELA SOARES CARNEIRO ARAUJO',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ROSANGELA SOARES CARNEIRO ARAUJO',meio:'PIX'},
+  // SYNC 27/10/2026 - tarde
+  {id:'st_2f4d3cfc',date:'2026-10-27',hora:'15:31',desc:'Pagamento | SUPLEY LAB ALIM SUPL NUT LTDA',amt:5903.51,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto',obs:'Boleto de R$ 6.035,37 = parcela Max Titanium 6/10 R$ 5.903,51 (valor do código de barras) + juros R$ 131,86'},
+  {id:'st_2f4d3cfc_juros',date:'2026-10-27',hora:'15:31',desc:'Juros do boleto em atraso - Max Titanium parc. 6/10 (venc. 20/10)',amt:131.86,type:'DEBIT',conta:'Stone',cat:'4.2.4',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto',status_fixo:'conciliado',comp:'2026-10',obs:'Parte de juros do boleto de R$ 6.035,37 de 27/10'},
+  {id:'st_39a0304c',date:'2026-10-27',hora:'15:30',desc:'Pix | Maquininha | ROBSON DE ARAUJO',amt:298.5,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ROBSON DE ARAUJO',meio:'PIX'},
+  {id:'st_2ff4f4fb',date:'2026-10-27',hora:'15:28',desc:'Transferência | Pix | D T SUPLEMENTOS DISTRIBUIDORA LTDA',amt:270.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'D T SUPLEMENTOS DISTRIBUIDORA LTDA',meio:'PIX'},
+  {id:'st_567e29f8',date:'2026-10-27',hora:'15:15',desc:'Antecipação | Recebimento vendas',amt:81.09,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_cb05fd66',date:'2026-10-27',hora:'15:05',desc:'Transferência | Pix | ANA KAROLAYNE DANTAS MENDES',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ANA KAROLAYNE DANTAS MENDES',meio:'PIX'},
+  {id:'st_4d7b275a',date:'2026-10-27',hora:'14:42',desc:'Pix | Maquininha | ANA CLECIA BATISTA DO NASCIMENTO MAIA',amt:109.45,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ANA CLECIA BATISTA DO NASCIMENTO MAIA',meio:'PIX'},
+  {id:'st_97bfbf0e',date:'2026-10-27',hora:'14:33',desc:'Transferência | Pix | Adriano da Silva Pereira',amt:115.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Adriano da Silva Pereira',meio:'PIX'},
+  {id:'st_5b543969',date:'2026-10-27',hora:'14:28',desc:'Pix | Maquininha | Francisca Dalcilene Fernandes',amt:164.18,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Francisca Dalcilene Fernandes',meio:'PIX'},
+  {id:'st_5aa7ba0c',date:'2026-10-27',hora:'14:28',desc:'Antecipação | Recebimento vendas',amt:85.05,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_7986bf2f',date:'2026-10-27',hora:'14:11',desc:'Transferência | Pix | FELIPE FERREIRA DE ARAUJO',amt:60.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'FELIPE FERREIRA DE ARAUJO',meio:'PIX'},
+  {id:'st_6e3cac2a',date:'2026-10-27',hora:'14:08',desc:'Antecipação | Recebimento vendas',amt:48.21,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_1d66d3bd',date:'2026-10-27',hora:'13:55',desc:'Transferência | Pix | MARIA APARECIDA CORREIA AMARANTE',amt:61.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIA APARECIDA CORREIA AMARANTE',meio:'PIX'},
+  {id:'st_3a3a19b9',date:'2026-10-27',hora:'13:40',desc:'Pix | Maquininha | FIRMINO PEREIRA DE ARAUJO',amt:398.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'FIRMINO PEREIRA DE ARAUJO',meio:'PIX'},
+  {id:'st_b5146615',date:'2026-10-27',hora:'13:07',desc:'Antecipação | Recebimento vendas',amt:74.31,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_3456a5e2',date:'2026-10-27',hora:'12:56',desc:'Pix | Maquininha | FLAVIO PACHECO DA SILVA 05880302440',amt:59.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'FLAVIO PACHECO DA SILVA 05880302440',meio:'PIX'},
+  {id:'st_9d80bae2',date:'2026-10-27',hora:'12:47',desc:'Antecipação | Recebimento vendas',amt:227.06,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
 ];
 
 // Estado
@@ -2120,6 +2138,7 @@ const PARES_ANULADOS = new Set(['st_50b9a840','st_06a0a1d2','st_fd04a895','st_c7
 const BAIXAS_PREV = {
   'pv_2dc627e0': ['2026-10-23','st_d2d817f6'], // FITOWAY 3/5 — Pix 23/10 R$ 3.079,87
   'pv_68112f19': ['2026-10-23','st_963c30e5'], // CANIBAL 3/11 — Pix 23/10 R$ 2.886,61
+  'pv_2ac9e86a': ['2026-10-27','st_2f4d3cfc'], // MAX TITANIUM 6/10 — boleto Supley 27/10 R$ 6.035,37 (R$ 5.903,51 + R$ 131,86 juros)
   'pv_46239687': ['2026-10-26','st_307fbb13'], // PROBIÓTICA 6/10 — boleto Supley 26/10 R$ 2.053,10 (R$ 2.008,91 + R$ 44,19 juros)
   'pv_06442037': ['2026-10-26','st_db4e51f7'], // DR PEANUT 5/7 — boleto Body Food 26/10 R$ 1.423,97 (R$ 1.392,76 + R$ 31,21 juros)
 };
@@ -5021,7 +5040,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:4617.56, em:'27/10/2026 12:21'}};
+const SALDO_BANCO = {Stone:{valor:168.74, em:'27/10/2026 15:33'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
