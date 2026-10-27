@@ -2014,7 +2014,8 @@ const RAW = [
   {id:'st_02c30d78',date:'2026-10-26',hora:'18:35',desc:'Pix | Maquininha | FERNANDO HENRIQUE PIMENTA DO NASCIMENTO',amt:119.4,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'FERNANDO HENRIQUE PIMENTA DO NASCIMENTO',meio:'PIX'},
   {id:'st_20c60f79',date:'2026-10-26',hora:'18:34',desc:'Pix | Maquininha | Rainara Rafaela Silva Do Nascimento',amt:99.5,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Rainara Rafaela Silva Do Nascimento',meio:'PIX'},
   {id:'st_d560c028',date:'2026-10-26',hora:'18:01',desc:'Antecipação | Recebimento vendas',amt:281.43,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_307fbb13',date:'2026-10-26',hora:'17:59',desc:'Pagamento | SUPLEY LAB ALIM SUPL NUT LTDA',amt:2053.1,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto'},
+  {id:'st_307fbb13',date:'2026-10-26',hora:'17:59',desc:'Pagamento | SUPLEY LAB ALIM SUPL NUT LTDA',amt:2008.91,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto',obs:'Boleto de R$ 2.053,10 = parcela Probiótica 6/10 R$ 2.008,91 + juros R$ 44,19'},
+  {id:'st_307fbb13_juros',date:'2026-10-26',hora:'17:59',desc:'Juros do boleto em atraso - Probiótica parc. 6/10 (venc. 20/10)',amt:44.19,type:'DEBIT',conta:'Stone',cat:'4.2.4',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto',status_fixo:'conciliado',comp:'2026-10',obs:'Parte de juros do boleto de R$ 2.053,10 de 26/10'},
   {id:'st_8dd619d0',date:'2026-10-26',hora:'17:55',desc:'Transferência | Pix | MAKSON SOUZA DE LIMA',amt:35.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MAKSON SOUZA DE LIMA',meio:'PIX'},
   {id:'st_3de8ae82',date:'2026-10-26',hora:'17:50',desc:'Antecipação | Recebimento vendas',amt:144.92,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_8b1d20e6',date:'2026-10-26',hora:'17:31',desc:'Valor referente à liquidação de suas vendas de cartão. | Recebimento de vendas',amt:257.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Cartão'},
@@ -2092,6 +2093,7 @@ const PARES_ANULADOS = new Set(['st_50b9a840','st_06a0a1d2','st_fd04a895','st_c7
 const BAIXAS_PREV = {
   'pv_2dc627e0': ['2026-10-23','st_d2d817f6'], // FITOWAY 3/5 — Pix 23/10 R$ 3.079,87
   'pv_68112f19': ['2026-10-23','st_963c30e5'], // CANIBAL 3/11 — Pix 23/10 R$ 2.886,61
+  'pv_46239687': ['2026-10-26','st_307fbb13'], // PROBIÓTICA 6/10 — boleto Supley 26/10 R$ 2.053,10 (R$ 2.008,91 + R$ 44,19 juros)
   'pv_06442037': ['2026-10-26','st_db4e51f7'], // DR PEANUT 5/7 — boleto Body Food 26/10 R$ 1.423,97 (R$ 1.392,76 + R$ 31,21 juros)
 };
 
