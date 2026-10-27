@@ -1478,7 +1478,8 @@ const RAW = [
   {id:'st_6c62ec2f',date:'2026-10-22',hora:'12:11',desc:'Transferência | Pix | VANESSA CAROLINE AQUINO DA SILVA',amt:65.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'VANESSA CAROLINE AQUINO DA SILVA',meio:'PIX'},
   {id:'st_d951b5f2',date:'2026-10-22',hora:'12:09',desc:'Antecipação | Recebimento vendas',amt:28.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_50f4239b',date:'2026-10-22',hora:'12:09',desc:'Transferência | Pix | KALINE GRAZIELLY MENDONCA ALVES',amt:65.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'KALINE GRAZIELLY MENDONCA ALVES',meio:'PIX'},
-  {id:'st_5b943ff6',date:'2026-10-22',hora:'11:53',desc:'Pagamento | RAINHA LABORATORIO NUTRACEUTIC',amt:5315.08,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA LABORATORIO NUTRACEUTICO LTDA.',meio:'Boleto'},
+  {id:'st_5b943ff6',date:'2026-10-22',hora:'11:53',desc:'Pagamento | RAINHA LABORATORIO NUTRACEUTIC',amt:5226.19,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA LABORATORIO NUTRACEUTICO LTDA.',meio:'Boleto',obs:'Boleto de R$ 5.315,08 = parcela Bodyaction NF 006449/4 R$ 5.226,19 + juros R$ 88,89'},
+  {id:'st_5b943ff6_juros',date:'2026-10-22',hora:'11:53',desc:'Juros do boleto em atraso - Bodyaction NF 006449/4 (venc. 15/10)',amt:88.89,type:'DEBIT',conta:'Stone',cat:'4.2.4',cli:'RAINHA LABORATORIO NUTRACEUTICO LTDA.',meio:'Boleto',status_fixo:'conciliado',comp:'2026-10',obs:'Parte de juros do boleto de R$ 5.315,08 de 22/10'},
   {id:'st_bb0069fd',date:'2026-10-22',hora:'11:48',desc:'Pix | Maquininha | Genesis Placas',amt:321.39,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ELIAS C DA SILVA',meio:'PIX'},
   {id:'st_2ca9cc7a',date:'2026-10-22',hora:'11:39',desc:'Pix | Maquininha | MARIA SELMA SILVA',amt:29.85,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIA SELMA SILVA',meio:'PIX'},
   {id:'st_85444485',date:'2026-10-22',hora:'11:21',desc:'Antecipação | Recebimento vendas',amt:113.44,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
@@ -2137,6 +2138,7 @@ const PARES_ANULADOS = new Set(['st_50b9a840','st_06a0a1d2','st_fd04a895','st_c7
 // Contas a pagar (previstas) já pagas: id do previsto -> [data do pagamento, id do lançamento do extrato]
 const BAIXAS_PREV = {
   'pv_2dc627e0': ['2026-10-23','st_d2d817f6'], // FITOWAY 3/5 — Pix 23/10 R$ 3.079,87
+  'pv_21f8fe35': ['2026-10-22','st_5b943ff6','boleto Rainha 22/10 R$ 5.315,08 = R$ 5.226,19 + R$ 88,89 juros'], // BODYACTION 006449/4
   'pv_2ac9e86a': ['2026-10-27','st_2f4d3cfc'], // MAX TITANIUM 6/10 — boleto Supley 27/10 R$ 6.035,37 (R$ 5.903,51 + R$ 131,86 juros)
   'pv_46239687': ['2026-10-26','st_307fbb13'], // PROBIÓTICA 6/10 — boleto Supley 26/10 R$ 2.053,10 (R$ 2.008,91 + R$ 44,19 juros)
   'pv_06442037': ['2026-10-26','st_db4e51f7'], // DR PEANUT 5/7 — boleto Body Food 26/10 R$ 1.423,97 (R$ 1.392,76 + R$ 31,21 juros)
