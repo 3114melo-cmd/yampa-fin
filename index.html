@@ -5497,6 +5497,9 @@ function renderForn(){
   const mesRef = periodoSel==='panorama'||periodoSel==='mes' ? mesHoje : periodoSel;
   const totMesRef = TX.filter(t=>ehForn(t)&&t.date.startsWith(mesRef)).reduce((s,t)=>s+t.amt,0);
   const metaMes = tetoMes(mesRef);
+  // Teto geral do panorama já com os meses de teto reduzido
+  const reducaoGeral = MESES_PANORAMA.reduce((s,m)=>s+(metaForn-tetoMes(m)),0);
+  const tetoGeralEf = Math.max(0, tetoGeralForn - reducaoGeral);
   const sobra = metaMes-totMesRef;
   const fmtK = v => (Math.abs(v)/1000).toFixed(1).replace('.',',')+'k';
 
@@ -5536,7 +5539,7 @@ function renderForn(){
       arcs+='<path d="M'+P(R,a0)+' A'+R+' '+R+' 0 '+lg+' 1 '+P(R,a1)+' L'+P(RI,a1)+' A'+RI+' '+RI+' 0 '+lg+' 0 '+P(RI,a0)+' Z" fill="'+g.cor+'"><title>'+g.nome+' · '+(g.tot/total*100).toFixed(1).replace('.',',')+'% · '+fmtR(g.tot)+'</title></path>';
       ang=ea;
     });
-    const pTeto = Math.round(total/(periodoSel==='panorama'?tetoGeralForn:metaMes)*100) || 0;
+    const pTeto = Math.round(total/(periodoSel==='panorama'?tetoGeralEf:metaMes)*100) || 0;
     const rosca = '<div style="position:relative;width:'+S+'px;height:'+S+'px;flex-shrink:0">'
       +'<svg width="'+S+'" height="'+S+'" viewBox="0 0 '+S+' '+S+'">'+arcs+'</svg>'
       +'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none">'
@@ -5680,7 +5683,8 @@ function renderForn(){
       `:`
         <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--sur);border:1px solid var(--bor2);border-radius:var(--r)">
           <span style="font-size:11px;color:var(--tx3)">Teto geral:</span>
-          <span style="font-size:14px;font-weight:700">${fmtR(tetoGeralForn)}</span>
+          <span style="font-size:14px;font-weight:700">${fmtR(tetoGeralEf)}</span>
+          ${reducaoGeral>0?'<span style="font-size:10.5px;color:#b54708;background:#fffaeb;padding:2px 7px;border-radius:999px" title="Teto geral base '+fmtR(tetoGeralForn)+' menos os meses com teto reduzido">base '+fmtR(tetoGeralForn)+' − '+fmtR(reducaoGeral)+'</span>':''}
           <button class="btn" style="padding:3px 8px;font-size:11px" onclick="editandoTetoGeral=true;render()">✏</button>
         </div>
       `}
@@ -5704,11 +5708,11 @@ function renderForn(){
       <div class="kv" style="font-size:16px;font-weight:700;color:var(--yel)">${fmtR(totalGeral)}</div>
       <div class="ks">${periodoSel==='panorama'?'soma de '+porMes.length+' meses':pct+'% do teto'}</div>
     </div>
-    <div class="kpi" style="border-left:3px solid ${(periodoSel==='panorama'?tetoGeralForn-totalGeral:sobra)<0?'var(--red)':'var(--grn)'}">
+    <div class="kpi" style="border-left:3px solid ${(periodoSel==='panorama'?tetoGeralEf-totalGeral:sobra)<0?'var(--red)':'var(--grn)'}">
       ${periodoSel==='panorama' ? `
-      <div class="kl">${tetoGeralForn-totalGeral>=0?'Falta para o teto geral':'Passou do teto geral'}</div>
-      <div class="kv" style="font-size:16px;font-weight:700;color:${tetoGeralForn-totalGeral<0?'var(--red)':'var(--grn)'}">${tetoGeralForn-totalGeral<0?'+ ':''}${fmtR(Math.abs(tetoGeralForn-totalGeral))}</div>
-      <div class="ks">Teto geral: ${fmtR(tetoGeralForn)} · usado ${fmtR(totalGeral)} (${Math.round(totalGeral/tetoGeralForn*100)}%)</div>` : `
+      <div class="kl">${tetoGeralEf-totalGeral>=0?'Falta para o teto geral':'Passou do teto geral'}</div>
+      <div class="kv" style="font-size:16px;font-weight:700;color:${tetoGeralEf-totalGeral<0?'var(--red)':'var(--grn)'}">${tetoGeralEf-totalGeral<0?'+ ':''}${fmtR(Math.abs(tetoGeralEf-totalGeral))}</div>
+      <div class="ks">Teto geral: ${fmtR(tetoGeralEf)}${reducaoGeral>0?' (−'+fmtR(reducaoGeral)+' dez/fev)':''} · usado ${fmtR(totalGeral)} (${Math.round(totalGeral/tetoGeralEf*100)}%)</div>` : `
       <div class="kl">${sobra>=0?'Falta para o teto':'Passou do teto'} · ${lblMes(mesRef)}</div>
       <div class="kv" style="font-size:16px;font-weight:700;color:${sobra<0?'var(--red)':'var(--grn)'}">${sobra<0?'+ ':''}${fmtR(Math.abs(sobra))}</div>
       <div class="ks">Teto: ${fmtR(metaMes)}${metaMes!==meta?' (−'+Math.round((1-metaMes/meta)*100)+'%)':''} · usado ${fmtR(totMesRef)} (${metaMes>0?Math.round(totMesRef/metaMes*100):0}%)</div>`}
@@ -5720,7 +5724,7 @@ function renderForn(){
     </div>
   </div>
 
-  ${(()=>{ window._tetoB = periodoSel==='panorama' ? tetoGeralForn : metaMes; return ''; })()}
+  ${(()=>{ window._tetoB = periodoSel==='panorama' ? tetoGeralEf : metaMes; return ''; })()}
   <!-- BARRA GERAL -->
   <div class="card cp" style="margin-bottom:14px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
