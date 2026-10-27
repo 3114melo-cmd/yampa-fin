@@ -2077,10 +2077,13 @@ const REGRAS_AUTO = [
   {nome:'Cosern → Energia elétrica', tipo:'DEBIT', pix:false, termos:['COSERN','COMPANHIA ENERGETICA DO RIO GRANDE DO NORTE'], cat:'5.2.3'},
   {nome:'M M Combustíveis Planalto → Gasolina', tipo:'DEBIT', pix:false, termos:['M M COMERCIAL DE COMBUSTIVEIS PLANALTO'], cat:'4.6.1'},
   {nome:'Combustíveis → Gasolina', tipo:'DEBIT', pix:false, termos:['COMBUSTIVE'], cat:'4.6.1'},
-  {nome:'Toda entrada → Receita de Vendas', tipo:'CREDIT', pix:false, termos:[], exceto:['DEVOLUCAO','RECEBIMENTO | BOLETO'], cat:'3.1.8'}, // boletos recebidos: competência manual na Conciliação
+  {nome:'Toda entrada → Receita de Vendas', tipo:'CREDIT', pix:false, termos:[], exceto:['DEVOLUCAO'], cat:'3.1.8'},
 ];
 function mesAnterior(c){ let y=parseInt(c.substring(0,4),10), m=parseInt(c.substring(5,7),10)-1; if(m<1){m=12;y--;} return y+'-'+String(m).padStart(2,'0'); }
+// Boletos recebidos: a partir de 27/10/2026 ficam pendentes (competência manual). Os que já tinham entrado continuam automáticos.
+const BOLETOS_REC_AUTO = new Set(["st_30fe44a7", "st_34397f84", "st_3f3b7d33", "st_48d87e74", "st_596879ec", "st_5b18d273", "st_a69b2a91", "st_da67d022", "st_e88c632f"]);
 function regraAuto(r){
+  if(r.type==='CREDIT' && /^Recebimento \| Boleto/i.test(String(r.desc||'')) && !BOLETOS_REC_AUTO.has(r.id)) return null;
   const d = String(r.desc||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
   if(r.status_fixo || String(r.cat||'').indexOf('13')===0 || r.transf || r.previsto) return null; // saldo inicial, transferências, previstos
   return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.pix || d.indexOf('PIX')>=0) && (g.termos.length===0 || g.termos.some(x=>d.indexOf(x)>=0)) && !(g.exceto||[]).some(x=>d.indexOf(x)>=0) && (!g.so || g.so.some(x=>d.indexOf(x)>=0))) || null;
