@@ -322,7 +322,7 @@ tr:hover td{background:var(--sur2)}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 26/10 · 14:17
+        Stone · 27/10 · 08:25
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -343,7 +343,7 @@ tr:hover td{background:var(--sur2)}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-26"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-27"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -1998,7 +1998,42 @@ const RAW = [
   {id:'st_30fe44a7',date:'2026-10-26',hora:'08:21',desc:'Recebimento | Boleto | DANILO S DO NASCIMENTO SPORT FITNESS',amt:498.32,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DANILO S DO NASCIMENTO SPORT FITNESS',meio:'TED'},
   {id:'st_5c82d549',date:'2026-10-26',hora:'06:30',desc:'Transferência | Conta Stone | PAGAR.ME PAGAMENTOS S.A.',amt:344.05,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PAGAR.ME S.A.',meio:'TED'},
   {id:'st_7d75e87b',date:'2026-10-26',hora:'03:28',desc:'Antecipação | Crédito | Recebimento vendas',amt:90.16,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'cx_20261026_01',date:'2026-10-26',hora:'15:32',desc:'Pagamento fornecedor Metta Fit (espécie)',amt:300.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.2.1',cli:'METTA FIT NUTRICAO ESPORTIVA LTDA',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'}
+  {id:'cx_20261026_01',date:'2026-10-26',hora:'15:32',desc:'Pagamento fornecedor Metta Fit (espécie)',amt:300.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.2.1',cli:'METTA FIT NUTRICAO ESPORTIVA LTDA',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'},
+  // SYNC 27/10/2026 - tarde/noite 26/10 e manhã 27/10
+  {id:'st_228d63f2',date:'2026-10-27',hora:'08:25',desc:'Transferência | Pix | GILDA OLIVEIRA BEZERRA',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'GILDA OLIVEIRA BEZERRA',meio:'PIX'},
+  {id:'st_34397f84',date:'2026-10-27',hora:'07:03',desc:'Recebimento | Boleto | Kleiton-Farmacia Extrema 24h',amt:523.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Kleiton-Farmacia Extrema 24h',meio:'TED'},
+  {id:'st_d3b22a40',date:'2026-10-27',hora:'03:16',desc:'Antecipação | Crédito | Recebimento vendas',amt:145.87,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_309fea62',date:'2026-10-26',hora:'21:54',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:600.0,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
+  {id:'st_3fd4c0ac',date:'2026-10-26',hora:'20:00',desc:'Pix | Maquininha | JOSE IVANILSON DA SILVA ARAUJO',amt:203.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSE IVANILSON DA SILVA ARAUJO',meio:'PIX'},
+  {id:'st_2f99f002',date:'2026-10-26',hora:'19:40',desc:'Antecipação | Recebimento vendas',amt:175.03,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_849d61fb',date:'2026-10-26',hora:'19:33',desc:'Pix | Maquininha | NATALIA FERNANDA DA SILVA MEDEIROS',amt:208.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'NATALIA FERNANDA DA SILVA MEDEIROS',meio:'PIX'},
+  {id:'st_34a8d766',date:'2026-10-26',hora:'19:32',desc:'Antecipação | Recebimento vendas',amt:152.54,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_13530edf',date:'2026-10-26',hora:'19:07',desc:'Transferência | Pix | Mirela Dias Ferreira',amt:25.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Mirela Dias Ferreira',meio:'PIX'},
+  {id:'st_28449839',date:'2026-10-26',hora:'18:45',desc:'Pix | Maquininha | José Luiz Alves de Lima',amt:89.46,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'José Luiz Alves de Lima',meio:'PIX'},
+  {id:'st_2d747920',date:'2026-10-26',hora:'18:40',desc:'Transferência | Pix | Matheus Dos Santos de Franca',amt:35.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Matheus Dos Santos de Franca',meio:'PIX'},
+  {id:'st_02c30d78',date:'2026-10-26',hora:'18:35',desc:'Pix | Maquininha | FERNANDO HENRIQUE PIMENTA DO NASCIMENTO',amt:119.4,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'FERNANDO HENRIQUE PIMENTA DO NASCIMENTO',meio:'PIX'},
+  {id:'st_20c60f79',date:'2026-10-26',hora:'18:34',desc:'Pix | Maquininha | Rainara Rafaela Silva Do Nascimento',amt:99.5,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Rainara Rafaela Silva Do Nascimento',meio:'PIX'},
+  {id:'st_d560c028',date:'2026-10-26',hora:'18:01',desc:'Antecipação | Recebimento vendas',amt:281.43,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_307fbb13',date:'2026-10-26',hora:'17:59',desc:'Pagamento | SUPLEY LAB ALIM SUPL NUT LTDA',amt:2053.1,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto'},
+  {id:'st_8dd619d0',date:'2026-10-26',hora:'17:55',desc:'Transferência | Pix | MAKSON SOUZA DE LIMA',amt:35.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MAKSON SOUZA DE LIMA',meio:'PIX'},
+  {id:'st_3de8ae82',date:'2026-10-26',hora:'17:50',desc:'Antecipação | Recebimento vendas',amt:144.92,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_8b1d20e6',date:'2026-10-26',hora:'17:31',desc:'Valor referente à liquidação de suas vendas de cartão. | Recebimento de vendas',amt:257.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Cartão'},
+  {id:'st_77cdafc0',date:'2026-10-26',hora:'17:28',desc:'Antecipação | Recebimento vendas',amt:151.28,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_b39e026f',date:'2026-10-26',hora:'17:02',desc:'Antecipação | Recebimento vendas',amt:62.01,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_cdc02f12',date:'2026-10-26',hora:'16:57',desc:'Transferência | Pix | MARIA BEATRYZ GUILHERME DE SENA',amt:65.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIA BEATRYZ GUILHERME DE SENA',meio:'PIX'},
+  {id:'st_af5ca460',date:'2026-10-26',hora:'16:47',desc:'Pix | Maquininha | MARIANA TAVARES DO NASCIMENTO',amt:155.22,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIANA TAVARES DO NASCIMENTO',meio:'PIX'},
+  {id:'st_efabd6f8',date:'2026-10-26',hora:'16:38',desc:'Antecipação | Recebimento vendas',amt:225.05,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_a1276cf6',date:'2026-10-26',hora:'16:20',desc:'Pix | Maquininha | Francisco Alex Mauricio da Silva',amt:60.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Francisco Alex Mauricio da Silva',meio:'PIX'},
+  {id:'st_01749bee',date:'2026-10-26',hora:'15:57',desc:'Pix | Maquininha | ELAINE CRISTINA SIMPLICIO NUNES DIAS',amt:54.73,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ELAINE CRISTINA SIMPLICIO NUNES DIAS',meio:'PIX'},
+  {id:'st_e60e66d0',date:'2026-10-26',hora:'15:55',desc:'Transferência | Pix | LILIANE ABREU FREIRE',amt:85.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LILIANE ABREU FREIRE',meio:'PIX'},
+  {id:'st_1e4a77a0',date:'2026-10-26',hora:'15:15',desc:'Transferência | Pix | JOSE AYRTON DOS SANTOS SILVA',amt:65.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSE AYRTON DOS SANTOS SILVA',meio:'PIX'},
+  {id:'st_92f7c629',date:'2026-10-26',hora:'15:10',desc:'Transferência | Pix | D T SUPLEMENTOS DISTRIBUIDORA LTDA',amt:75.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'D T SUPLEMENTOS DISTRIBUIDORA LTDA',meio:'PIX'},
+  {id:'st_fbebca80',date:'2026-10-26',hora:'15:04',desc:'Transferência | Pix | DIOGO MONTEIRO SANTOS DE BARRO',amt:60.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DIOGO MONTEIRO SANTOS DE BARRO',meio:'PIX'},
+  {id:'st_a2fe0647',date:'2026-10-26',hora:'15:01',desc:'Antecipação | Recebimento vendas',amt:85.76,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_a772494c',date:'2026-10-26',hora:'14:41',desc:'Transferência | Pix | OLSA AIDE DE MESQUITA LEAL',amt:100.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'OLSA AIDE DE MESQUITA LEAL',meio:'PIX'},
+  {id:'st_056737d8',date:'2026-10-26',hora:'14:37',desc:'Transferência | TED | TICKET SERVICOS SA',amt:179.03,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'TICKET SERVICOS SA',meio:'TED'},
+  {id:'st_c2246695',date:'2026-10-26',hora:'14:32',desc:'Transferência | Pix | MARIA ROSANGELA BARBOSA FERREIRA',amt:90.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIA ROSANGELA BARBOSA FERREIRA',meio:'PIX'},
+  {id:'st_c36fe2f9',date:'2026-10-26',hora:'14:27',desc:'Transferência | Pix | DEBORA DO NASCIMENTO FERREIRA',amt:32.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DEBORA DO NASCIMENTO FERREIRA',meio:'PIX'}
 ];
 
 // Estado
@@ -2829,7 +2864,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-10-26';
+  const hoje = '2026-10-27';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -3410,7 +3445,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-10-26';
+const HOJE_SISTEMA = '2026-10-27';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -4055,7 +4090,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-10-26';
+  const hoje = '2026-10-27';
 
   let txData;
   if(cfMes){
@@ -4957,7 +4992,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:2362.06, em:'26/10/2026 22:39'}};
+const SALDO_BANCO = {Stone:{valor:3106.73, em:'27/10/2026 08:32'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
