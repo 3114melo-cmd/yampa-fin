@@ -5910,41 +5910,46 @@ function renderForn(){
     ${cardParticipacao(lista,totalGeral,'Participação por fornecedor — '+labelPeriodo)}
   `}
 
-  <!-- TABELA DE LANÇAMENTOS -->
-  <div class="card" style="overflow:hidden">
-    <div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between">
-      <span style="font-size:13px;font-weight:700">Lançamentos — ${labelPeriodo}</span>
-      <span style="font-size:11px;color:var(--tx3)">${txSel.length} lançamentos · ${fmtR(totalGeral)}</span>
-    </div>
-    <div style="overflow-x:auto;max-height:320px">
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr>
-          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0;white-space:nowrap">Data</th>
-          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Fornecedor</th>
-          <th style="padding:7px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Nota</th>
-          <th style="padding:7px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0;white-space:nowrap">Valor</th>
-          <th style="padding:7px 12px;text-align:center;font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">Status</th>
-        </tr></thead>
-        <tbody>
-          ${txSel.length===0?`<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--tx3)">Nenhum lançamento no período</td></tr>`:
-            txSel.sort((a,b)=>a.date.localeCompare(b.date)).map(t=>{
-              const nf=t.desc.match(/NF[\s\-e°º]*N?[°º]?\s*([\d.]+)/i);
-              const nome=t.cli&&t.cli.length>2?t.cli:t.desc.replace(/PAGAMENTO PIX \d+ |BOLETO /g,'').split(' - ')[0].substring(0,35);
-              const _NU=(nome+' | '+(t.desc||'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(); const _al=RAZAO_SOCIAL.find(([ks])=>ks.some(k=>_NU.indexOf(k)>=0));
-              const nomeRS=_al?_al[1]:nome;
-              return`<tr style="border-bottom:1px solid var(--bor);${t.status==='previsto'?'background:#fafbff':''}">
-                <td style="padding:7px 12px;font-size:11px;color:var(--tx3);white-space:nowrap">${fmtD(t.date)}</td>
-                <td style="padding:7px 12px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nomeRS}</td>
-                <td style="padding:7px 12px;font-size:11px;color:var(--tx3)">${nf?nf[1]:'—'}</td>
-                <td style="padding:7px 12px;text-align:right;font-size:12px;font-weight:700;color:var(--red)">−${fmtR(t.amt)}</td>
-                <td style="padding:7px 12px;text-align:center">
-                  <span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:${t.status==='previsto'?'#e0f2fe':t.status==='conciliado'?'var(--gbg)':'var(--ybg)'};color:${t.status==='previsto'?'#0369a1':t.status==='conciliado'?'var(--grn)':'var(--yel)'}">${t.status}</span>
-                </td>
-              </tr>`;
-            }).join('')}
-        </tbody>
-      </table>
-    </div>
+  <!-- TABELAS: PAGOS x A PAGAR -->
+  ${(()=>{
+    const linha = (t, modo) => {
+      const nf=t.desc.match(/NF[\s\-e°º]*N?[°º]?\s*([\d.]+)/i);
+      const parc=(t.desc.match(/PARCELA\s*(\d+\/\d+)/i)||[])[1];
+      const nome=t.cli&&t.cli.length>2?t.cli:t.desc.replace(/PAGAMENTO PIX \d+ |BOLETO /g,'').split(' - ')[0].substring(0,35);
+      const _NU=(nome+' | '+(t.desc||'')).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase(); const _al=RAZAO_SOCIAL.find(([ks])=>ks.some(k=>_NU.indexOf(k)>=0));
+      const nomeRS=_al?_al[1]:nome;
+      let sit='';
+      if(modo==='pagar'){
+        const dias=Math.round((new Date(t.date+'T12:00:00')-new Date(hoje+'T12:00:00'))/86400000);
+        sit = t.status==='pendente' ? '<span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:var(--ybg);color:var(--yel)">pendente concil.</span>'
+          : dias<0 ? '<span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;background:var(--rbg);color:var(--red)">atrasado '+(-dias)+'d</span>'
+          : dias===0 ? '<span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;background:var(--ybg);color:#b54708">vence hoje</span>'
+          : '<span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:#e0f2fe;color:#0369a1">em '+dias+'d</span>';
+      } else {
+        sit = '<span style="font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;background:var(--gbg);color:var(--grn)">'+(t.cat==='4.2.4'?'juros':t.conta&&t.conta.indexOf('Caixa')>=0?'pago (dinheiro)':'pago')+'</span>';
+      }
+      return '<tr style="border-bottom:1px solid var(--bor)">'
+        +'<td style="padding:7px 10px;font-size:11px;color:var(--tx3);white-space:nowrap">'+fmtD(t.date)+'</td>'
+        +'<td style="padding:7px 10px;font-size:12px;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+String(t.desc).replace(/"/g,'&quot;')+'">'+nomeRS+(parc?' <span style="color:var(--tx3);font-size:11px">· parc. '+parc+'</span>':'')+(nf?' <span style="color:var(--tx3);font-size:11px">· NF '+nf[1]+'</span>':'')+'</td>'
+        +'<td style="padding:7px 10px;text-align:right;font-size:12px;font-weight:700;color:'+(modo==='pagar'?'#b42318':'var(--red)')+';white-space:nowrap">'+fmtR(t.amt)+'</td>'
+        +'<td style="padding:7px 10px;text-align:center;white-space:nowrap">'+sit+'</td></tr>';
+    };
+    const pagos = txSel.filter(t=>pago(t)).sort((a,b)=>b.date.localeCompare(a.date));
+    const aPagar = txSel.filter(t=>!pago(t)).sort((a,b)=>a.date.localeCompare(b.date));
+    const tab = (titulo, lista, modo, cor, bg) => '<div class="card" style="overflow:hidden">'
+      +'<div style="padding:10px 14px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;background:'+bg+'">'
+      +'<span style="font-size:13px;font-weight:700;color:'+cor+'">'+titulo+'</span>'
+      +'<span style="font-size:12px;color:var(--tx2)">'+lista.length+' lançamento'+(lista.length!==1?'s':'')+' · <strong style="color:'+cor+'">'+fmtR(lista.reduce((s,t)=>s+t.amt,0))+'</strong></span></div>'
+      +'<div style="overflow:auto;max-height:360px"><table style="width:100%;border-collapse:collapse"><thead><tr>'
+      +['Data','Fornecedor','Valor',modo==='pagar'?'Vencimento':'Situação'].map((h,i)=>'<th style="padding:7px 10px;text-align:'+(i===2?'right':i===3?'center':'left')+';font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);border-bottom:1px solid var(--bor);text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0">'+h+'</th>').join('')
+      +'</tr></thead><tbody>'
+      +(lista.length?lista.map(t=>linha(t,modo)).join(''):'<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--tx3);font-size:12px">Nenhum lançamento</td></tr>')
+      +'</tbody></table></div></div>';
+    return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+      + tab('✅ Fornecedores pagos — '+labelPeriodo, pagos, 'pago', 'var(--grn)', 'var(--gbg)')
+      + tab('📅 Fornecedores a pagar — '+labelPeriodo, aPagar, 'pagar', '#b42318', 'var(--rbg)')
+      + '</div>';
+  })()}
   </div>`;
 }
 
