@@ -266,6 +266,11 @@ tr:hover td{background:var(--sur2)}
     <span class="sc-txt">Caixa (Dinheiro)</span>
     <span class="sc-saldo" id="sb-saldo-dist">R$ 0,00</span>
   </div>
+  <div class="sc-live" style="margin-top:3px;background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.22)" title="XP · conta 01889069-0 · taxas de entrega Strong">
+    <div class="sc-dot" style="background:#6366f1"></div>
+    <span class="sc-txt">XP (Strong)</span>
+    <span class="sc-saldo" id="sb-saldo-xp">R$ 0,00</span>
+  </div>
   <nav class="snav">
     <div class="ng">Controle</div>
     <button class="ni act" id="ni-dash" onclick="go('dash',this)">
@@ -348,16 +353,16 @@ tr:hover td{background:var(--sur2)}
       </div>
       <div class="fr fr2" id="m-conta-row">
         <div class="fg"><label>Conta</label>
-          <select id="m-conta"><option>Stone</option><option>Caixa (Dinheiro)</option></select>
+          <select id="m-conta"><option>Stone</option><option>Caixa (Dinheiro)</option><option>XP</option></select>
         </div>
         <div class="fg"><label style="color:var(--red)">Competência *</label><input type="month" id="m-comp" value=""></div>
       </div>
       <div class="fr fr2" id="m-transf-row" style="display:none">
         <div class="fg"><label>De (sai da conta)</label>
-          <select id="m-de"><option>Stone</option><option>Caixa (Dinheiro)</option></select>
+          <select id="m-de"><option>Stone</option><option>Caixa (Dinheiro)</option><option>XP</option></select>
         </div>
         <div class="fg"><label>Para (entra na conta)</label>
-          <select id="m-para"><option>Caixa (Dinheiro)</option><option>Stone</option></select>
+          <select id="m-para"><option>Caixa (Dinheiro)</option><option>Stone</option><option>XP</option></select>
         </div>
       </div>
       <div class="fr"><div class="fg"><label>Descrição</label><input type="text" id="m-desc" placeholder="Ex: Pagamento DHFIT Distribuidora"></div></div>
@@ -2092,7 +2097,11 @@ const RAW = [
   {id:'st_8842cefc',date:'2026-10-27',hora:'16:51',desc:'Transferência | Pix | Edna Clementino Silva',amt:265.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Edna Clementino Silva',meio:'PIX'},
   {id:'st_962162eb',date:'2026-10-27',hora:'16:18',desc:'Antecipação | Recebimento vendas',amt:99.34,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_25d7528c',date:'2026-10-27',hora:'16:01',desc:'Transferência | Pix | Gerliane Barbosa Dutra',amt:49.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Gerliane Barbosa Dutra',meio:'PIX'},
-  {id:'st_f3e26c87',date:'2026-10-27',hora:'15:54',desc:'Débito | Físico | SUPERMERCADO NORDESTAO',amt:23.03,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'SUPERMERCADO NORDESTAO',meio:'Cartão'}
+  {id:'st_f3e26c87',date:'2026-10-27',hora:'15:54',desc:'Débito | Físico | SUPERMERCADO NORDESTAO',amt:23.03,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'SUPERMERCADO NORDESTAO',meio:'Cartão'},
+  // XP (conta 348/0001/01889069-0) · taxas de entrega STRONG · a partir de 27/10/2026
+  {id:'saldo_inicial_xp',date:'2026-10-27',hora:'00:00',desc:'SALDO INICIAL XP - Abertura (saldo em 26/10/2026)',amt:166.11,type:'CREDIT',conta:'XP',cat:'13.99',cli:'Saldo Inicial',meio:'Ajuste',status_fixo:'conciliado'},
+  {id:'xp_7fff022a',date:'2026-10-27',hora:'11:32',desc:'Pix recebido de Kiria Sheillyane Jorge de Araujo',amt:12.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'KIRIA SHEILLYANE JORGE DE ARAUJO',meio:'PIX'},
+  {id:'xp_5972c49f',date:'2026-10-27',hora:'17:20',desc:'Pix recebido de Josineide Lourenco Honorato da Silva',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Josineide Lourenco Honorato da Silva',meio:'PIX'}
 ];
 
 // Estado
@@ -2135,6 +2144,7 @@ const REGRAS_AUTO = [
   {nome:'Cosern → Energia elétrica', tipo:'DEBIT', pix:false, termos:['COSERN','COMPANHIA ENERGETICA DO RIO GRANDE DO NORTE'], cat:'5.2.3'},
   {nome:'M M Combustíveis Planalto → Gasolina', tipo:'DEBIT', pix:false, termos:['M M COMERCIAL DE COMBUSTIVEIS PLANALTO'], cat:'4.6.1'},
   {nome:'Combustíveis → Gasolina', tipo:'DEBIT', pix:false, termos:['COMBUSTIVE'], cat:'4.6.1'},
+  {nome:'XP: toda entrada → STRONG (taxas de entrega)', tipo:'CREDIT', pix:false, termos:[], conta:'XP', cat:'7.1.7'},
   {nome:'Toda entrada → Receita de Vendas', tipo:'CREDIT', pix:false, termos:[], exceto:['DEVOLUCAO'], cat:'3.1.8'},
 ];
 function mesAnterior(c){ let y=parseInt(c.substring(0,4),10), m=parseInt(c.substring(5,7),10)-1; if(m<1){m=12;y--;} return y+'-'+String(m).padStart(2,'0'); }
@@ -2144,7 +2154,7 @@ function regraAuto(r){
   if(r.type==='CREDIT' && /^Recebimento \| Boleto/i.test(String(r.desc||'')) && !BOLETOS_REC_AUTO.has(r.id)) return null;
   const d = String(r.desc||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
   if(r.status_fixo || String(r.cat||'').indexOf('13')===0 || r.transf || r.previsto) return null; // saldo inicial, transferências, previstos
-  return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.pix || d.indexOf('PIX')>=0) && (g.termos.length===0 || g.termos.some(x=>d.indexOf(x)>=0)) && !(g.exceto||[]).some(x=>d.indexOf(x)>=0) && (!g.so || g.so.some(x=>d.indexOf(x)>=0))) || null;
+  return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.conta || g.conta===r.conta) && !(g.conta===undefined && r.conta==='XP') && (!g.pix || d.indexOf('PIX')>=0) && (g.termos.length===0 || g.termos.some(x=>d.indexOf(x)>=0)) && !(g.exceto||[]).some(x=>d.indexOf(x)>=0) && (!g.so || g.so.some(x=>d.indexOf(x)>=0))) || null;
 }
 
 // Pix enviados e devolvidos (se anulam): ficam IGNORADOS e fora do saldo/DRE
@@ -2285,6 +2295,9 @@ function updateSaldoBadges(){
   const fmtS = v => (v<-0.004?'− ':'')+fmtR(v);
   if(elM){ elM.textContent = fmtS(calcS(sm)); elM.style.color = calcS(sm)<-0.004?'#f87171':''; }
   if(elD){ elD.textContent = fmtS(calcS(sd)); elD.style.color = calcS(sd)<-0.004?'#f87171':''; }
+  const sx = TX.filter(t=>t.conta==='XP'&&(t.status==='conciliado'||t.status==='transferencia'));
+  const elX = document.getElementById('sb-saldo-xp');
+  if(elX){ elX.textContent = fmtS(calcS(sx)); elX.style.color = calcS(sx)<-0.004?'#f87171':''; }
 }
 
 function updateBadge(){
@@ -2361,6 +2374,7 @@ function renderDash(){
   const contas = [
     {nome:'Stone',           icon:'💳', info:infoStone, cor:'#00a868', conta:'Stone'},
     {nome:'Caixa (Dinheiro)',icon:'💵', info:infoCaixa, cor:'#16a34a', conta:'Caixa (Dinheiro)'},
+    {nome:'XP (Strong)',     icon:'🟣', info:getSaldo('XP'), cor:'#6366f1', conta:'XP'},
   ];
   const saldoTotal = contas.reduce((s,c)=>s+c.info.atual,0);
   const saldoPrevisto = saldoTotal - aPagarHoje + aReceberHoje;
@@ -2771,7 +2785,7 @@ function listaPorData(list){
 }
 
 function renderTransfPanel(t){
-  const contas = ['Stone','Caixa (Dinheiro)'].filter(c=>c!==(t.conta||'Stone'));
+  const contas = ['Stone','Caixa (Dinheiro)','XP'].filter(c=>c!==(t.conta||'Stone'));
   const id = t.id;
   const sentido = t.type==='CREDIT'?'origem (saída)':'destino (entrada)';
 
@@ -2960,7 +2974,7 @@ function abrirFiltroConta(ev){
   const pop = document.createElement('div');
   pop.id = 'filtro-popover';
   var vwF=window.innerWidth, vhF=window.innerHeight; var leftF=Math.min(rect.left, vwF-200); leftF=Math.max(8,leftF); var topF=rect.bottom+4; if(topF+300>vhF) topF=Math.max(8,rect.top-300-4); pop.style.cssText = 'position:fixed;top:'+topF+'px;left:'+leftF+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:9999;min-width:180px;max-height:'+(vhF-20)+'px;overflow-y:auto';
-  const contas = ['todas','Sicredi Matriz','Sicredi Distribuidora','Caixa (Dinheiro)'];
+  const contas = ['todas','Stone','Caixa (Dinheiro)','XP'];
   pop.innerHTML = contas.map(c=>'<div class="cp-item" onclick="window._jourConta=\''+c+'\';fecharPopover();render()">'+(c==='todas'?'📋 Todas as contas':'🏦 '+c)+'</div>').join('');
   document.body.appendChild(pop);
   setTimeout(()=>document.addEventListener('click', fecharPopoverOutside), 10);
@@ -3536,6 +3550,7 @@ function getOrigem(t){
 function getCentroCustoGlobal(t){
   if(t.conta==='Stone') return 'STONE';
   if(t.conta==='Caixa (Dinheiro)') return 'CAIXA';
+  if(t.conta==='XP') return 'XP';
   return t.conta||'—';
 }
 
@@ -3933,7 +3948,7 @@ function filtrarMultiSelList(termo, inputEl){
   labels.forEach(function(lb){ lb.style.display = normalizarBusca(lb.textContent).indexOf(t)>=0?'flex':'none'; });
 }
 
-function valoresContas(){ return ['Stone','Caixa (Dinheiro)']; }
+function valoresContas(){ return ['Stone','Caixa (Dinheiro)','XP']; }
 function valoresClientes(){ var s=new Set(); TX.forEach(function(t){ s.add(t.cli||'sem nome'); }); return [...s].sort(); }
 function valoresMeios(){ var s=new Set(); TX.forEach(function(t){ s.add(t.meio||'sem meio'); }); return [...s].sort(); }
 function valoresCentroCusto(){ var s=new Set(); TX.forEach(function(t){ s.add(getCentroCustoGlobal(t)); }); return [...s].sort(); }
@@ -4242,6 +4257,7 @@ function renderJour(){
   const contasResumo = [
     {n:'Stone', conta:'Stone', icon:'💳', saldo:saldoConta('Stone')},
     {n:'Caixa (Dinheiro)', conta:'Caixa (Dinheiro)', icon:'💵', saldo:saldoConta('Caixa (Dinheiro)')},
+    {n:'XP (Strong)', conta:'XP', icon:'🟣', saldo:saldoConta('XP')},
   ];
 
   // Sequência (parcelas)
@@ -4276,7 +4292,7 @@ function renderJour(){
     return dd+'/'+m+'/'+y;
   }
 
-  const contasUnicas = [...new Set(['Stone','Caixa (Dinheiro)', ...TX.map(t=>t.conta).filter(Boolean)])];
+  const contasUnicas = [...new Set(['Stone','Caixa (Dinheiro)','XP', ...TX.map(t=>t.conta).filter(Boolean)])];
 
   window._jourRowsAtuais = rows;
   const qtdFiltrosAtivos = contarFiltrosAtivos();
@@ -5062,7 +5078,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1393.32, em:'27/10/2026 19:42'}};
+const SALDO_BANCO = {Stone:{valor:1393.32, em:'27/10/2026 19:42'}, XP:{valor:185.11, em:'27/10/2026 22:13'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
