@@ -327,7 +327,7 @@ tr:hover td{background:var(--sur2)}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 27/10 · 19:26
+        Stone · 28/10 · 12:30
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -348,7 +348,7 @@ tr:hover td{background:var(--sur2)}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-27"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-28"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -2102,7 +2102,31 @@ const RAW = [
   {id:'saldo_inicial_xp',date:'2026-10-27',hora:'00:00',desc:'SALDO INICIAL XP - Abertura (saldo em 26/10/2026)',amt:166.11,type:'CREDIT',conta:'XP',cat:'13.99',cli:'Saldo Inicial',meio:'Ajuste',status_fixo:'conciliado'},
   {id:'xp_7fff022a',date:'2026-10-27',hora:'11:32',desc:'Pix recebido de Kiria Sheillyane Jorge de Araujo',amt:12.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'KIRIA SHEILLYANE JORGE DE ARAUJO',meio:'PIX'},
   {id:'xp_5972c49f',date:'2026-10-27',hora:'17:20',desc:'Pix recebido de Josineide Lourenco Honorato da Silva',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Josineide Lourenco Honorato da Silva',meio:'PIX'},
-  {id:'cx_20261028_01',date:'2026-10-28',hora:'12:45',desc:'Pró-labore (espécie)',amt:106.93,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.2',cli:'Pró-labore',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'}
+  {id:'cx_20261028_01',date:'2026-10-28',hora:'12:45',desc:'Pró-labore (espécie)',amt:106.93,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.2',cli:'Pró-labore',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10'},
+  // SYNC 28/10 12:58
+  {id:'st_396203c0',date:'2026-10-28',hora:'12:30',desc:'Transferência | Pix | RENATA GISELE DE PAIVA',amt:60.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'RENATA GISELE DE PAIVA',meio:'PIX'},
+  {id:'st_b3787b0f',date:'2026-10-28',hora:'12:21',desc:'Antecipação | Recebimento vendas',amt:76.32,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_d71d434f',date:'2026-10-28',hora:'12:21',desc:'Antecipação | Recebimento vendas',amt:4.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_8c06a5b8',date:'2026-10-28',hora:'12:19',desc:'Transferência | Pix | JANIELE SIBELE DA SILVA ROSENDO DE MELO',amt:172.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Janiele Sibele Da Silva Rosendo De Melo',meio:'PIX'},
+  {id:'st_58831114',date:'2026-10-28',hora:'12:07',desc:'Pix | Maquininha | DANNIELA SILVA ALVES DE OLIVEIRA',amt:232.83,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Danniela Silva Alves',meio:'PIX'},
+  {id:'st_061a9443',date:'2026-10-28',hora:'11:58',desc:'Pix | Maquininha | JOSE AMAURI PEREIRA SENA',amt:69.56,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSE AMAURI PEREIRA SENA',meio:'PIX'},
+  {id:'st_67a3b906',date:'2026-10-28',hora:'11:22',desc:'Antecipação | Recebimento vendas',amt:210.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_9f5fa7f8',date:'2026-10-28',hora:'11:18',desc:'Transferência | Pix | MARIA JOSE ALVES BARROS',amt:35.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MARIA JOSE ALVES BARROS',meio:'PIX'},
+  {id:'st_5edc240a',date:'2026-10-28',hora:'11:16',desc:'Antecipação | Recebimento vendas',amt:4.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_a4258ff4',date:'2026-10-28',hora:'11:11',desc:'Antecipação | Recebimento vendas',amt:26.24,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_82c4e2ff',date:'2026-10-28',hora:'11:09',desc:'Antecipação | Recebimento vendas',amt:26.24,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_838473fa',date:'2026-10-28',hora:'11:03',desc:'Transferência | Pix | LEONARDO DOS SANTOS SILVA',amt:61.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LEONARDO DOS SANTOS SILVA',meio:'PIX'},
+  {id:'st_0e9f2f00',date:'2026-10-28',hora:'10:58',desc:'Transferência | Pix | VINDI INTERMEDIADORA S/A',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'YAPAY PAGAMENTOS ONLINE S/A',meio:'PIX'},
+  {id:'st_2b87724a',date:'2026-10-28',hora:'10:56',desc:'Transferência | Pix | MICLEANNY ARAUJO DE BARROS FRANCA',amt:133.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Micleanny Araujo De Barros',meio:'PIX'},
+  {id:'st_c3f8fff4',date:'2026-10-28',hora:'10:31',desc:'Transferência | Pix | André Soares Venáncio',amt:1.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'André Soares Venáncio',meio:'PIX'},
+  {id:'st_b8adcbde',date:'2026-10-28',hora:'10:29',desc:'Transferência | Pix | André Soares Venáncio',amt:229.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'André Soares Venáncio',meio:'PIX'},
+  {id:'st_8541c4e4',date:'2026-10-28',hora:'10:05',desc:'Transferência | Pix | EDGAR SILVEIRA',amt:190.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'EDGAR SILVEIRA',meio:'PIX'},
+  {id:'st_2ad68bed',date:'2026-10-28',hora:'09:21',desc:'Transferência | Pix | MARIA VALDETE DA PAIXAO SILVA',amt:35.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIA VALDETE DA PAIXAO SILVA',meio:'PIX'},
+  {id:'st_2c2eb60e',date:'2026-10-28',hora:'09:12',desc:'Transferência | Pix | JONATHAN MARINHO PEREIRA',amt:50.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JONATHAN MARINHO PEREIRA',meio:'PIX'},
+  {id:'st_b5403d26',date:'2026-10-28',hora:'08:43',desc:'Transferência | Pix | ADENILSON FELIX DO NASCIMENTO',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ADENILSON FELIX DO NASCIMENTO',meio:'PIX'},
+  {id:'st_0d99653f',date:'2026-10-27',hora:'20:06',desc:'Antecipação | Recebimento vendas',amt:61.5,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_2879c39f',date:'2026-10-27',hora:'19:46',desc:'Antecipação | Recebimento vendas',amt:132.45,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'xp_49174c9b',date:'2026-10-28',hora:'10:01',desc:'Pix recebido de Viviani Gonçalves da Silva',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Viviani Gonçalves da Silva',meio:'PIX'}
 ];
 
 // Estado
@@ -2948,7 +2972,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-10-27';
+  const hoje = '2026-10-28';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -3529,7 +3553,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-10-27';
+const HOJE_SISTEMA = '2026-10-28';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -4175,7 +4199,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-10-27';
+  const hoje = '2026-10-28';
 
   let txData;
   if(cfMes){
@@ -5079,7 +5103,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1393.32, em:'27/10/2026 19:42'}, XP:{valor:185.11, em:'27/10/2026 22:13'}};
+const SALDO_BANCO = {Stone:{valor:2911.34, em:'28/10/2026 12:30 (extrato)'}, XP:{valor:192.11, em:'28/10/2026 12:58'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
