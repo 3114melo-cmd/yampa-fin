@@ -1960,8 +1960,6 @@ const RAW = [
   {id:'df_6941b86c',date:'2026-12-18',hora:'--:--',desc:'CHATGPT - CARTÃO - Despesa administrativa fixa - PARCELA 3/5',amt:99.9,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'CHATGPT - CARTÃO',meio:'Boleto',previsto:true,comp:'2026-12',obs:'Despesa fixa provisionada'},
   {id:'df_233bf717',date:'2026-11-20',hora:'--:--',desc:'MATRIZ - Energia elétrica - PARCELA 1/3',amt:310.26,type:'DEBIT',conta:'Stone',cat:'5.2.3',cli:'MATRIZ',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada'},
   {id:'df_e4100b22',date:'2026-12-20',hora:'--:--',desc:'MATRIZ - Energia elétrica - PARCELA 2/3',amt:310.26,type:'DEBIT',conta:'Stone',cat:'5.2.3',cli:'MATRIZ',meio:'Boleto',previsto:true,comp:'2026-12',obs:'Despesa fixa provisionada'},
-  {id:'df_2b3a0a49',date:'2026-11-20',hora:'--:--',desc:'CONVERTA- SITE - Despesa administrativa fixa - PARCELA 2/3',amt:300.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'CONVERTA- SITE',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada'},
-  {id:'df_616bfd0e',date:'2026-12-20',hora:'--:--',desc:'CONVERTA- SITE - Despesa administrativa fixa - PARCELA 3/3',amt:300.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'CONVERTA- SITE',meio:'Boleto',previsto:true,comp:'2026-12',obs:'Despesa fixa provisionada'},
   {id:'df_b753fdd7',date:'2026-11-25',hora:'--:--',desc:'Contador - PARCELA 2/3',amt:2866.0,type:'DEBIT',conta:'Stone',cat:'5.2.11',cli:'Contador',meio:'Boleto',previsto:true,comp:'2026-10',obs:'Despesa fixa provisionada · conta original: 3. DISTRIBUIDORA'},
   {id:'df_71d8d7e1',date:'2026-12-25',hora:'--:--',desc:'Contador - PARCELA 3/3',amt:2866.0,type:'DEBIT',conta:'Stone',cat:'5.2.11',cli:'Contador',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada · conta original: 3. DISTRIBUIDORA'},
   {id:'df_4d5d7f6a',date:'2026-11-25',hora:'--:--',desc:'MENSALIDADE SITE - Despesa administrativa fixa - PARCELA 1/2',amt:57.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MENSALIDADE SITE',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada · conta original: 2. ITAU'},
@@ -2111,12 +2109,12 @@ const RAW = [
   {id:'st_58831114',date:'2026-10-28',hora:'12:07',desc:'Pix | Maquininha | DANNIELA SILVA ALVES DE OLIVEIRA',amt:232.83,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Danniela Silva Alves',meio:'PIX'},
   {id:'st_061a9443',date:'2026-10-28',hora:'11:58',desc:'Pix | Maquininha | JOSE AMAURI PEREIRA SENA',amt:69.56,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSE AMAURI PEREIRA SENA',meio:'PIX'},
   {id:'st_67a3b906',date:'2026-10-28',hora:'11:22',desc:'Antecipação | Recebimento vendas',amt:210.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_9f5fa7f8',date:'2026-10-28',hora:'11:18',desc:'Transferência | Pix | MARIA JOSE ALVES BARROS',amt:35.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MARIA JOSE ALVES BARROS',meio:'PIX'},
+  {id:'st_9f5fa7f8',date:'2026-10-28',hora:'11:18',desc:'Transferência | Pix | MARIA JOSE ALVES BARROS',amt:35.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MARIA JOSE ALVES BARROS',meio:'PIX',transf:'Caixa (Dinheiro)',obs:'Transferência Stone → Caixa (dinheiro)'},
   {id:'st_5edc240a',date:'2026-10-28',hora:'11:16',desc:'Antecipação | Recebimento vendas',amt:4.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_a4258ff4',date:'2026-10-28',hora:'11:11',desc:'Antecipação | Recebimento vendas',amt:26.24,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_82c4e2ff',date:'2026-10-28',hora:'11:09',desc:'Antecipação | Recebimento vendas',amt:26.24,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_838473fa',date:'2026-10-28',hora:'11:03',desc:'Transferência | Pix | LEONARDO DOS SANTOS SILVA',amt:61.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LEONARDO DOS SANTOS SILVA',meio:'PIX'},
-  {id:'st_0e9f2f00',date:'2026-10-28',hora:'10:58',desc:'Transferência | Pix | VINDI INTERMEDIADORA S/A',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'YAPAY PAGAMENTOS ONLINE S/A',meio:'PIX'},
+  {id:'st_0e9f2f00',date:'2026-10-28',hora:'10:58',desc:'Transferência | Pix | VINDI INTERMEDIADORA S/A',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'PIX',obs:'Mensalidade aplicativo Converta'},
   {id:'st_2b87724a',date:'2026-10-28',hora:'10:56',desc:'Transferência | Pix | MICLEANNY ARAUJO DE BARROS FRANCA',amt:133.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Micleanny Araujo De Barros',meio:'PIX'},
   {id:'st_c3f8fff4',date:'2026-10-28',hora:'10:31',desc:'Transferência | Pix | André Soares Venáncio',amt:1.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'André Soares Venáncio',meio:'PIX'},
   {id:'st_b8adcbde',date:'2026-10-28',hora:'10:29',desc:'Transferência | Pix | André Soares Venáncio',amt:229.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'André Soares Venáncio',meio:'PIX'},
@@ -2126,7 +2124,14 @@ const RAW = [
   {id:'st_b5403d26',date:'2026-10-28',hora:'08:43',desc:'Transferência | Pix | ADENILSON FELIX DO NASCIMENTO',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ADENILSON FELIX DO NASCIMENTO',meio:'PIX'},
   {id:'st_0d99653f',date:'2026-10-27',hora:'20:06',desc:'Antecipação | Recebimento vendas',amt:61.5,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_2879c39f',date:'2026-10-27',hora:'19:46',desc:'Antecipação | Recebimento vendas',amt:132.45,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'xp_49174c9b',date:'2026-10-28',hora:'10:01',desc:'Pix recebido de Viviani Gonçalves da Silva',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Viviani Gonçalves da Silva',meio:'PIX'}
+  {id:'xp_49174c9b',date:'2026-10-28',hora:'10:01',desc:'Pix recebido de Viviani Gonçalves da Silva',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Viviani Gonçalves da Silva',meio:'PIX'},
+  // PREVISÃO mensalidade App Converta (Vindi/Yapay) — 6 meses,
+  {id:'pvc_converta_202611',date:'2026-11-28',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 1/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'PIX',previsto:true,comp:'2026-11',obs:'Mensalidade prevista (Vindi/Yapay)'},
+  {id:'pvc_converta_202612',date:'2026-12-28',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 2/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'PIX',previsto:true,comp:'2026-12',obs:'Mensalidade prevista (Vindi/Yapay)'},
+  {id:'pvc_converta_202701',date:'2027-01-28',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 3/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'PIX',previsto:true,comp:'2027-01',obs:'Mensalidade prevista (Vindi/Yapay)'},
+  {id:'pvc_converta_202702',date:'2027-02-28',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 4/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'PIX',previsto:true,comp:'2027-02',obs:'Mensalidade prevista (Vindi/Yapay)'},
+  {id:'pvc_converta_202703',date:'2027-03-28',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 5/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'PIX',previsto:true,comp:'2027-03',obs:'Mensalidade prevista (Vindi/Yapay)'},
+  {id:'pvc_converta_202704',date:'2027-04-28',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 6/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'PIX',previsto:true,comp:'2027-04',obs:'Mensalidade prevista (Vindi/Yapay)'}
 ];
 
 // Estado
@@ -2158,6 +2163,7 @@ function saveEd(id, data){
 const REGRAS_AUTO = [
   {nome:'D T Suplementos → Fornecedor', tipo:'DEBIT', pix:true, termos:['D T SUPLEMENTOS DISTRIBUIDORA'], cat:'4.2.1'},
   {nome:'João Maria Moura de Melo Elias → Motoboy Terceirizado', tipo:'DEBIT', pix:true, termos:['JOAO MARIA MOURA DE MELO ELIAS'], cat:'4.4.6'},
+  {nome:'Vindi/Yapay → App Converta (mensalidade)', tipo:'DEBIT', pix:false, termos:['VINDI INTERMEDIADORA','YAPAY'], cat:'5.2.99'},
   {nome:'Facebook → Tráfego Pago', tipo:'DEBIT', pix:false, termos:['FACEBOOK SERVICOS ONLINE DO BRASIL'], cat:'5.8.1'},
   {nome:'Metta Fit → Fornecedor', tipo:'DEBIT', pix:false, termos:['METTA FIT NUTRICAO ESPORTIVA'], cat:'4.2.1'},
   {nome:'Fornecedores (Supley, Canibal, Body Food, Fitoway, BRG, Rainha)', tipo:'DEBIT', pix:false, termos:['SUPLEY LAB','SUPLEY LABORATORIO','CANIBAL INC','BODY FOOD FABR','FITOWAY LABORATORIO','BRG SUPL','RAINHA LABORATORIO NUTRACEUT'], cat:'4.2.1'},
@@ -2269,6 +2275,13 @@ function buildTX(){
       if(resta<=0.004){ p.status='ignorado'; p.obs='Teto de '+fmtR(teto)+' já atingido (pago '+fmtR(pago)+')'; }
     });
   })();
+
+  // MENSALIDADE APP CONVERTA: pagamento à Vindi/Yapay no mês dá baixa automática na previsão do mês
+  TX.filter(t=>t.status==='previsto' && /^pvc_converta_/.test(t.id)).forEach(p=>{
+    const mes = p.comp || p.date.substring(0,7);
+    const pg = TX.find(x=>x.type==='DEBIT' && x.status==='conciliado' && !x.previsto && /VINDI|YAPAY/i.test(x.desc||'') && x.date.substring(0,7)===mes);
+    if(pg){ p.status='ignorado'; p.baixado=true; p.obs='Baixado: pago em '+pg.date.split('-').reverse().join('/')+' ('+fmtR(pg.amt)+')'; }
+  });
 
   // CAIXA NEGATIVO → ENTRADA EM DINHEIRO automática (vendas em espécie), dia a dia
   (function(){
