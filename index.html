@@ -1937,8 +1937,8 @@ const RAW = [
   {id:'st_190309c7',date:'2026-10-24',hora:'14:59',desc:'Antecipação | Recebimento vendas',amt:98.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_2bfcb553',date:'2026-10-24',hora:'14:56',desc:'Transferência | Pix | Maria Erivaneis Rosa',amt:40.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Maria Erivaneis Rosa',meio:'PIX'},
   // PROVISÃO DESPESAS FIXAS nov/dez 2026 - importado 25/10/2026
-  {id:'df_dc6773b7',date:'2026-11-01',hora:'--:--',desc:'Pró-labore - PARCELA 2/3',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada · conta original: Sicredi Delivery 3-50'},
-  {id:'df_47d4c3df',date:'2026-12-01',hora:'--:--',desc:'Pró-labore - PARCELA 3/3',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'Boleto',previsto:true,comp:'2026-12',obs:'Despesa fixa provisionada · conta original: Sicredi Delivery 3-50'},
+  {id:'df_dc6773b7',date:'2026-11-30',hora:'--:--',desc:'Pró-labore - PARCELA 2/3',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada · conta original: Sicredi Delivery 3-50'},
+  {id:'df_47d4c3df',date:'2026-12-30',hora:'--:--',desc:'Pró-labore - PARCELA 3/3',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'Boleto',previsto:true,comp:'2026-12',obs:'Despesa fixa provisionada · conta original: Sicredi Delivery 3-50'},
   {id:'df_5e0a1583',date:'2026-11-01',hora:'--:--',desc:'Alimentação - PARCELA 3/4',amt:400.0,type:'DEBIT',conta:'Stone',cat:'5.3.13',cli:'Alimentação',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada'},
   {id:'df_e5dbe448',date:'2026-12-01',hora:'--:--',desc:'Alimentação - PARCELA 4/4',amt:400.0,type:'DEBIT',conta:'Stone',cat:'5.3.13',cli:'Alimentação',meio:'Boleto',previsto:true,comp:'2026-12',obs:'Despesa fixa provisionada'},
   {id:'df_eff95cbe',date:'2026-11-03',hora:'--:--',desc:'YAMPA PREVISÃO - Despesa administrativa fixa - PARCELA 1/2',amt:198.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'YAMPA PREVISÃO',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada · conta original: 1. MATRIZ'},
@@ -2215,7 +2215,13 @@ const RAW = [
   {id:'st_b37cd323',date:'2026-10-28',hora:'19:38',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'NUTRATA (via Merchant)',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Pagamento parcial Nutrata acordo PARCELA 2/6 (R$ 4.000 de R$ 5.844,83) via Merchant'},
   {id:'st_ac39b2d9',date:'2026-10-28',hora:'19:21',desc:'Antecipação | Recebimento vendas',amt:62.01,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_e5b7c971',date:'2026-10-28',hora:'19:16',desc:'Antecipação | Recebimento vendas',amt:9.66,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'xp_b337a32c',date:'2026-10-29',hora:'13:14',desc:'Pix recebido de Italo Igo da Silva Domingos',amt:100.0,type:'CREDIT',conta:'XP',cat:'3.1.8',cli:'Italo Igo da Silva Domingos',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Venda DHFIT (não é Strong)'}
+  {id:'xp_b337a32c',date:'2026-10-29',hora:'13:14',desc:'Pix recebido de Italo Igo da Silva Domingos',amt:100.0,type:'CREDIT',conta:'XP',cat:'3.1.8',cli:'Italo Igo da Silva Domingos',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Venda DHFIT (não é Strong)'},
+  // PRÓ-LABORE: teto R$ 4.000/mês previsto no dia 30 (último dia em fevereiro); pagamentos 5.3.2 do mês vão abatendo,
+  {id:'pvc_prolabore_202610',date:'2026-10-30',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2026-10',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'},
+  {id:'pvc_prolabore_202701',date:'2027-01-30',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2027-01',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'},
+  {id:'pvc_prolabore_202702',date:'2027-02-28',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2027-02',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'},
+  {id:'pvc_prolabore_202703',date:'2027-03-30',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2027-03',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'},
+  {id:'pvc_prolabore_202704',date:'2027-04-30',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2027-04',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'}
 ];
 
 // Estado
