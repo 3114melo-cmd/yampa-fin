@@ -60,7 +60,7 @@ setTimeout(() => {
   const linhasSem = R.aPagar.map(a => `<tr><td>${diaSem(a.data)} ${br(a.data)}</td><td>${a.forn}<div class="d">${a.desc}</div></td><td class="n">${fmt(a.valor)}</td></tr>`).join('');
   const out = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Pagamentos ${br(R.hoje)}</title><style>
 body{font-family:Arial,Helvetica,sans-serif;color:#1f2430;margin:28px;font-size:12px}h1{font-size:19px;margin:0}h2{font-size:14px;margin:22px 0 6px;border-bottom:2px solid #e5e7eb;padding-bottom:4px}
-.sub{color:#6b7280;margin:4px 0 14px}.cards{display:flex;gap:10px;flex-wrap:wrap}.c{flex:1;min-width:130px;border:1px solid #e5e7eb;border-radius:8px;padding:10px}.c .l{color:#6b7280;font-size:11px}.c .v{font-size:16px;font-weight:700;margin-top:3px}
+.sub{color:#6b7280;margin:4px 0 14px}.cards{display:flex;gap:10px;flex-wrap:wrap}.c{flex:1;min-width:110px;border:1px solid #e5e7eb;border-radius:8px;padding:10px}.c .l{color:#6b7280;font-size:11px}.c .v{font-size:16px;font-weight:700;margin-top:3px}
 .red{color:#b91c1c}.grn{color:#15803d}table{width:100%;border-collapse:collapse}td,th{padding:6px 5px;border-bottom:1px solid #f0f0f0;text-align:left;vertical-align:top}th{font-size:11px;color:#6b7280}.n{text-align:right;white-space:nowrap}.d{color:#9ca3af;font-size:10px}.m{color:#b45309}tfoot td{font-weight:700}
 </style></head><body><h1>YampaFin · Previsão de pagamentos</h1><div class="sub">${diaSem(R.hoje)} ${br(R.hoje)} · semana ${br(R.semana.de)} a ${br(R.semana.ate)}</div>
 <div class="cards"><div class="c"><div class="l">Saldo total</div><div class="v">${fmt(R.saldoTotal)}</div><div class="d">Stone ${fmt(R.saldos.Stone)} · XP ${fmt(R.saldos.XP)} · Caixa ${fmt(R.saldos.Caixa)}</div></div>
