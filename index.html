@@ -327,7 +327,7 @@ tr:hover td{background:var(--sur2)}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 29/10 · 16:02
+        Stone · 29/10 · 19:53
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -348,7 +348,7 @@ tr:hover td{background:var(--sur2)}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-29"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-30"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -2221,7 +2221,26 @@ const RAW = [
   {id:'pvc_prolabore_202701',date:'2027-01-30',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2027-01',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'},
   {id:'pvc_prolabore_202702',date:'2027-02-28',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2027-02',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'},
   {id:'pvc_prolabore_202703',date:'2027-03-30',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2027-03',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'},
-  {id:'pvc_prolabore_202704',date:'2027-04-30',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2027-04',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'}
+  {id:'pvc_prolabore_202704',date:'2027-04-30',hora:'--:--',desc:'Pró-labore - teto mensal',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'PIX',previsto:true,comp:'2027-04',obs:'Teto mensal de pró-labore (R$ 4.000) — abatido pelos pagamentos do mês'},
+  // SYNC 30/10 07:36
+  {id:'st_ed591890',date:'2026-10-29',hora:'19:53',desc:'Pix | Maquininha | WANDERLANE SUELY ALVES RODRIGUES',amt:109.45,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'WANDERLANE SUELY ALVES RODRIGUES',meio:'PIX'},
+  {id:'st_a103a169',date:'2026-10-29',hora:'19:51',desc:'Pix | Maquininha | ROBSON SILVA DE ALBUQUERQUE',amt:149.25,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ROBSON SILVA DE ALBUQUERQUE',meio:'PIX'},
+  {id:'st_1c00649c',date:'2026-10-29',hora:'19:22',desc:'Antecipação | Recebimento vendas',amt:102.01,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_3627947b',date:'2026-10-29',hora:'19:22',desc:'Pix | Maquininha | Roberto Henrique de Carvalho Filho',amt:44.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Roberto Henrique de Carvalho Filho',meio:'PIX'},
+  {id:'st_bf9f5ac2',date:'2026-10-29',hora:'19:16',desc:'Antecipação | Recebimento vendas',amt:48.88,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_ecc2456c',date:'2026-10-29',hora:'19:14',desc:'Antecipação | Recebimento vendas',amt:48.89,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_e8e0f492',date:'2026-10-29',hora:'19:04',desc:'Pix | Maquininha | Breno Geliel da Silva',amt:64.68,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Breno Geliel da Silva',meio:'PIX'},
+  {id:'st_cadd9707',date:'2026-10-29',hora:'19:00',desc:'Valor referente à liquidação de suas vendas de cartão. | Recebimento de vendas',amt:143.1,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Cartão'},
+  {id:'st_aa84f0ab',date:'2026-10-29',hora:'18:56',desc:'Antecipação | Recebimento vendas',amt:99.08,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_2517e8ee',date:'2026-10-29',hora:'18:56',desc:'Pix | Maquininha | MARCELO BELO SILVA 03575532419',amt:64.68,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARCELO BELO SILVA 03575532419',meio:'PIX'},
+  {id:'st_93f87e53',date:'2026-10-29',hora:'18:42',desc:'Transferência | Pix | Roberto Henrique de Carvalho Filho',amt:85.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Roberto Henrique de Carvalho Filho',meio:'PIX'},
+  {id:'st_0a6aae40',date:'2026-10-29',hora:'18:12',desc:'Pix | Maquininha | JARLES DE CASTRO LIMA',amt:64.68,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JARLES DE CASTRO LIMA',meio:'PIX'},
+  {id:'st_80272cc7',date:'2026-10-29',hora:'17:54',desc:'Transferência | Pix | BIANCA MARIA DE MORAIS DIAS',amt:114.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'BIANCA MARIA DE MORAIS DIAS',meio:'PIX'},
+  {id:'st_918b350d',date:'2026-10-29',hora:'17:08',desc:'Transferência | Pix | Leanderson Sales de Oliveira',amt:207.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Leanderson Sales de Oliveira',meio:'PIX'},
+  {id:'st_e8432b28',date:'2026-10-29',hora:'16:49',desc:'Pix | Maquininha | MARCOS DOUGLAS NUNES DA SILVA',amt:161.1,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARCOS DOUGLAS NUNES DA SILVA',meio:'PIX'},
+  {id:'st_ee6c38f7',date:'2026-10-29',hora:'16:40',desc:'Transferência | Pix | Jean Jakson Lopes',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Jean Jakson Lopes',meio:'PIX'},
+  {id:'st_637d8e24',date:'2026-10-29',hora:'16:39',desc:'Antecipação | Recebimento vendas',amt:162.97,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_b02eaa36',date:'2026-10-29',hora:'16:28',desc:'Pix | Maquininha | JOSE AMAURI PEREIRA SENA',amt:89.55,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSE AMAURI PEREIRA SENA',meio:'PIX'}
 ];
 
 // Estado
@@ -3095,7 +3114,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-10-29';
+  const hoje = '2026-10-30';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -3676,7 +3695,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-10-29';
+const HOJE_SISTEMA = '2026-10-30';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -4322,7 +4341,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-10-29';
+  const hoje = '2026-10-30';
 
   let txData;
   if(cfMes){
@@ -5229,7 +5248,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:3188.35, em:'29/10/2026 22:28'}, XP:{valor:285.11, em:'29/10/2026 22:28'}};
+const SALDO_BANCO = {Stone:{valor:3188.35, em:'30/10/2026 07:36'}, XP:{valor:285.11, em:'30/10/2026 07:36'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
