@@ -2276,6 +2276,9 @@ function regraAuto(r){
 const PARES_ANULADOS = new Set(['st_50b9a840','st_06a0a1d2','st_fd04a895','st_c77d6a80','st_c39dfdfa','st_65212dda']);
 
 // Contas a pagar (previstas) já pagas: id do previsto -> [data do pagamento, id do lançamento do extrato]
+// Dias de atraso até o boleto ir para protesto/cartório, por fornecedor (usado no relatório diário do WhatsApp). Ex.: 'FITOWAY': 5
+const PROTESTO_DIAS = {
+};
 const BAIXAS_PREV = {
   'pvc_canibal_04': ['2026-10-28','st_7443299a'], // CANIBAL 4/11 — Pix 28/10 R$ 2.886,61
   'pv_2dc627e0': ['2026-10-23','st_d2d817f6'], // FITOWAY 3/5 — Pix 23/10 R$ 3.079,87
