@@ -1725,7 +1725,7 @@ const RAW = [
   {id:'pv_46239687',date:'2026-10-20',hora:'--:--',desc:'PROBIÓTICA - nf-e 1056079 - PARCELA 6/10',amt:2008.91,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'Probiótica',meio:'Boleto',previsto:true,comp:'2026-10'},
   {id:'pv_2ac9e86a',date:'2026-10-20',hora:'--:--',desc:'MAX TITANIUM - nf-e 1056069 - PARCELA 6/10',amt:5903.51,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'Max Titanium',meio:'Boleto',previsto:true,comp:'2026-10'},
   {id:'pv_2dc627e0',date:'2026-10-22',hora:'--:--',desc:'FITOWAY - FITWAY - ACORDO - PARCELA 3/5',amt:3079.87,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',previsto:true,comp:'2026-10'},
-  {id:'pv_0168535f',date:'2026-11-02',hora:'--:--',desc:'BODYACTION - NF-e 006.449 - 006449/5 - venc. original 25/10 - PARCELA 1/1',amt:5226.19,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'Bodyaction',meio:'Boleto',previsto:true,obs:'Vencimento original: 25/10/2026 (adiado para 02/11/2026)',comp:'2026-10'},
+  {id:'pv_0168535f',date:'2026-10-30',hora:'--:--',desc:'BODYACTION - NF-e 006.449 - 006449/5 - venc. original 25/10 - PARCELA 1/1',amt:5226.19,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'Bodyaction',meio:'Boleto',previsto:true,obs:'Vencimento original: 25/10/2026 · ÚLTIMO DIA no banco 30/10/2026 (aviso Bodyaction) — antecipado de 02/11 para 30/10',comp:'2026-10'},
   {id:'pv_5478a549',date:'2026-11-02',hora:'--:--',desc:'NUTRATA - ACORDO PARCELADO DOS TÍTULOS VENCIDOS nutrata - VENC. ORIGINAL 27/10/2026 - PARCELA 3/6',amt:5844.83,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'NUTRATA',meio:'Boleto',previsto:true,comp:'2026-10',obs:'Vencimento original: 27/10/2026 (adiado para 02/11/2026)'},
   {id:'pv_36178c6a',date:'2026-11-02',hora:'--:--',desc:'DR PEANUT - nf-e 36077 - VENC. ORIGINAL 27/10/2026 - PARCELA 7/7',amt:1392.76,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'Dr Peanut',meio:'Boleto',previsto:true,comp:'2026-10',obs:'Vencimento original: 27/10/2026 (adiado para 02/11/2026)'},
   {id:'pv_e8300e4f',date:'2026-10-28',hora:'--:--',desc:'VELIK - VELIK - DATA CORRETA: 28/10 - PARCELA 3/3',amt:1297.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'VELIK',meio:'Boleto',previsto:true,comp:'2026-10'},
@@ -2303,6 +2303,7 @@ const PARES_ANULADOS = new Set(['st_50b9a840','st_06a0a1d2','st_fd04a895','st_c7
 // Contas a pagar (previstas) já pagas: id do previsto -> [data do pagamento, id do lançamento do extrato]
 // Dias de atraso até o boleto ir para protesto/cartório, por fornecedor (usado no relatório diário do WhatsApp). Ex.: 'FITOWAY': 5
 const PROTESTO_DIAS = {
+  'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
   'pvc_canibal_04': ['2026-10-28','st_7443299a'], // CANIBAL 4/11 — Pix 28/10 R$ 2.886,61
