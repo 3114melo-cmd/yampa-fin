@@ -48,7 +48,9 @@ setTimeout(() => {
     const totAtras=sum(atras), totSemana=sum(semana), totReceber=sum(receber);
     const saldoTotal = +(saldos.Stone+saldos.XP+saldos.Caixa).toFixed(2);
     const precisaVender = Math.max(0, +(totAtras+totSemana-saldoTotal-totReceber).toFixed(2));
-    return JSON.stringify({hoje:HOJE, semana:{de:SEG, ate:DOM}, saldos, saldoTotal, atrasados:atras, totAtras, aPagar:semana, totSemana, aReceber:receber, totReceber, precisaVender});
+    const diasVenda = Math.max(1, 6 - dow);              // seg=6 … sáb=1 (dias de venda restantes até sábado, contando hoje)
+    const mediaDia = +(precisaVender/diasVenda).toFixed(2);
+    return JSON.stringify({diasVenda, mediaDia, hoje:HOJE, semana:{de:SEG, ate:DOM}, saldos, saldoTotal, atrasados:atras, totAtras, aPagar:semana, totSemana, aReceber:receber, totReceber, precisaVender});
   })('${hojeArg}')`));
 
   const fmt = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -63,7 +65,8 @@ body{font-family:Arial,Helvetica,sans-serif;color:#1f2430;margin:28px;font-size:
 </style></head><body><h1>YampaFin · Previsão de pagamentos</h1><div class="sub">${diaSem(R.hoje)} ${br(R.hoje)} · semana ${br(R.semana.de)} a ${br(R.semana.ate)}</div>
 <div class="cards"><div class="c"><div class="l">Saldo total</div><div class="v">${fmt(R.saldoTotal)}</div><div class="d">Stone ${fmt(R.saldos.Stone)} · XP ${fmt(R.saldos.XP)} · Caixa ${fmt(R.saldos.Caixa)}</div></div>
 <div class="c"><div class="l">Atrasado</div><div class="v red">${fmt(R.totAtras)}</div></div><div class="c"><div class="l">A pagar até domingo</div><div class="v">${fmt(R.totSemana)}</div></div>
-<div class="c"><div class="l">Precisa vender</div><div class="v ${R.precisaVender > 0 ? 'red' : 'grn'}">${fmt(R.precisaVender)}</div><div class="d">atrasado + semana − saldo${R.totReceber ? ' − a receber ' + fmt(R.totReceber) : ''}</div></div></div>
+<div class="c"><div class="l">Precisa vender</div><div class="v ${R.precisaVender > 0 ? 'red' : 'grn'}">${fmt(R.precisaVender)}</div><div class="d">atrasado + semana − saldo${R.totReceber ? ' − a receber ' + fmt(R.totReceber) : ''}</div></div>
+<div class="c"><div class="l">Média por dia</div><div class="v ${R.mediaDia > 0 ? 'red' : 'grn'}">${fmt(R.mediaDia)}</div><div class="d">${R.diasVenda} ${R.diasVenda === 1 ? 'dia' : 'dias'} de venda até sábado</div></div></div>
 <h2>⚠️ Atrasados (${R.atrasados.length})</h2><table><thead><tr><th>Venc.</th><th>Fornecedor</th><th class="n">Atraso</th><th>Pagar até (cartório)</th><th class="n">Valor</th></tr></thead><tbody>${linhasAtr || '<tr><td colspan=5>Nada atrasado.</td></tr>'}</tbody><tfoot><tr><td colspan=4>Total atrasado</td><td class="n">${fmt(R.totAtras)}</td></tr></tfoot></table>
 <h2>📅 A pagar de hoje até domingo (${R.aPagar.length})</h2><table><thead><tr><th>Dia</th><th>Descrição</th><th class="n">Valor</th></tr></thead><tbody>${linhasSem || '<tr><td colspan=3>Nada previsto.</td></tr>'}</tbody><tfoot><tr><td colspan=2>Total da semana</td><td class="n">${fmt(R.totSemana)}</td></tr></tfoot></table>
 ${R.aReceber.length ? '<h2>💰 A receber na semana</h2><table><tbody>' + R.aReceber.map(a => `<tr><td>${br(a.data)}</td><td>${a.desc}</td><td class="n">${fmt(a.valor)}</td></tr>`).join('') + '</tbody></table>' : ''}
@@ -71,6 +74,6 @@ ${R.aReceber.length ? '<h2>💰 A receber na semana</h2><table><tbody>' + R.aRec
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'relatorio.json'), JSON.stringify(R, null, 1));
   fs.writeFileSync(path.join(outDir, 'relatorio.html'), out);
-  console.log(JSON.stringify({ hoje: R.hoje, saldoTotal: R.saldoTotal, totAtras: R.totAtras, nAtras: R.atrasados.length, totSemana: R.totSemana, nSemana: R.aPagar.length, totReceber: R.totReceber, precisaVender: R.precisaVender }));
+  console.log(JSON.stringify({ hoje: R.hoje, saldoTotal: R.saldoTotal, totAtras: R.totAtras, nAtras: R.atrasados.length, totSemana: R.totSemana, nSemana: R.aPagar.length, totReceber: R.totReceber, precisaVender: R.precisaVender, mediaDia: R.mediaDia, diasVenda: R.diasVenda }));
   process.exit(0);
 }, 3000);

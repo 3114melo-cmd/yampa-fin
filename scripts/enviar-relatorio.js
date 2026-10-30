@@ -34,7 +34,7 @@ const dia = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(hoje + '
 
   const nAtr = R.atrasados.length;
   const params = [`${dia} ${br(hoje).slice(0, 5)}`, num(R.saldoTotal), num(R.totAtras),
-    nAtr === 0 ? 'nenhum boleto' : nAtr === 1 ? '1 boleto' : `${nAtr} boletos`, num(R.totSemana), num(R.precisaVender)];
+    nAtr === 0 ? 'nenhum boleto' : nAtr === 1 ? '1 boleto' : `${nAtr} boletos`, num(R.totSemana), `${num(R.precisaVender)} (média R$ ${num(R.mediaDia)}/dia em ${R.diasVenda} ${R.diasVenda === 1 ? 'dia' : 'dias'})`];
   const msg = { messaging_product: 'whatsapp', to: DESTINO, type: 'template', template: { name: 'previsao_pagamentos', language: { code: 'pt_BR' }, components: [
     { type: 'header', parameters: [{ type: 'document', document: { id: up.id, filename: `Pagamentos ${br(hoje).replace(/\//g, '-')}.pdf` } }] },
     { type: 'body', parameters: params.map(t => ({ type: 'text', text: t })) }] } };
