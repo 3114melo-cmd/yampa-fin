@@ -2375,6 +2375,15 @@ function buildTX(){
     if(rc){ p.status='ignorado'; p.baixado=true; p.obs='Baixado: recebido em '+rc.date.split('-').reverse().join('/')+' ('+fmtR(rc.amt)+')'; }
   });
 
+  // TAXAS DE ENTREGA STRONGEST (fechamento semanal seg–sáb, PIX da diferença na segunda):
+  // Pix da Strongest na XP com o mesmo valor (±R$ 0,01), de 1 dia antes até 6 dias depois, dá baixa na previsão
+  TX.filter(t=>t.status==='previsto' && /^pvr_strongtx_/.test(t.id)).forEach(p=>{
+    const d0=new Date(p.date+'T12:00:00'); const ini=new Date(d0); ini.setDate(ini.getDate()-1); const fim=new Date(d0); fim.setDate(fim.getDate()+6);
+    const iso=d=>d.toISOString().substring(0,10);
+    const rc = TX.find(x=>x.type==='CREDIT' && x.conta==='XP' && !x.previsto && x.status==='conciliado' && /STRONGEST/i.test((x.desc||'')+' '+(x.cli||'')) && Math.abs(x.amt-p.amt)<0.01 && x.date>=iso(ini) && x.date<=iso(fim));
+    if(rc){ p.status='ignorado'; p.baixado=true; p.obs='Baixado: recebido em '+rc.date.split('-').reverse().join('/')+' ('+fmtR(rc.amt)+')'; }
+  });
+
   // CAIXA NEGATIVO → ENTRADA EM DINHEIRO automática (vendas em espécie), dia a dia
   (function(){
     const CX='Caixa (Dinheiro)';
