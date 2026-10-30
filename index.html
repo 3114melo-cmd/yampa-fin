@@ -327,7 +327,7 @@ tr:hover td{background:var(--sur2)}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 29/10 · 19:53
+        Stone · 30/10 · 11:51
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -2239,7 +2239,22 @@ const RAW = [
   {id:'st_e8432b28',date:'2026-10-29',hora:'16:49',desc:'Pix | Maquininha | MARCOS DOUGLAS NUNES DA SILVA',amt:161.1,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARCOS DOUGLAS NUNES DA SILVA',meio:'PIX'},
   {id:'st_ee6c38f7',date:'2026-10-29',hora:'16:40',desc:'Transferência | Pix | Jean Jakson Lopes',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Jean Jakson Lopes',meio:'PIX'},
   {id:'st_637d8e24',date:'2026-10-29',hora:'16:39',desc:'Antecipação | Recebimento vendas',amt:162.97,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_b02eaa36',date:'2026-10-29',hora:'16:28',desc:'Pix | Maquininha | JOSE AMAURI PEREIRA SENA',amt:89.55,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSE AMAURI PEREIRA SENA',meio:'PIX'}
+  {id:'st_b02eaa36',date:'2026-10-29',hora:'16:28',desc:'Pix | Maquininha | JOSE AMAURI PEREIRA SENA',amt:89.55,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSE AMAURI PEREIRA SENA',meio:'PIX'},
+  // SYNC 30/10 11:53
+  {id:'st_1f0f2ca2',date:'2026-10-30',hora:'11:51',desc:'Transferência | Pix | FITOWAY LABORATORIO NUTRICIONAL LTDA',amt:62.71,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY LABORATORIO NUTRICIONAL LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Complemento Fitoway acordo PARCELA 2/5 (R$ 62,71 + R$ 3.017,16 = R$ 3.079,87)'},
+  {id:'st_64b1f121',date:'2026-10-30',hora:'11:40',desc:'Pix | Maquininha | Adriano Freitas da Silva',amt:288.21,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Adriano Freitas da Silva',meio:'PIX'},
+  {id:'st_f873c2c0',date:'2026-10-30',hora:'11:26',desc:'Transferência | Pix | Thaisa Justino Diniz Morais',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Thaisa Justino Diniz Morais',meio:'PIX'},
+  {id:'st_a6d26bdb',date:'2026-10-30',hora:'11:24',desc:'Valor referente à liquidação de suas vendas de cartão. | Recebimento de vendas',amt:62.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Cartão'},
+  {id:'st_4853a6eb',date:'2026-10-30',hora:'11:18',desc:'Transferência | Pix | PAGALI INSTITUICAO DE PAGAM...',amt:97.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PAGALI INSTITUICAO DE PAGAMENTO S.A.',meio:'PIX'},
+  {id:'st_b15599bc',date:'2026-10-30',hora:'11:08',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:3017.16,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY (via DH Holding/Nubank)',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Pagamento Fitoway acordo PARCELA 2/5 (R$ 3.017,16 via DH Holding → Nubank Felipe → Fitoway; + R$ 62,71 direto da Stone)'},
+  {id:'st_0bb9cf5e',date:'2026-10-30',hora:'11:00',desc:'Transferência | Pix | 68.986.404 CLAUDIO ROCHA DE LEMOS',amt:679.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'68.986.404 CLAUDIO ROCHA DE LEMOS',meio:'PIX'},
+  {id:'st_541720e8',date:'2026-10-30',hora:'10:43',desc:'Débito | Físico | O BARATAO ZN',amt:53.96,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'O BARATAO ZN',meio:'Cartão'},
+  {id:'st_1d0b8887',date:'2026-10-30',hora:'10:42',desc:'Transferência | Pix | Girlayne Maria da Silva',amt:10.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Girlayne Maria da Silva',meio:'PIX'},
+  {id:'st_83271cf7',date:'2026-10-30',hora:'10:37',desc:'Antecipação | Recebimento vendas',amt:76.32,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c7506fed',date:'2026-10-30',hora:'10:07',desc:'Transferência | TED | BANCO TOPAZIO S.A.',amt:96.4,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'BANCO TOPAZIO S.A.',meio:'TED'},
+  {id:'st_72cade25',date:'2026-10-30',hora:'09:26',desc:'Transferência | Pix | JESSICA RENALI DE LIMA BARBOSA',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JESSICA RENALI DE LIMA BARBOSA',meio:'PIX'},
+  {id:'st_1aa60f16',date:'2026-10-30',hora:'09:01',desc:'Transferência | Pix | Joao Maria Moura De Melo Elias',amt:60.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Joao Maria Moura De Melo Elias',meio:'PIX'},
+  {id:'st_3690f8dd',date:'2026-10-30',hora:'08:57',desc:'Antecipação | Recebimento vendas',amt:62.01,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
 ];
 
 // Estado
@@ -2305,6 +2320,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pv_e3cf8b29': ['2026-10-30','st_b15599bc','R$ 3.017,16 (Stone→DH Holding→Nubank→Fitoway) + R$ 62,71 (st_1f0f2ca2) = R$ 3.079,87'], // FITOWAY 2/5
   'pvc_canibal_04': ['2026-10-28','st_7443299a'], // CANIBAL 4/11 — Pix 28/10 R$ 2.886,61
   'pv_2dc627e0': ['2026-10-23','st_d2d817f6'], // FITOWAY 3/5 — Pix 23/10 R$ 3.079,87
   'pv_21f8fe35': ['2026-10-22','st_5b943ff6','boleto Rainha 22/10 R$ 5.315,08 = R$ 5.226,19 + R$ 88,89 juros'], // BODYACTION 006449/4
@@ -5248,7 +5264,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:3188.35, em:'30/10/2026 07:36'}, XP:{valor:285.11, em:'30/10/2026 07:36'}};
+const SALDO_BANCO = {Stone:{valor:1517.59, em:'30/10/2026 11:53'}, XP:{valor:285.11, em:'30/10/2026 11:53'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
