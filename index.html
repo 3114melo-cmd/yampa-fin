@@ -4858,7 +4858,8 @@ function renderCF(){
     a523:  Math.abs(txMes(m,['5.2.3'],'DEBIT',false)),
     a5211: Math.abs(txMes(m,['5.2.11'],'DEBIT',false)),
     a5217: Math.abs(txMes(m,['5.2.17'],'DEBIT',false)),
-    a5299: Math.abs(txMes(m,['5.2.99','5.2.19'],'DEBIT',false)),
+    a5299: Math.abs(txMes(m,['5.2.99'],'DEBIT',false)),
+    a5219: Math.abs(txMes(m,['5.2.19'],'DEBIT',false)),
     pes:   Math.abs(txMes(m,['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],'DEBIT',false)),
     p531:  Math.abs(txMes(m,['5.3.1'],'DEBIT',false)),
     p532:  Math.abs(txMes(m,['5.3.2'],'DEBIT',false)),
@@ -4904,7 +4905,8 @@ function renderCF(){
     a523:  Math.abs(txMes(m,['5.2.3'],'DEBIT',true)),
     a5211: Math.abs(txMes(m,['5.2.11'],'DEBIT',true)),
     a5217: Math.abs(txMes(m,['5.2.17'],'DEBIT',true)),
-    a5299: Math.abs(txMes(m,['5.2.99','5.2.19'],'DEBIT',true)),
+    a5299: Math.abs(txMes(m,['5.2.99'],'DEBIT',true)),
+    a5219: Math.abs(txMes(m,['5.2.19'],'DEBIT',true)),
     pes:   Math.abs(txMes(m,['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],'DEBIT',true)),
     p531:  Math.abs(txMes(m,['5.3.1'],'DEBIT',true)),
     p532:  Math.abs(txMes(m,['5.3.2'],'DEBIT',true)),
@@ -4971,7 +4973,8 @@ function renderCF(){
     {label:'  5.2.3 — Energia elétrica',    key:'a523',  tipo:'-', nivel:3, sub:'5.2.3'},
     {label:'  5.2.11 — Contador',           key:'a5211', tipo:'-', nivel:3, sub:'5.2.11'},
     {label:'  5.2.17 — CAERN',              key:'a5217', tipo:'-', nivel:3, sub:'5.2.17'},
-    {label:'  5.2.99 — Outras desp. adm.',  key:'a5299', tipo:'-', nivel:3, sub:'5.2.99'},
+    {label:'  5.2.99 — Desp. adm. fixas',   key:'a5299', tipo:'-', nivel:3, sub:'5.2.99'},
+    {label:'  5.2.19 — Outras desp. adm. eventuais', key:'a5219', tipo:'-', nivel:3, sub:'5.2.19'},
     {label:'5.3 — Desp. com Pessoal',       key:'pes',   tipo:'-', nivel:2},
     {label:'  5.3.1 — Salário',             key:'p531',  tipo:'-', nivel:3, sub:'5.3.1'},
     {label:'  5.3.2 — Pró-labore',          key:'p532',  tipo:'-', nivel:3, sub:'5.3.2'},
@@ -5042,7 +5045,7 @@ function renderCF(){
     moto:['4.6.1','4.6.2','4.6.3','4.6.4'], m461:['4.6.1'], m462:['4.6.2'], m463:['4.6.3'], m464:['4.6.4'],
     fin:['5.1.1','5.1.99'],
     adm:['5.2.1','5.2.2','5.2.3','5.2.11','5.2.17','5.2.19','5.2.99'],
-    a521:['5.2.1'], a523:['5.2.3'], a5211:['5.2.11'], a5217:['5.2.17'], a5299:['5.2.99','5.2.19'],
+    a521:['5.2.1'], a523:['5.2.3'], a5211:['5.2.11'], a5217:['5.2.17'], a5299:['5.2.99'], a5219:['5.2.19'],
     pes:['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],
     p531:['5.3.1'], p532:['5.3.2'], p535:['5.3.5'], p536:['5.3.6'], p537:['5.3.7'], p5312:['5.3.12'], p5313:['5.3.13'],
     veic:['5.5.3','5.5.4','5.5.5','5.5.99'], traf:['5.8.1','5.8.2'],
@@ -5142,7 +5145,7 @@ function renderCF(){
     if(l.nivel===3){
       // N3 só aparece em modo N2 expandido
       const cvKeys=['t411','t414','t499','f421','f424','v441','v442','v443','v444','v446','m461','m462','m463','m464'];
-      const dfKeys=['a521','a523','a5211','a5217','a5299','p531','p532','p535','p536','p537','p5312','p5313','n7213'];
+      const dfKeys=['a521','a523','a5211','a5217','a5299','a5219','p531','p532','p535','p536','p537','p5312','p5313','n7213'];
       const noKeys=['n7213'];
       if(cvKeys.includes(l.key) && (!cfExp.c || cfExp.lvl===1)) return;
       if(dfKeys.includes(l.key) && (!cfExp.d || cfExp.lvl===1)) return;
