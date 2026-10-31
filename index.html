@@ -2407,7 +2407,11 @@ const RAW = [
   {id:'pvs_nathan_adi_20270415',date:'2027-04-15',hora:'--:--',desc:'Adiantamento NATHAN - ref. abr/27 (dia 15)',amt:810.5,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Nathan',meio:'PIX',previsto:true,comp:'2027-04',obs:'Operação: adiantamento fixo de R$ 810,50 no dia 15 (salário R$ 1.938,72)'},
   {id:'pvcom_soares_202610',date:'2026-11-15',hora:'--:--',desc:'Comissão SOARES - vendas out/26 (1%)',amt:555.07,type:'DEBIT',conta:'Stone',cat:'4.4.2',cli:'Soares',meio:'PIX',previsto:true,comp:'2026-10',obs:'1% sobre R$ 55.507,31 vendidos no Bling em out/2026 (pedidos atendidos)'},
   {id:'pvcom_renato_202610',date:'2026-11-15',hora:'--:--',desc:'Comissão RENATO - vendas out/26 (1%)',amt:513.02,type:'DEBIT',conta:'Stone',cat:'4.4.2',cli:'Renato',meio:'PIX',previsto:true,comp:'2026-10',obs:'1% sobre R$ 51.302,02 vendidos no Bling em out/2026 (pedidos atendidos)'},
-  {id:'pvcom_soldado_202610',date:'2026-11-15',hora:'--:--',desc:'Comissão SOLDADO - vendas out/26 (1%)',amt:560.39,type:'DEBIT',conta:'Stone',cat:'4.4.2',cli:'Soldado',meio:'PIX',previsto:true,comp:'2026-10',obs:'1% sobre R$ 56.039,48 vendidos no Bling em out/2026 (pedidos atendidos)'}
+  {id:'pvcom_soldado_202610',date:'2026-11-15',hora:'--:--',desc:'Comissão SOLDADO - vendas out/26 (1%)',amt:560.39,type:'DEBIT',conta:'Stone',cat:'4.4.2',cli:'Soldado',meio:'PIX',previsto:true,comp:'2026-10',obs:'1% sobre R$ 56.039,48 vendidos no Bling em out/2026 (pedidos atendidos)'},
+  {id:'txm_pix_202610',date:'2026-10-31',hora:'23:58',desc:'Taxa de Pix (maquininha) - out/26',amt:62.34,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'STONE',meio:'Ajuste',status_fixo:'conciliado',comp:'2026-10',obs:'Taxas Stone out/26: lançadas no último dia do mês (saída + entrada de mesmo valor) — o extrato traz as vendas líquidas'},
+  {id:'txm_pix_202610_e',date:'2026-10-31',hora:'23:58',desc:'Receita bruta - ajuste taxa de pix (maquininha) - out/26',amt:62.34,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Ajuste',status_fixo:'conciliado',comp:'2026-10',obs:'Taxas Stone out/26: lançadas no último dia do mês (saída + entrada de mesmo valor) — o extrato traz as vendas líquidas'},
+  {id:'txm_boleto_202610',date:'2026-10-31',hora:'23:58',desc:'Taxa de boleto (recebimentos) - out/26',amt:6.0,type:'DEBIT',conta:'Stone',cat:'4.4.5',cli:'STONE',meio:'Ajuste',status_fixo:'conciliado',comp:'2026-10',obs:'Taxas Stone out/26: lançadas no último dia do mês (saída + entrada de mesmo valor) — o extrato traz as vendas líquidas'},
+  {id:'txm_boleto_202610_e',date:'2026-10-31',hora:'23:58',desc:'Receita bruta - ajuste taxa de boleto (recebimentos) - out/26',amt:6.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Ajuste',status_fixo:'conciliado',comp:'2026-10',obs:'Taxas Stone out/26: lançadas no último dia do mês (saída + entrada de mesmo valor) — o extrato traz as vendas líquidas'}
 ];
 
 // Estado
@@ -4849,6 +4853,7 @@ function renderCF(){
     v442:  Math.abs(txMes(m,['4.4.2'],'DEBIT',false)),
     v443:  Math.abs(txMes(m,['4.4.3'],'DEBIT',false)),
     v444:  Math.abs(txMes(m,['4.4.4'],'DEBIT',false)),
+    v445:  Math.abs(txMes(m,['4.4.5'],'DEBIT',false)),
     v446:  Math.abs(txMes(m,['4.4.6'],'DEBIT',false)),
     moto:  Math.abs(txMes(m,['4.6.1','4.6.2','4.6.3','4.6.4'],'DEBIT',false)),
     m461:  Math.abs(txMes(m,['4.6.1'],'DEBIT',false)),
@@ -4896,6 +4901,7 @@ function renderCF(){
     v442:  Math.abs(txMes(m,['4.4.2'],'DEBIT',true)),
     v443:  Math.abs(txMes(m,['4.4.3'],'DEBIT',true)),
     v444:  Math.abs(txMes(m,['4.4.4'],'DEBIT',true)),
+    v445:  Math.abs(txMes(m,['4.4.5'],'DEBIT',true)),
     v446:  Math.abs(txMes(m,['4.4.6'],'DEBIT',true)),
     moto:  Math.abs(txMes(m,['4.6.1','4.6.2','4.6.3','4.6.4'],'DEBIT',true)),
     m461:  Math.abs(txMes(m,['4.6.1'],'DEBIT',true)),
@@ -4960,6 +4966,7 @@ function renderCF(){
     {label:'  4.4.2 — Comissão Vendedor',   key:'v442',  tipo:'-', nivel:3, sub:'4.4.2'},
     {label:'  4.4.3 — Taxa de Pix',         key:'v443',  tipo:'-', nivel:3, sub:'4.4.3'},
     {label:'  4.4.4 — Frete',               key:'v444',  tipo:'-', nivel:3, sub:'4.4.4'},
+    {label:'  4.4.5 — Taxa de boleto',      key:'v445',  tipo:'-', nivel:3, sub:'4.4.5'},
     {label:'  4.4.6 — Motoboy Terceirizado',key:'v446',  tipo:'-', nivel:3, sub:'4.4.6'},
     {label:'4.6 — Custo de Veículos',        key:'moto',  tipo:'-', nivel:2},
     {label:'  4.6.1 — Gasolina',            key:'m461',  tipo:'-', nivel:3, sub:'4.6.1'},
@@ -5044,7 +5051,7 @@ function renderCF(){
     trib:['4.1.1','4.1.4','4.1.5','4.1.6','4.1.99'], t411:['4.1.1'], t414:['4.1.4'], t499:['4.1.99'],
     forn:['4.2.1','4.2.4'], f421:['4.2.1'], f424:['4.2.4'], emb:['4.3.1'],
     vend:['4.4.1','4.4.2','4.4.3','4.4.4','4.4.5','4.4.6','4.4.7'],
-    v441:['4.4.1'], v442:['4.4.2'], v443:['4.4.3'], v444:['4.4.4'], v446:['4.4.6'],
+    v441:['4.4.1'], v442:['4.4.2'], v443:['4.4.3'], v444:['4.4.4'], v445:['4.4.5'], v446:['4.4.6'],
     moto:['4.6.1','4.6.2','4.6.3','4.6.4'], m461:['4.6.1'], m462:['4.6.2'], m463:['4.6.3'], m464:['4.6.4'],
     fin:['5.1.1','5.1.99'],
     adm:['5.2.1','5.2.2','5.2.3','5.2.11','5.2.17','5.2.19','5.2.99'],
@@ -5147,7 +5154,7 @@ function renderCF(){
     }
     if(l.nivel===3){
       // N3 só aparece em modo N2 expandido
-      const cvKeys=['t411','t414','t499','f421','f424','v441','v442','v443','v444','v446','m461','m462','m463','m464'];
+      const cvKeys=['t411','t414','t499','f421','f424','v441','v442','v443','v444','v445','v446','m461','m462','m463','m464'];
       const dfKeys=['a521','a523','a5211','a5217','a5299','a5219','p531','p532','p535','p536','p537','p5312','p5313','n7213'];
       const noKeys=['n7213'];
       if(cvKeys.includes(l.key) && (!cfExp.c || cfExp.lvl===1)) return;
