@@ -234,6 +234,11 @@ tr:hover td{background:var(--sur2)}
 .cp-item:hover{background:var(--acl)}
 .cp-code{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;min-width:44px;text-align:center;flex-shrink:0}
 .cp-grupo{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;padding:8px 10px 3px}
+/* rolagem no celular/tablet: altura real da tela (100dvh) e rolagem por toque */
+body,.main,.sb{height:100dvh}
+.ct{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-x pan-y}
+.ct [style*="overflow-x:auto"]{touch-action:pan-x pan-y;overscroll-behavior-x:contain}
+.ct{padding-bottom:60px}
 </style>
 </head>
 <body>
