@@ -5115,7 +5115,7 @@ function renderCF(){
   mesesExib.forEach(m=>{
     const bg = m.isFut ? '#f0f7ff' : 'var(--sur2)';
     const c = m.isFut ? '#0369a1' : 'var(--tx2)';
-    thHead += `<th colspan="3" style="text-align:center;padding:6px 8px;background:${bg};border-bottom:1px solid var(--bor);border-left:2px solid var(--bor2);font-size:12px;font-weight:700;color:${c}">${m.lbl}/26</th>`;
+    thHead += `<th colspan="3" style="text-align:center;padding:6px 8px;background:${bg};border-bottom:1px solid var(--bor);border-left:2px solid var(--bor2);font-size:12px;font-weight:700;color:${c}">${m.iso==='2026-10'?'<div style="display:inline-block;margin-bottom:3px;padding:2px 7px;border-radius:10px;background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;letter-spacing:.2px" title="O sistema começou em 01/10/2026 e outubro ainda tem lançamentos pendentes de conciliação. Os dados valem a partir de novembro/2026.">⚠️ dados incompletos</div><br>':''}${m.lbl}/26</th>`;
   });
   // Total
   thHead += `<th colspan="2" style="text-align:center;padding:6px 8px;background:var(--sur2);border-bottom:1px solid var(--bor);border-left:2px solid var(--bor2);font-size:12px;font-weight:700;color:var(--txt)">Total</th>`;
@@ -5328,7 +5328,7 @@ function renderDRE(){
 
   const tdS = 'padding:7px 10px;text-align:right;border-bottom:1px solid var(--bor);font-variant-numeric:tabular-nums;white-space:nowrap';
   let head = '<th style="text-align:left;padding:9px 12px;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;color:var(--tx3);text-transform:uppercase;position:sticky;left:0;z-index:2;min-width:290px">Conta</th>';
-  cols.forEach(m=>{ head += '<th style="padding:9px 10px;text-align:right;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;color:var(--tx3);text-transform:uppercase">'+m.lbl+'/'+String(ano).slice(2)+'</th>'; });
+  cols.forEach(m=>{ head += '<th style="padding:9px 10px;text-align:right;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;color:var(--tx3);text-transform:uppercase">'+(m.comp==='2026-10'?'<div style="display:inline-block;margin-bottom:3px;padding:2px 7px;border-radius:10px;background:#fef3c7;color:#92400e;font-size:9px;font-weight:700;text-transform:none" title="O sistema começou em 01/10/2026 e outubro ainda tem lançamentos pendentes de conciliação. Os dados valem a partir de novembro/2026.">⚠️ dados incompletos</div><br>':'')+m.lbl+'/'+String(ano).slice(2)+'</th>'; });
   head += '<th style="padding:9px 10px;text-align:right;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;color:var(--txt);text-transform:uppercase;border-left:2px solid var(--bor2)">Total</th><th style="padding:9px 10px;text-align:right;background:var(--sur2);border-bottom:1px solid var(--bor);font-size:11px;color:var(--tx3);text-transform:uppercase">AV%</th>';
 
   let body = '';
