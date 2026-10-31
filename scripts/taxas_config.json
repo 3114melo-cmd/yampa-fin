@@ -1,1 +1,6 @@
-{"_comentario":"Taxas Stone de cartão para estimar a taxa a partir do valor líquido recebido (bruto = líquido / (1 - taxa)). Preencher com as taxas do contrato Stone.","debito":null,"credito_avista":null,"antecipacao":null}
+{
+  "_comentario": "Taxas Stone (plano recebimento no mesmo dia, print de 31/10/2026). Estimativa: bruto = líquido / (1 - taxa); taxa = bruto - líquido. Linhas 'Antecipação | ... Recebimento vendas' usam 'antecipacao' (crédito à vista Mastercard/Visa); linhas 'Valor referente à liquidação de suas vendas de cartão' usam 'liquidacao' (débito Mastercard/Visa). Elo é mais caro (débito 2,81%, crédito 4,95%) e não entra na estimativa.",
+  "antecipacao": 0.0339,
+  "liquidacao": 0.0092,
+  "tabela": {"mastercard": {"debito": 0.0092, "credito_avista": 0.0339, "credito_2x": 0.046, "credito_3x": 0.0539}, "elo": {"debito": 0.0281, "credito_avista": 0.0495, "credito_2x": 0.0629, "credito_3x": 0.0708}}
+}
