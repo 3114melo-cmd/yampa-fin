@@ -15,6 +15,23 @@ const out = fs.mkdtempSync(path.join(os.tmpdir(), 'rel-'));
 
 execFileSync('node', [path.join(__dirname, 'relatorio.js'), hoje, out], { stdio: 'inherit', env: process.env });
 const R = JSON.parse(fs.readFileSync(path.join(out, 'relatorio.json'), 'utf8'));
+
+// Diárias dos entregadores (Cooperativa e Juninho) do dia anterior — scripts/entregadores.js
+execFileSync('node', [path.join(__dirname, 'entregadores.js'), hoje, path.join(out, 'entregadores.json')], { stdio: ['ignore', 'ignore', 'inherit'], env: process.env });
+const E = JSON.parse(fs.readFileSync(path.join(out, 'entregadores.json'), 'utf8'));
+if (E.pendentes.length && !process.env.ENVIAR_SEM_PENDENTES) {
+  // Felipe pediu: bairro fora da tabela → NÃO enviar; perguntar o valor antes
+  console.log(JSON.stringify({ enviado: false, motivo: 'entregas sem taxa definida', diaEntregadores: E.dia, pendentes: E.pendentes, parcial: { cooperativa: E.cooperativa.total, juninho: E.juninho.total } }));
+  process.exit(5);
+}
+{
+  const f = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const dE = s => ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(s + 'T12:00:00').getDay()] + ' ' + s.split('-').reverse().join('/');
+  const linha = r => `<tr><td>${r.nome}</td><td class="n">${r.idas.length}</td><td class="n">${f(r.taxas)}</td><td class="n">${r.encosta ? f(r.encosta) : '—'}</td><td class="n"><b>${f(r.total)}</b></td></tr>`;
+  const sec = `<h2>🛵 Entregadores — ${dE(E.dia)}</h2><table><thead><tr><th>Entregador</th><th class="n">Idas</th><th class="n">Taxas</th><th class="n">Encosta</th><th class="n">Total</th></tr></thead><tbody>${linha(E.cooperativa)}${linha(E.juninho)}</tbody><tfoot><tr><td colspan=4>Total a pagar</td><td class="n">${f(E.total)}</td></tr></tfoot></table>`;
+  const hp = path.join(out, 'relatorio.html');
+  fs.writeFileSync(hp, fs.readFileSync(hp, 'utf8').replace('<div class="sub" style="margin-top:20px">', sec + '<div class="sub" style="margin-top:20px">'));
+}
 const num = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const br = s => s.split('-').reverse().join('/');
 const dia = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(hoje + 'T12:00:00').getDay()];
@@ -35,10 +52,15 @@ const dia = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(hoje + '
   const nAtr = R.atrasados.length;
   const params = [`${dia} ${br(hoje).slice(0, 5)}`, num(R.saldoTotal), num(R.totAtras),
     nAtr === 0 ? 'nenhum boleto' : nAtr === 1 ? '1 boleto' : `${nAtr} boletos`, num(R.totSemana), `${num(R.precisaVender)} (média R$ ${num(R.mediaDia)}/dia em ${R.diasVenda} ${R.diasVenda === 1 ? 'dia' : 'dias'})`];
-  const msg = { messaging_product: 'whatsapp', to: DESTINO, type: 'template', template: { name: 'previsao_pagamentos', language: { code: 'pt_BR' }, components: [
-    { type: 'header', parameters: [{ type: 'document', document: { id: up.id, filename: `Pagamentos ${br(hoje).replace(/\//g, '-')}.pdf` } }] },
-    { type: 'body', parameters: params.map(t => ({ type: 'text', text: t })) }] } };
-  const r = curl(['-X', 'POST', `https://graph.facebook.com/v21.0/${PHONE_ID}/messages`, '-H', 'Content-Type: application/json', '--data-binary', JSON.stringify(msg)]);
-  console.log(JSON.stringify({ enviado: !!(r.messages && r.messages[0]), resposta: r, pdf, resumo: { saldo: R.saldoTotal, atrasado: R.totAtras, semana: R.totSemana, vender: R.precisaVender } }));
+  const diaE = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(E.dia + 'T12:00:00').getDay()] + ' ' + br(E.dia).slice(0, 5);
+  const enviar = (nome, ps) => curl(['-X', 'POST', `https://graph.facebook.com/v21.0/${PHONE_ID}/messages`, '-H', 'Content-Type: application/json', '--data-binary', JSON.stringify(
+    { messaging_product: 'whatsapp', to: DESTINO, type: 'template', template: { name: nome, language: { code: 'pt_BR' }, components: [
+      { type: 'header', parameters: [{ type: 'document', document: { id: up.id, filename: `Pagamentos ${br(hoje).replace(/\//g, '-')}.pdf` } }] },
+      { type: 'body', parameters: ps.map(t => ({ type: 'text', text: t })) }] } })]);
+  // modelo com os entregadores; enquanto a Meta não aprovar, usa o antigo (os totais ficam no PDF)
+  let modelo = 'previsao_pagamentos_entregas';
+  let r = enviar(modelo, [...params, diaE, num(E.cooperativa.total), num(E.juninho.total)]);
+  if (!r.messages) { modelo = 'previsao_pagamentos'; r = enviar(modelo, params); }
+  console.log(JSON.stringify({ enviado: !!(r.messages && r.messages[0]), resposta: r, pdf, modelo, entregadores: { dia: E.dia, cooperativa: E.cooperativa.total, juninho: E.juninho.total }, resumo: { saldo: R.saldoTotal, atrasado: R.totAtras, semana: R.totSemana, vender: R.precisaVender } }));
   process.exit(r.messages ? 0 : 4);
 })();
