@@ -6,7 +6,7 @@
 //  - Juninho, bike (motoId '2'): R$ 5,00 fixo por entrega.
 //  - Produção (nome com PRODUÇÃO/PRODUCAO/PRDUCAO): R$ 5,00 por ida, para os dois.
 //  - Só pedidos status 'entregue', fora das rotas loja/retirada. Pedido que diz "FAZ A ENTREGA" (outra pessoa entregou) não conta.
-//  - Mesmo entregador + mesmo endereço + saída com até 5 min de diferença = mesma viagem (conta 1).
+//  - Cada pedido entregue conta como uma entrega, mesmo com o mesmo endereço na mesma saída (Felipe, 31/10/2026).
 //  - Bairro fora da tabela ou não identificado → vai em "pendentes" (não inventar valor: perguntar ao Felipe).
 const fs = require('fs');
 const { execFileSync } = require('child_process');
@@ -76,14 +76,9 @@ function calcular(pedidos, dia, extra = {}) {  // extra = {idPedido: taxa} para 
   const lista = Object.values(pedidos || {}).filter(p => p && p.status === 'entregue' && ENTREGADORES[p.motoId] &&
     p.tsEntregue >= inicio && p.tsEntregue < fim && !['loja', 'retirada'].includes(String(p.rota || '').toLowerCase()))
     .sort((a, b) => (a.tsSaiu || a.tsEntregue) - (b.tsSaiu || b.tsEntregue));
-  const viagens = [];
   for (const p of lista) {
     const txt = norm(p.nome + ' ' + p.end + ' ' + (p.obs || ''));
     if (/faz a entrega/.test(norm(p.end))) { fora.push({ entregador: ENTREGADORES[p.motoId], cliente: p.nome, end: p.end, motivo: 'outra pessoa fez a entrega' }); continue; }
-    const t = p.tsSaiu || p.tsEntregue;
-    const dup = viagens.find(v => v.motoId === p.motoId && v.endN === norm(p.end) && Math.abs(v.t - t) <= 5 * 60e3);
-    if (dup) { fora.push({ entregador: ENTREGADORES[p.motoId], cliente: p.nome, end: p.end, motivo: 'mesma viagem de outro pedido' }); continue; }
-    viagens.push({ motoId: p.motoId, endN: norm(p.end), t });
     const r = res[p.motoId];
     const producao = /pr[o]?ducao/.test(norm(p.nome));
     let taxa, bairro;
