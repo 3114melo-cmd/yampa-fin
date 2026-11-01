@@ -332,7 +332,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 30/10 · 19:39
+        Stone · 31/10 · 13:27
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -353,7 +353,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-30"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-10-31"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -2411,7 +2411,30 @@ const RAW = [
   {id:'txm_pix_202610',date:'2026-10-31',hora:'23:58',desc:'Taxa de Pix (maquininha) - out/26',amt:177.25,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'STONE',meio:'Ajuste',status_fixo:'conciliado',comp:'2026-10',obs:'Taxas Stone out/26: lançadas no último dia do mês (saída + entrada de mesmo valor) — o extrato traz as vendas líquidas'},
   {id:'txm_boleto_202610',date:'2026-10-31',hora:'23:58',desc:'Taxa de boleto (recebimentos) - out/26',amt:6.0,type:'DEBIT',conta:'Stone',cat:'4.4.5',cli:'STONE',meio:'Ajuste',status_fixo:'conciliado',comp:'2026-10',obs:'Taxas Stone out/26: lançadas no último dia do mês (saída + entrada de mesmo valor) — o extrato traz as vendas líquidas'},
   {id:'txm_cartao_202610',date:'2026-10-31',hora:'23:58',desc:'Taxa de cartão crédito/débito + antecipação - out/26',amt:1887.99,type:'DEBIT',conta:'Stone',cat:'4.4.1',cli:'STONE',meio:'Ajuste',status_fixo:'conciliado',comp:'2026-10',obs:'Taxas Stone out/26: lançadas no último dia do mês (saída + entrada de mesmo valor) — o extrato traz as vendas líquidas'},
-  {id:'txm_ajuste_202610_e',date:'2026-10-31',hora:'23:59',desc:'Receita bruta - ajuste das taxas Stone - out/26',amt:2071.24,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Ajuste',status_fixo:'conciliado',comp:'2026-10',obs:'Entrada única que compensa as saídas de taxas (pix R$ 177,25, boleto R$ 6,00, cartao R$ 1.887,99) — as vendas entram líquidas no extrato; com ela o saldo bate com o banco'}
+  {id:'txm_ajuste_202610_e',date:'2026-10-31',hora:'23:59',desc:'Receita bruta - ajuste das taxas Stone - out/26',amt:2071.24,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Ajuste',status_fixo:'conciliado',comp:'2026-10',obs:'Entrada única que compensa as saídas de taxas (pix R$ 177,25, boleto R$ 6,00, cartao R$ 1.887,99) — as vendas entram líquidas no extrato; com ela o saldo bate com o banco'},
+  // SYNC 31/10 22:25
+  {id:'st_92213a65',date:'2026-10-31',hora:'13:27',desc:'Antecipação | Recebimento vendas',amt:90.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_257d9f18',date:'2026-10-31',hora:'13:17',desc:'Transferência | Pix | Marcilene da Silva Nascimento',amt:149.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Marcilene da Silva Nascimento',meio:'PIX'},
+  {id:'st_c3a9cf85',date:'2026-10-31',hora:'13:09',desc:'Antecipação | Recebimento vendas',amt:178.34,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_48f13c19',date:'2026-10-31',hora:'12:49',desc:'Antecipação | Recebimento vendas',amt:57.03,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_2be182e0',date:'2026-10-31',hora:'11:57',desc:'Transferência | Pix | JACKSON BEZERRA DO VALE',amt:170.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'JACKSON BEZERRA DO VALE',meio:'PIX'},
+  {id:'st_c3c145ed',date:'2026-10-31',hora:'11:51',desc:'Transferência | Pix | JAINE NEVES DA SILVA DE MEDEIROS',amt:95.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JAINE NEVES DA SILVA DE MEDEIROS',meio:'PIX'},
+  {id:'st_275656cc',date:'2026-10-31',hora:'11:42',desc:'Pix | Maquininha | PEDRO LUCAS SOUZA DA CUNHA',amt:26.87,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PEDRO LUCAS SOUZA DA CUNHA',meio:'PIX'},
+  {id:'st_bafffeee',date:'2026-10-31',hora:'11:33',desc:'Valor referente à liquidação de suas vendas de cartão. | Recebimento de vendas',amt:57.14,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Cartão'},
+  {id:'st_39cf4051',date:'2026-10-31',hora:'11:25',desc:'Pix | Maquininha | JOSENILSON DA SILVA MENDES',amt:158.91,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Josenilson Da Silva Mendes',meio:'PIX'},
+  {id:'st_ee98ecc3',date:'2026-10-31',hora:'11:18',desc:'Transferência | Pix | vanessa maria lopes do nascimento',amt:59.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Vanessa Maria Lopes Do Nascimento',meio:'PIX'},
+  {id:'st_2561e24d',date:'2026-10-31',hora:'11:04',desc:'Antecipação | Recebimento vendas',amt:89.88,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c7c14d7f',date:'2026-10-31',hora:'10:47',desc:'Pix | Maquininha | IRANILDO DA SILVA ALVES',amt:59.61,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'IRANILDO DA SILVA ALVES',meio:'PIX'},
+  {id:'st_c1035172',date:'2026-10-31',hora:'10:37',desc:'Antecipação | Recebimento vendas',amt:70.96,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_3b18736d',date:'2026-10-31',hora:'10:34',desc:'Transferência | Pix | TAISA RAIANA DA SILVA MATIAS',amt:150.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'TAISA RAIANA DA SILVA MATIAS',meio:'PIX'},
+  {id:'st_c06823b6',date:'2026-10-31',hora:'10:05',desc:'Transferência | Pix | Gabriela Vieira Felipe',amt:150.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Gabriela Vieira Felipe',meio:'PIX'},
+  {id:'st_4da3992d',date:'2026-10-31',hora:'09:21',desc:'Pix | Maquininha | ANGELA RIANNY DA SILVA SANTOS',amt:159.11,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ANGELA RIANNY DA SILVA SANTOS',meio:'PIX'},
+  {id:'st_f0fb95dd',date:'2026-10-31',hora:'09:03',desc:'Transferência | Pix | VELIK INDUSTRIA E COMERCIO LTDA',amt:1294.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'VELIK INDUSTRIA E COMERCIO LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Velik PARCELA 3/3 (previsto R$ 1.297,00, pago R$ 1.294,00)'},
+  {id:'st_d52f189c',date:'2026-10-31',hora:'08:36',desc:'Pix | Maquininha | SILVANA KELLY CRUZ PAIXAO',amt:64.68,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'SILVANA KELLY CRUZ PAIXAO',meio:'PIX'},
+  {id:'xp_ad798fc7',date:'2026-10-31',hora:'09:10',desc:'Pix recebido de Anne Natalia Almeida de Oliveira',amt:10.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Anne Natalia Almeida De Oliveira',meio:'PIX'},
+  {id:'xp_dd06c939',date:'2026-10-31',hora:'10:57',desc:'Pix enviado para Marília Nayana Nascimento Dias',amt:20.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'Marília Nayana Nascimento Dias',meio:'PIX'},
+  {id:'xp_2fcc265d',date:'2026-10-31',hora:'11:04',desc:'Pix enviado para Marília Nayana Nascimento Dias',amt:10.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'Marília Nayana Nascimento Dias',meio:'PIX'},
+  {id:'xp_e8587d4e',date:'2026-10-31',hora:'11:22',desc:'Pix recebido de Aparecida Benedita da Silva',amt:6.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Aparecida Benedita da Silva',meio:'PIX'}
 ];
 
 // Estado
@@ -2478,6 +2501,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pv_e8300e4f': ['2026-10-31','st_f0fb95dd','Pix Velik 31/10 R$ 1.294,00 (previsto R$ 1.297,00)'], // VELIK 3/3
   'pv_0168535f': ['2026-10-30','st_502e5c37','boleto Rainha 30/10 R$ 5.290,68 = R$ 5.226,19 + R$ 64,49 juros'], // BODYACTION 006449/5
   'pv_e3cf8b29': ['2026-10-30','st_b15599bc','R$ 3.017,16 (Stone→DH Holding→Nubank→Fitoway) + R$ 62,71 (st_1f0f2ca2) = R$ 3.079,87'], // FITOWAY 2/5
   'pvc_canibal_04': ['2026-10-28','st_7443299a'], // CANIBAL 4/11 — Pix 28/10 R$ 2.886,61
@@ -3289,7 +3313,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-10-30';
+  const hoje = '2026-10-31';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -3870,7 +3894,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-10-30';
+const HOJE_SISTEMA = '2026-10-31';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -4516,7 +4540,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-10-30';
+  const hoje = '2026-10-31';
 
   let txData;
   if(cfMes){
@@ -5426,7 +5450,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1292.14, em:'30/10/2026 20:09'}, XP:{valor:111.34, em:'30/10/2026 20:09'}};
+const SALDO_BANCO = {Stone:{valor:1714.54, em:'31/10/2026 22:25 (extrato parcial)'}, XP:{valor:97.34, em:'31/10/2026 22:25'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
