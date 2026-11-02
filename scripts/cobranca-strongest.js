@@ -2,7 +2,7 @@
 // Envia uma mensagem para cada recebível da Strongest VENCIDO e ainda não recebido:
 //   - pvr_strongtx_*  taxas de entrega da semana (vencem na segunda)
 //   - pvr_strong_*    mensalidade R$ 600 (vence dia 10)
-// Uso: WA_TOKEN=... [XP_JSON=arquivo.json] node scripts/cobranca-strongest.js [AAAA-MM-DD] [destino] [--dry]
+// Uso: WA_TOKEN=... [XP_JSON=arquivo.json] node scripts/cobranca-strongest.js [AAAA-MM-DD] [destino] [--dry] [--forcar]  (--forcar envia mesmo em feriado)
 //   XP_JSON (opcional): transações recentes da XP (formato Pluggy: date, amount, description, type) para conferir
 //   pagamentos que ainda não foram importados no index.html. O token NUNCA fica no repositório.
 const fs = require('fs');
@@ -20,6 +20,22 @@ const DESTINO = pos[1] || '5584986327208';
 const PHONE_ID = '1413683815156427';
 const TOKEN = process.env.WA_TOKEN;
 if (!TOKEN && !DRY) { console.error('WA_TOKEN não definido'); process.exit(2); }
+
+// FERIADOS (nacionais + RN + Natal): nesses dias não envia cobrança. Acrescente aqui quando precisar.
+const FERIADOS = {
+  '2026-01-01':'Confraternização Universal','2026-01-06':'Santos Reis (Natal)','2026-04-03':'Sexta-feira Santa','2026-04-21':'Tiradentes',
+  '2026-05-01':'Dia do Trabalho','2026-06-04':'Corpus Christi','2026-09-07':'Independência','2026-10-03':'Mártires de Cunhaú e Uruaçu (RN)',
+  '2026-10-12':'Nossa Senhora Aparecida','2026-11-02':'Finados','2026-11-15':'Proclamação da República','2026-11-20':'Consciência Negra',
+  '2026-11-21':'Nossa Senhora da Apresentação (Natal)','2026-12-25':'Natal',
+  '2027-01-01':'Confraternização Universal','2027-01-06':'Santos Reis (Natal)','2027-03-26':'Sexta-feira Santa','2027-04-21':'Tiradentes',
+  '2027-05-01':'Dia do Trabalho','2027-05-27':'Corpus Christi','2027-09-07':'Independência','2027-10-03':'Mártires de Cunhaú e Uruaçu (RN)',
+  '2027-10-12':'Nossa Senhora Aparecida','2027-11-02':'Finados','2027-11-15':'Proclamação da República','2027-11-20':'Consciência Negra',
+  '2027-11-21':'Nossa Senhora da Apresentação (Natal)','2027-12-25':'Natal'
+};
+if (FERIADOS[HOJE] && !args.includes('--forcar')) {
+  console.log(JSON.stringify({ hoje: HOJE, feriado: FERIADOS[HOJE], vencidos: null, mensagens: [], obs: 'Feriado: cobrança não enviada' }));
+  process.exit(0);
+}
 
 // transações XP extras (UTC → Natal, UTC−3)
 let extra = [];
