@@ -1936,7 +1936,7 @@ const RAW = [
   // PROVISÃO DESPESAS FIXAS nov/dez 2026 - importado 25/10/2026
   {id:'df_dc6773b7',date:'2026-11-30',hora:'--:--',desc:'Pró-labore - PARCELA 2/3',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada · conta original: Sicredi Delivery 3-50'},
   {id:'df_47d4c3df',date:'2026-12-30',hora:'--:--',desc:'Pró-labore - PARCELA 3/3',amt:4000.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Pró-labore',meio:'Boleto',previsto:true,comp:'2026-12',obs:'Despesa fixa provisionada · conta original: Sicredi Delivery 3-50'},
-  {id:'df_5e0a1583',date:'2026-11-03',hora:'--:--',desc:'Alimentação motoboys (2 × R$ 400) - VENC. ORIGINAL 01/11/2026 - PARCELA 3/4',amt:400.0,type:'DEBIT',conta:'Stone',cat:'5.3.13',cli:'Alimentação',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Vencimento original: 01/11/2026 (adiado para 03/11/2026) · Despesa fixa provisionada · R$ 400,00 para cada motoboy · pago R$ 400,00 (Rodrigo) em espécie em 03/11 — falta R$ 400,00 do outro motoboy'},
+  {id:'df_5e0a1583',date:'2026-11-03',hora:'--:--',desc:'Alimentação motoboys (2 × R$ 400) - VENC. ORIGINAL 01/11/2026 - PARCELA 3/4',amt:800.0,type:'DEBIT',conta:'Stone',cat:'5.3.13',cli:'Alimentação',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Vencimento original: 01/11/2026 (adiado para 03/11/2026) · Despesa fixa provisionada · R$ 400,00 para cada motoboy · pago R$ 400,00 (Rodrigo) em espécie em 03/11 + R$ 400,00 (Nathan) por Pix em 03/11 — quitado'},
   {id:'df_e5dbe448',date:'2026-12-01',hora:'--:--',desc:'Alimentação motoboys (2 × R$ 400) - PARCELA 4/4',amt:800.0,type:'DEBIT',conta:'Stone',cat:'5.3.13',cli:'Alimentação',meio:'Boleto',previsto:true,comp:'2026-12',obs:'Despesa fixa provisionada · R$ 400,00 para cada motoboy'},
   {id:'df_eff95cbe',date:'2026-11-03',hora:'--:--',desc:'YAMPA PREVISÃO - Despesa administrativa fixa - PARCELA 1/2',amt:198.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'YAMPA PREVISÃO',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Despesa fixa provisionada · conta original: 1. MATRIZ'},
   {id:'df_9832f1fe',date:'2026-12-03',hora:'--:--',desc:'YAMPA PREVISÃO - Despesa administrativa fixa - PARCELA 2/2',amt:198.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'YAMPA PREVISÃO',meio:'Boleto',previsto:true,comp:'2026-12',obs:'Despesa fixa provisionada · conta original: 1. MATRIZ'},
@@ -2594,6 +2594,7 @@ const REGRAS_AUTO = [
   {nome:'Adailton → Saída da sociedade DHFIT', tipo:'DEBIT', pix:true, termos:['ADAILTON RIBEIRO DA SILVA'], cat:'7.2.99', desc:'Pagamento saída da sociedade DHFIT - ADAILTON'},
   {nome:'Adrielle Karen (borracharia) → Manutenção moto carburada', tipo:'DEBIT', pix:true, termos:['ADRIELLE KAREN'], cat:'4.6.2', desc:'Borracharia - manutenção moto carburada (Adrielle Karen)'},
   {nome:'Pix DH Holding 03/11 R$ 3.000 → NUTRATA novo acordo 1/8', tipo:'DEBIT', pix:true, termos:['DH HOLDING'], valor:3000, data:'2026-11-03', cat:'4.2.1', desc:'NUTRATA - NOVO ACORDO - PARCELA 1/8 (Pix via DH Holding)'},
+  {nome:'Natanel (Nathan) 03/11 R$ 400 → Alimentação motoboy', tipo:'DEBIT', pix:true, termos:['NATANEL SANTANA'], valor:400, data:'2026-11-03', cat:'5.3.13', desc:'Alimentação motoboy NATHAN (Pix)'},
   {nome:'D T Suplementos → Fornecedor', tipo:'DEBIT', pix:true, termos:['D T SUPLEMENTOS DISTRIBUIDORA'], cat:'4.2.1'},
   {nome:'João Maria Moura de Melo Elias → Motoboy Terceirizado', tipo:'DEBIT', pix:true, termos:['JOAO MARIA MOURA DE MELO ELIAS'], cat:'4.4.6'},
   {nome:'Vindi/Yapay → App Converta (mensalidade)', tipo:'DEBIT', pix:false, termos:['VINDI INTERMEDIADORA','YAPAY'], cat:'5.2.99'},
@@ -2631,6 +2632,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'df_5e0a1583': ['2026-11-03','pix_natanel_400','Alimentação nov/26: R$ 400 Rodrigo (espécie) + R$ 400 Nathan (Pix Stone 18:27)'], // ALIMENTAÇÃO MOTOBOYS nov
   'pvc_nutrata2_01': ['2026-11-03','pix_dhholding_3000','Pix Stone R$ 3.000,00 via DH Holding 03/11 18:14'], // NUTRATA novo acordo 1/8
   'df_brisarod_202611': ['2026-11-03','st_7b28cc3b','Pix Brisanet 03/11 R$ 22,99'], // BRISANET Rodrigo nov/26
   'pv_36178c6a': ['2026-11-03','st_a48aaf47','boleto Body Food 03/11 R$ 1.420,15 = R$ 1.389,84 + R$ 30,31 juros'], // DR PEANUT 7/7
