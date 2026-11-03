@@ -17,6 +17,8 @@ const DRY = args.includes('--dry');
 const pos = args.filter(a => !a.startsWith('--'));
 const HOJE = pos[0] || new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
 const DESTINO = pos[1] || '5584986327208';
+// destinos por tipo (env): DESTINO_TAXAS (taxas semanais) e DESTINO_MENSAL (mensalidade); vários números separados por vírgula
+const destinos = p => (/^pvr_strongtx_/.test(p.id) ? process.env.DESTINO_TAXAS : process.env.DESTINO_MENSAL) || DESTINO;
 const PHONE_ID = '1413683815156427';
 const TOKEN = process.env.WA_TOKEN;
 if (!TOKEN && !DRY) { console.error('WA_TOKEN não definido'); process.exit(2); }
@@ -78,12 +80,14 @@ setTimeout(() => {
   const res = [];
   for (const p of vencidos) {
     const params = [rotulo(p), num(p.amt), br(p.date)];
-    if (DRY) { res.push({ id: p.id, params, enviado: false, dry: true }); continue; }
-    const msg = { messaging_product: 'whatsapp', to: DESTINO, type: 'template', template: { name: 'cobranca_strongest', language: { code: 'pt_BR' },
-      components: [{ type: 'body', parameters: params.map(t => ({ type: 'text', text: t })) }] } };
-    const r = JSON.parse(execFileSync('curl', ['-sS', '-H', 'Authorization: Bearer ' + TOKEN, '-H', 'Content-Type: application/json', '-X', 'POST',
-      `https://graph.facebook.com/v21.0/${PHONE_ID}/messages`, '--data-binary', JSON.stringify(msg)]).toString());
-    res.push({ id: p.id, params, enviado: !!(r.messages && r.messages[0]), erro: r.error ? r.error.message : undefined });
+    if (DRY) { res.push({ id: p.id, to: destinos(p), params, enviado: false, dry: true }); continue; }
+    for (const to of destinos(p).split(',').map(x => x.trim()).filter(Boolean)) {
+      const msg = { messaging_product: 'whatsapp', to, type: 'template', template: { name: 'cobranca_strongest', language: { code: 'pt_BR' },
+        components: [{ type: 'body', parameters: params.map(t => ({ type: 'text', text: t })) }] } };
+      const r = JSON.parse(execFileSync('curl', ['-sS', '-H', 'Authorization: Bearer ' + TOKEN, '-H', 'Content-Type: application/json', '-X', 'POST',
+        `https://graph.facebook.com/v21.0/${PHONE_ID}/messages`, '--data-binary', JSON.stringify(msg)]).toString());
+      res.push({ id: p.id, to, params, enviado: !!(r.messages && r.messages[0]), erro: r.error ? r.error.message : undefined });
+    }
   }
   console.log(JSON.stringify({ hoje: HOJE, destino: DESTINO, conferidosXP: extra.length, vencidos: vencidos.length, mensagens: res }, null, 1));
   process.exit(res.some(r => r.erro) ? 4 : 0);
