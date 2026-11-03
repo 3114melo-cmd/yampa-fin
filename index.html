@@ -1577,7 +1577,7 @@ const RAW = [
   {id:'st_c8c19ee4',date:'2026-10-20',hora:'18:13',desc:'Pix | Maquininha | HAGACY A GOMES VIRGINIO',amt:104.48,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'HAGACY A GOMES VIRGINIO',meio:'PIX'},
   {id:'st_c029e2fa',date:'2026-10-20',hora:'18:01',desc:'Antecipação | Recebimento vendas',amt:113.44,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_db54cf9f',date:'2026-10-20',hora:'17:55',desc:'Antecipação | Recebimento vendas',amt:62.01,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_11e03d12',date:'2026-10-20',hora:'17:46',desc:'Transferência | Pix | BIODIS INDUSTRIAL LTDA',amt:500.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'BIODIS INDUSTRIAL LTDA',meio:'PIX'},
+  {id:'st_11e03d12',date:'2026-10-20',hora:'17:46',desc:'Transferência | Pix | BIODIS INDUSTRIAL LTDA',amt:500.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'BIODIS INDUSTRIAL LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'União Vegetal (BIODIS INDUSTRIAL)'},
   {id:'st_d361e14c',date:'2026-10-20',hora:'17:31',desc:'Transferência | Pix | CARAU COMBUSTIVEIS LTDA',amt:40.0,type:'DEBIT',conta:'Stone',cat:'4.6.1',cli:'CARAU COMBUSTIVEIS LTDA',meio:'PIX'},
   {id:'st_def69653',date:'2026-10-20',hora:'17:26',desc:'Antecipação | Recebimento vendas',amt:38.64,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_a20c7fb7',date:'2026-10-20',hora:'17:16',desc:'Antecipação | Recebimento vendas',amt:184.49,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
@@ -1735,7 +1735,6 @@ const RAW = [
   {id:'pv_9a6a5f76',date:'2026-11-02',hora:'--:--',desc:'MAX TITANIUM - nf-e 1056069 - venc. original 30/10 - PARCELA 7/10',amt:5903.51,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'Max Titanium',meio:'Boleto',previsto:true,obs:'Vencimento original: 30/10/2026 (adiado para 02/11/2026)',comp:'2026-10'},
   {id:'pv_ebc0b3f3',date:'2026-11-27',hora:'--:--',desc:'VELIK - VELIK - DATA CORRETA: 1.297,00 - VENC. ORIGINAL 01/11/2026 - PARCELA 2/3',amt:1297.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'VELIK',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Vencimento original: 01/11/2026 (adiado para 03/11/2026) · adiado para 27/11/2026 (semana mais folgada)'},
   {id:'pv_3a2b07ea',date:'2026-11-10',hora:'--:--',desc:'DUX COMPANY LTDA - RENEGOCIAÇÃO DUX - VENC. ORIGINAL 01/11/2026 - PARCELA 1/3',amt:795.68,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'DUX COMPANY LTDA',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Vencimento original: 01/11/2026 (adiado para 03/11/2026) · adiado para 10/11/2026'},
-  {id:'pv_3bc9ccc9',date:'2026-11-10',hora:'--:--',desc:'UNIÃO VEGETAL - 18963 - CARTORIO - DATA CORRETA: 24/08 - VENC. ORIGINAL 01/11/2026 - PARCELA 1/1',amt:2300.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'UNIÃO VEGETAL',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Vencimento original: 01/11/2026 (adiado para 03/11/2026) · adiado para 10/11/2026'},
   {id:'pv_7fae87e3',date:'2026-11-04',hora:'--:--',desc:'BODYACTION - NF-e 006.449 - 006449/6 - PARCELA 1/1',amt:5229.68,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'Bodyaction',meio:'Boleto',previsto:true,comp:'2026-11',obs:'Valor ajustado ao boleto da Stone (era R$ 5226,19)'},
   {id:'pv_fcaaabf0',date:'2026-11-05',hora:'--:--',desc:'DR PEANUT - nfe 37.487 - PARCELA 1/6',amt:1533.11,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'Dr Peanut',meio:'Boleto',previsto:true,comp:'2026-11'},
   {id:'pv_42353147',date:'2026-11-05',hora:'--:--',desc:'FITOWAY - 188597 - PARCELA 1/1',amt:2883.13,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',previsto:true,comp:'2026-11'},
@@ -2460,28 +2459,6 @@ const RAW = [
   {id:'pvc_nutrata2_07',date:'2027-02-01',hora:'--:--',desc:'NUTRATA - NOVO ACORDO PARCELADO DOS TÍTULOS VENCIDOS - PARCELA 7/8',amt:3354.22,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'NUTRATA',meio:'Boleto',previsto:true,comp:'2027-02',obs:'Novo acordo Nutrata (03/11/2026): R$ 3.000,00 + 7 × R$ 3.354,22 = R$ 26.479,54 · substitui o saldo do acordo anterior'},
   {id:'pvc_nutrata2_08',date:'2027-02-16',hora:'--:--',desc:'NUTRATA - NOVO ACORDO PARCELADO DOS TÍTULOS VENCIDOS - PARCELA 8/8',amt:3354.22,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'NUTRATA',meio:'Boleto',previsto:true,comp:'2027-02',obs:'Novo acordo Nutrata (03/11/2026): R$ 3.000,00 + 7 × R$ 3.354,22 = R$ 26.479,54 · substitui o saldo do acordo anterior'},
   // SYNC 03/11/2026 14:54
-  {id:'st_86f9380e',date:'2026-10-30',hora:'11:40',desc:'Tarifa | Adriano Freitas da Silva',amt:1.44,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'Adriano Freitas da Silva',meio:'TED'},
-  {id:'st_03e9b9c1',date:'2026-10-30',hora:'12:34',desc:'Tarifa | NITIERY MAYARA PEIXOTO FONSECA',amt:0.7,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'NITIERY MAYARA PEIXOTO FONSECA',meio:'TED'},
-  {id:'st_fc530933',date:'2026-10-30',hora:'13:07',desc:'Tarifa | Edevandro Matos da Veiga',amt:1.02,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'Edevandro Matos da Veiga',meio:'TED'},
-  {id:'st_8a1813e8',date:'2026-10-30',hora:'13:48',desc:'Tarifa | Daniel Rocha da Silva',amt:0.7,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'Daniel Rocha da Silva',meio:'TED'},
-  {id:'st_a892d910',date:'2026-10-30',hora:'13:58',desc:'Tarifa | Felipe Oliveira dos Santos',amt:0.97,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'Felipe Oliveira dos Santos',meio:'TED'},
-  {id:'st_a7b4a039',date:'2026-10-30',hora:'14:08',desc:'Tarifa | YASMIM FERNANDA VIEIRA DA COSTA',amt:0.15,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'YASMIM FERNANDA VIEIRA DA COSTA',meio:'TED'},
-  {id:'st_8db02277',date:'2026-10-30',hora:'14:59',desc:'Tarifa | Joelson Lourenco Henrique Dos Santos',amt:0.53,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'Joelson Lourenco Henrique Dos Santos',meio:'TED'},
-  {id:'st_f744f1fd',date:'2026-10-30',hora:'15:13',desc:'Tarifa | 64 744 226 JOSAILTON JOSE DE LIRA FILHO',amt:0.22,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'64 744 226 JOSAILTON JOSE DE LIRA FILHO',meio:'TED'},
-  {id:'st_998e5755',date:'2026-10-30',hora:'15:37',desc:'Tarifa | AILTON GONCALVES DE BRITO',amt:0.02,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'AILTON GONCALVES DE BRITO',meio:'TED'},
-  {id:'st_70df9943',date:'2026-10-30',hora:'15:40',desc:'Tarifa | E S D DOS SANTOS SERVICOS AUTOMOTIVOS',amt:0.4,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'E S D DOS SANTOS SERVICOS AUTOMOTIVOS',meio:'TED'},
-  {id:'st_15816621',date:'2026-10-30',hora:'16:21',desc:'Tarifa | Gilson Silva de Oliveira',amt:0.26,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'Gilson Silva de Oliveira',meio:'TED'},
-  {id:'st_cc60ebc9',date:'2026-10-30',hora:'16:51',desc:'Tarifa | MARCELO DO NASCIMENTO PAULINO',amt:0.37,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'MARCELO DO NASCIMENTO PAULINO',meio:'TED'},
-  {id:'st_4cfd23d5',date:'2026-10-30',hora:'16:57',desc:'Tarifa | 64.744.226 JOSAILTON JOSE DE LIRA FILHO',amt:0.12,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'64.744.226 JOSAILTON JOSE DE LIRA FILHO',meio:'TED'},
-  {id:'st_30996ef9',date:'2026-10-30',hora:'17:21',desc:'Tarifa | Milena Morais da Silva',amt:0.53,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'Milena Morais da Silva',meio:'TED'},
-  {id:'st_44e43c5d',date:'2026-10-30',hora:'17:42',desc:'Tarifa | RAYANE RAFAELLY ALVES LOPES',amt:0.82,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'RAYANE RAFAELLY ALVES LOPES',meio:'TED'},
-  {id:'st_ad7baae9',date:'2026-10-30',hora:'18:34',desc:'Tarifa | JOANDERSON FONSECA SANTANA',amt:0.37,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'JOANDERSON FONSECA SANTANA',meio:'TED'},
-  {id:'st_36e0853f',date:'2026-10-30',hora:'19:16',desc:'Tarifa | DEYVESON CRISPIM DE OLIVEIRA',amt:0.5,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'DEYVESON CRISPIM DE OLIVEIRA',meio:'TED'},
-  {id:'st_14a1edf5',date:'2026-10-31',hora:'08:36',desc:'Tarifa | SILVANA KELLY CRUZ PAIXAO',amt:0.32,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'SILVANA KELLY CRUZ PAIXAO',meio:'TED'},
-  {id:'st_3d91cc8f',date:'2026-10-31',hora:'09:21',desc:'Tarifa | ANGELA RIANNY DA SILVA SANTOS',amt:0.79,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'ANGELA RIANNY DA SILVA SANTOS',meio:'TED'},
-  {id:'st_0f8c0fa1',date:'2026-10-31',hora:'10:47',desc:'Tarifa | IRANILDO DA SILVA ALVES',amt:0.29,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'IRANILDO DA SILVA ALVES',meio:'TED'},
-  {id:'st_70b73752',date:'2026-10-31',hora:'11:25',desc:'Tarifa | JOSENILSON DA SILVA MENDES',amt:0.79,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'JOSENILSON DA SILVA MENDES',meio:'TED'},
-  {id:'st_54646006',date:'2026-10-31',hora:'11:42',desc:'Tarifa | PEDRO LUCAS SOUZA DA CUNHA',amt:0.13,type:'DEBIT',conta:'Stone',cat:'4.4.3',cli:'PEDRO LUCAS SOUZA DA CUNHA',meio:'TED'},
   {id:'st_d5243cba',date:'2026-10-31',hora:'14:28',desc:'Transferência | Pix | MAXSUEL DANTAS DA SILVA',amt:84.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MAXSUEL DANTAS DA SILVA',meio:'PIX'},
   {id:'st_37c927aa',date:'2026-10-31',hora:'14:30',desc:'Antecipação | Recebimento vendas',amt:161.59,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_d5d206bc',date:'2026-10-31',hora:'14:33',desc:'Pix | Maquininha | JOAO BATISTA FERREIRA',amt:114.43,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOAO BATISTA FERREIRA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,57 abatida'},
@@ -2560,7 +2537,13 @@ const RAW = [
   {id:'st_f905101f',date:'2026-11-03',hora:'14:20',desc:'Transferência | Pix | Dayany da Silva de Brito',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Dayany Da Silva De Brito',meio:'PIX'},
   {id:'st_4effb692',date:'2026-11-03',hora:'14:20',desc:'Transferência | Pix | ALELO S.A.',amt:355.24,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ALELO INSTITUICAO DE PAGAMENTO SA',meio:'PIX'},
   {id:'xp_6378fda4',date:'2026-11-03',hora:'13:31',desc:'Pix recebido de Wdualeide Franca',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Wdualeide Franca',meio:'PIX'},
-  {id:'xp_d39a0885',date:'2026-11-03',hora:'14:42',desc:'Pix recebido de Ellen Cris dos Santos Justino do Nascimento',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Ellen Cris dos Santos Justino do Nascimento',meio:'PIX'}
+  {id:'xp_d39a0885',date:'2026-11-03',hora:'14:42',desc:'Pix recebido de Ellen Cris dos Santos Justino do Nascimento',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Ellen Cris dos Santos Justino do Nascimento',meio:'PIX'},
+  // UNIÃO VEGETAL (Biodis): pago R$ 500 em 03/11; saldo R$ 2.312,64 em parcelas de R$ 500 toda segunda,
+  {id:'pvc_uniao_01',date:'2026-11-09',hora:'--:--',desc:'UNIÃO VEGETAL (BIODIS) - 18963 - ACORDO SEMANAL - PARCELA 1/5',amt:500.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'UNIÃO VEGETAL',meio:'PIX',previsto:true,comp:'2026-11',obs:'Saldo de R$ 2.312,64 após pagamento de R$ 500,00 em 03/11/2026 · R$ 500 toda segunda'},
+  {id:'pvc_uniao_02',date:'2026-11-16',hora:'--:--',desc:'UNIÃO VEGETAL (BIODIS) - 18963 - ACORDO SEMANAL - PARCELA 2/5',amt:500.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'UNIÃO VEGETAL',meio:'PIX',previsto:true,comp:'2026-11',obs:'Saldo de R$ 2.312,64 após pagamento de R$ 500,00 em 03/11/2026 · R$ 500 toda segunda'},
+  {id:'pvc_uniao_03',date:'2026-11-23',hora:'--:--',desc:'UNIÃO VEGETAL (BIODIS) - 18963 - ACORDO SEMANAL - PARCELA 3/5',amt:500.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'UNIÃO VEGETAL',meio:'PIX',previsto:true,comp:'2026-11',obs:'Saldo de R$ 2.312,64 após pagamento de R$ 500,00 em 03/11/2026 · R$ 500 toda segunda'},
+  {id:'pvc_uniao_04',date:'2026-11-30',hora:'--:--',desc:'UNIÃO VEGETAL (BIODIS) - 18963 - ACORDO SEMANAL - PARCELA 4/5',amt:500.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'UNIÃO VEGETAL',meio:'PIX',previsto:true,comp:'2026-11',obs:'Saldo de R$ 2.312,64 após pagamento de R$ 500,00 em 03/11/2026 · R$ 500 toda segunda'},
+  {id:'pvc_uniao_05',date:'2026-12-07',hora:'--:--',desc:'UNIÃO VEGETAL (BIODIS) - 18963 - ACORDO SEMANAL - PARCELA 5/5',amt:312.64,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'UNIÃO VEGETAL',meio:'PIX',previsto:true,comp:'2026-12',obs:'Saldo de R$ 2.312,64 após pagamento de R$ 500,00 em 03/11/2026 · R$ 500 toda segunda'}
 ];
 
 // Estado
@@ -2591,6 +2574,7 @@ function saveEd(id, data){
 // competência = mês da data em que o dinheiro saiu/entrou da conta.
 const REGRAS_AUTO = [
   {nome:'Pix DH Holding 02/11 R$ 1.626,61 → CANIBAL parcela 5/11', tipo:'DEBIT', pix:true, termos:['DH HOLDING'], valor:1626.61, data:'2026-11-02', cat:'4.2.1', desc:'CANIBAL - PARCELA 5/11 (Pix via DH Holding)'},
+  {nome:'Biodis Industrial → União Vegetal (fornecedor)', tipo:'DEBIT', pix:false, termos:['BIODIS INDUSTRIAL'], cat:'4.2.1', desc:'UNIÃO VEGETAL (Biodis) - parcela semanal'},
   {nome:'D T Suplementos → Fornecedor', tipo:'DEBIT', pix:true, termos:['D T SUPLEMENTOS DISTRIBUIDORA'], cat:'4.2.1'},
   {nome:'João Maria Moura de Melo Elias → Motoboy Terceirizado', tipo:'DEBIT', pix:true, termos:['JOAO MARIA MOURA DE MELO ELIAS'], cat:'4.4.6'},
   {nome:'Vindi/Yapay → App Converta (mensalidade)', tipo:'DEBIT', pix:false, termos:['VINDI INTERMEDIADORA','YAPAY'], cat:'5.2.99'},

@@ -78,8 +78,12 @@ for t in tarifas:
     par = [r for r in outras if tipo(r) == 'CREDIT' and r['date'][:19] == t['date'][:19]]
     if par:
         k = par[0]['id']; abat[k] = abat.get(k, 0) + abs(float(t['amount']))
-    else:
-        outras.append(dict(t, _tarifa_sem_par=True))
+        continue
+    # venda já importada antes (entrou líquida): a tarifa já está abatida — não lança de novo
+    d_, h_, _ = local(t['date'])
+    if re.search(r"\{id:'st_[0-9a-f]{8}',date:'" + d_ + r"',hora:'" + h_ + r"',[^\n]*?type:'CREDIT',conta:'Stone'", s):
+        continue
+    outras.append(dict(t, _tarifa_sem_par=True))
 for r in sorted(outras, key=lambda r: r['date']):
     desc = str(r.get('description', '')); D = desc.upper(); parts = [p.strip() for p in desc.split('|')]
     amt = round(abs(float(r['amount'])) - abat.get(r['id'], 0), 2)
