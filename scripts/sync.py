@@ -137,10 +137,19 @@ for n in novas:
     c = [p for p in prev if p['amt'] <= n['amt'] + 0.01 and n['amt'] <= p['amt'] * 1.05 + 0.01]
     n['candidatos'] = sorted(c, key=lambda p: (abs(p['amt'] - n['amt']), p['date']))[:4]
 
+# ---------- DH HOLDING (CNPJ 57.875.466/0001-58): meta de R$ 20.000 por mês ----------
+META_DH = 20000.0
+mes = HOJE[:7]
+dh = [(m.group(1), float(m.group(2))) for m in re.finditer(r"\{id:'(st_[0-9a-f]{8})',date:'" + mes + r"-\d\d'[^\n]*?DH HOLDING[^\n]*?amt:([\d.]+),type:'DEBIT',conta:'Stone'", s)]
+dh_tot = round(sum(v for _, v in dh), 2)
+dh_info = {'mes': mes, 'total': dh_tot, 'meta': META_DH, 'falta': round(max(0, META_DH - dh_tot), 2),
+           'novos': [n['amt'] for n in novas if n['type'] == 'DEBIT' and 'DH HOLDING' in n['desc'].upper()]}
+
 if not a.dry: open(PATH, 'w', encoding='utf8').write(s)
 res = {'hoje': HOJE, 'em': EM, 'novas': len(novas),
        'entradas': round(sum(n['amt'] for n in novas if n['type'] == 'CREDIT'), 2),
        'saidas': round(sum(n['amt'] for n in novas if n['type'] == 'DEBIT'), 2),
        'tarifas_abatidas': round(sum(abat.values()), 2),
+       'dh_holding': dh_info,
        'saidas_novas': [n for n in novas if n['type'] == 'DEBIT']}
 print(json.dumps(res, ensure_ascii=False, indent=1))
