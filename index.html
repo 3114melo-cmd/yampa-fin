@@ -1035,7 +1035,7 @@ const RAW = [
   {id:'st_d2966f68',date:'2026-10-07',hora:'19:17',desc:'Antecipação | Recebimento vendas',amt:19.32,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_19630b9d',date:'2026-10-07',hora:'19:07',desc:'Valor referente à liquidação de suas vendas de cartão. | Recebimento de vendas',amt:177.56,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Cartão'},
   {id:'st_0b4995da',date:'2026-10-07',hora:'18:35',desc:'Transferência | Pix | Flavio Alves de Assis Junior',amt:700.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Flavio Alves de Assis Junior',meio:'PIX'},
-  {id:'st_fd014daa',date:'2026-10-07',hora:'18:34',desc:'Transferência | Pix | ADAILTON RIBEIRO DA SILVA',amt:2744.45,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'ADAILTON RIBEIRO DA SILVA',meio:'PIX'},
+  {id:'st_fd014daa',date:'2026-10-07',hora:'18:34',desc:'Pagamento saída da sociedade DHFIT - ADAILTON',amt:2744.45,type:'DEBIT',conta:'Stone',cat:'7.2.99',cli:'ADAILTON RIBEIRO DA SILVA',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Pagamento mensal ao Adailton pela saída da sociedade da DHFIT · Banco: Transferência | Pix | ADAILTON RIBEIRO DA SILVA'},
   {id:'st_f5d74e35',date:'2026-10-07',hora:'18:24',desc:'Transferência | Pix | DHFIT NUTRICAO ESPORTIVA LTDA',amt:484.41,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA',meio:'PIX'},
   {id:'st_879f1c53',date:'2026-10-07',hora:'18:10',desc:'Antecipação | Recebimento vendas',amt:135.16,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_c740a2f2',date:'2026-10-07',hora:'18:06',desc:'Antecipação | Recebimento vendas',amt:338.67,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
@@ -2574,6 +2574,7 @@ function saveEd(id, data){
 const REGRAS_AUTO = [
   {nome:'Pix DH Holding 02/11 R$ 1.626,61 → CANIBAL parcela 5/11', tipo:'DEBIT', pix:true, termos:['DH HOLDING'], valor:1626.61, data:'2026-11-02', cat:'4.2.1', desc:'CANIBAL - PARCELA 5/11 (Pix via DH Holding)'},
   {nome:'Biodis Industrial → União Vegetal (fornecedor)', tipo:'DEBIT', pix:false, termos:['BIODIS INDUSTRIAL'], cat:'4.2.1', desc:'UNIÃO VEGETAL (Biodis) - parcela semanal'},
+  {nome:'Adailton → Saída da sociedade DHFIT', tipo:'DEBIT', pix:true, termos:['ADAILTON RIBEIRO DA SILVA'], cat:'7.2.99', desc:'Pagamento saída da sociedade DHFIT - ADAILTON'},
   {nome:'D T Suplementos → Fornecedor', tipo:'DEBIT', pix:true, termos:['D T SUPLEMENTOS DISTRIBUIDORA'], cat:'4.2.1'},
   {nome:'João Maria Moura de Melo Elias → Motoboy Terceirizado', tipo:'DEBIT', pix:true, termos:['JOAO MARIA MOURA DE MELO ELIAS'], cat:'4.4.6'},
   {nome:'Vindi/Yapay → App Converta (mensalidade)', tipo:'DEBIT', pix:false, termos:['VINDI INTERMEDIADORA','YAPAY'], cat:'5.2.99'},
