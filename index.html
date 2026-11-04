@@ -332,7 +332,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 03/11 · 14:20
+        Stone · 03/11 · 19:28
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -353,7 +353,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-03"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-04"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -2562,7 +2562,37 @@ const RAW = [
   {id:'df_bling_202701',date:'2027-01-15',hora:'--:--',desc:'BLING (LWSA S/A) - contrato mensal 01/2027',amt:245.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Bling Matriz',meio:'Boleto',previsto:true,comp:'2027-01',obs:'Sistema Bling: R$ 245,00 (contrato + espaço adicional de dados) todo dia 15'},
   {id:'df_bling_202702',date:'2027-02-15',hora:'--:--',desc:'BLING (LWSA S/A) - contrato mensal 02/2027',amt:245.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Bling Matriz',meio:'Boleto',previsto:true,comp:'2027-02',obs:'Sistema Bling: R$ 245,00 (contrato + espaço adicional de dados) todo dia 15'},
   {id:'df_bling_202703',date:'2027-03-15',hora:'--:--',desc:'BLING (LWSA S/A) - contrato mensal 03/2027',amt:245.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Bling Matriz',meio:'Boleto',previsto:true,comp:'2027-03',obs:'Sistema Bling: R$ 245,00 (contrato + espaço adicional de dados) todo dia 15'},
-  {id:'df_bling_202704',date:'2027-04-15',hora:'--:--',desc:'BLING (LWSA S/A) - contrato mensal 04/2027',amt:245.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Bling Matriz',meio:'Boleto',previsto:true,comp:'2027-04',obs:'Sistema Bling: R$ 245,00 (contrato + espaço adicional de dados) todo dia 15'}
+  {id:'df_bling_202704',date:'2027-04-15',hora:'--:--',desc:'BLING (LWSA S/A) - contrato mensal 04/2027',amt:245.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Bling Matriz',meio:'Boleto',previsto:true,comp:'2027-04',obs:'Sistema Bling: R$ 245,00 (contrato + espaço adicional de dados) todo dia 15'},
+  // SYNC 04/11/2026 07:21
+  {id:'st_d4fb9819',date:'2026-11-03',hora:'14:27',desc:'Transferência | Pix | ALELO S.A.',amt:90.58,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ALELO INSTITUICAO DE PAGAMENTO SA',meio:'PIX'},
+  {id:'st_b952cdc1',date:'2026-11-03',hora:'15:00',desc:'Transferência | Pix | ERICA BARBOSA DIAS',amt:130.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ERICA BARBOSA DIAS',meio:'PIX'},
+  {id:'st_f21b2fc7',date:'2026-11-03',hora:'15:02',desc:'Transferência | Pix | BIODIS INDUSTRIAL LTDA',amt:500.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'BIODIS INDUSTRIAL LTDA',meio:'PIX'},
+  {id:'st_519a9db2',date:'2026-11-03',hora:'15:05',desc:'Débito | Físico | MP*TEOCELLIMPORT',amt:15.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MP*TEOCELLIMPORT',meio:'Cartão'},
+  {id:'st_0066e300',date:'2026-11-03',hora:'15:11',desc:'Transferência | Pix | Julio Cesar da Silva Moura',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Julio Cesar da Silva Moura',meio:'PIX'},
+  {id:'st_80b133bc',date:'2026-11-03',hora:'15:58',desc:'Antecipação | Recebimento vendas',amt:300.32,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_96c4af2c',date:'2026-11-03',hora:'16:13',desc:'Pix | Maquininha | Sebastião Francisco Barboza',amt:38.81,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Sebastião Francisco Barboza',meio:'PIX',obs:'Líquido: tarifa de R$ 0,19 abatida'},
+  {id:'st_0aa84cad',date:'2026-11-03',hora:'16:19',desc:'Transferência | Pix | CRISTIANE CARLA GOMES DA SILVA',amt:60.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'CRISTIANE CARLA GOMES DA SILVA',meio:'PIX'},
+  {id:'st_6818a12d',date:'2026-11-03',hora:'16:23',desc:'Valor referente à liquidação de suas vendas de cartão. | Recebimento de vendas',amt:286.01,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Cartão'},
+  {id:'st_45a2d848',date:'2026-11-03',hora:'16:38',desc:'Transferência | Pix | ADRIELLE KAREN MEDEIROS DE SOUZA SILVA',amt:50.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'ADRIELLE KAREN MEDEIROS DE SOUZA SILVA',meio:'PIX'},
+  {id:'st_e98808ac',date:'2026-11-03',hora:'16:47',desc:'Transferência | Pix | IVONISE AMORIM COUTO',amt:219.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'IVONISE AMORIM COUTO',meio:'PIX'},
+  {id:'st_78fcb99e',date:'2026-11-03',hora:'16:53',desc:'Pix | Maquininha | GILBERTO CIRIACO FERNANDES',amt:54.73,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'GILBERTO CIRIACO FERNANDES',meio:'PIX',obs:'Líquido: tarifa de R$ 0,27 abatida'},
+  {id:'st_30cb4188',date:'2026-11-03',hora:'17:06',desc:'Pix | Maquininha | 50.554.247 FRANCISCO ERINALDO FABRICIO',amt:109.36,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'50.554.247 FRANCISCO ERINALDO FABRICIO',meio:'PIX',obs:'Líquido: tarifa de R$ 0,54 abatida'},
+  {id:'st_35c5072f',date:'2026-11-03',hora:'17:08',desc:'Transferência | Pix | daniel nazario de oliveira',amt:95.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'daniel nazario de oliveira',meio:'PIX'},
+  {id:'st_15e0696c',date:'2026-11-03',hora:'17:11',desc:'Pix | Maquininha | Erika Joice Queiroz de Oliveira',amt:114.43,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Erika Joice Queiroz de Oliveira',meio:'PIX',obs:'Líquido: tarifa de R$ 0,57 abatida'},
+  {id:'st_1d183c62',date:'2026-11-03',hora:'17:13',desc:'Transferência | Pix | Geziel Albuquerque dos Santos',amt:8.25,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Geziel Albuquerque dos Santos',meio:'PIX'},
+  {id:'st_59524f54',date:'2026-11-03',hora:'17:17',desc:'Pix | Maquininha | TAYONARA RAQUEL FREITAS DA COSTA',amt:9.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'TAYONARA RAQUEL FREITAS DA COSTA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,05 abatida'},
+  {id:'st_13905f5e',date:'2026-11-03',hora:'17:33',desc:'Pix | Maquininha | Paulo Henrique Mendes de Freitas',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Paulo Henrique Mendes De Freitas',meio:'PIX',obs:'Líquido: tarifa de R$ 0,37 abatida'},
+  {id:'st_c4badbb3',date:'2026-11-03',hora:'17:34',desc:'Transferência | Pix | José Victor Nascimento da Silva',amt:55.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'José Victor Nascimento da Silva',meio:'PIX'},
+  {id:'st_5d15d8ae',date:'2026-11-03',hora:'17:36',desc:'Transferência | Pix | Raniele Nogueira Bezerra de Barros',amt:25.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Raniele Nogueira Bezerra de Barros',meio:'PIX'},
+  {id:'st_7acc3ba8',date:'2026-11-03',hora:'17:50',desc:'Antecipação | Recebimento vendas',amt:243.27,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_81dd4910',date:'2026-11-03',hora:'18:12',desc:'Antecipação | Recebimento vendas',amt:347.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_b6217d1b',date:'2026-11-03',hora:'18:14',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:3000.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'DH HOLDING IMOBILIARIA LTDA',meio:'PIX'},
+  {id:'st_5f30ea22',date:'2026-11-03',hora:'18:16',desc:'Pix | Maquininha | HUDSON TALYSON BILRO SOARES',amt:119.31,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'HUDSON TALYSON BILRO SOARES',meio:'PIX',obs:'Líquido: tarifa de R$ 0,59 abatida'},
+  {id:'st_f4c8483c',date:'2026-11-03',hora:'18:27',desc:'Transferência | Pix | Natanel Santana Gomes',amt:400.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Natanel Santana Gomes',meio:'PIX'},
+  {id:'st_20816547',date:'2026-11-03',hora:'18:38',desc:'Transferência | Pix | DANIELLE DIAS COSTA',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DANIELLE DIAS COSTA',meio:'PIX'},
+  {id:'st_56cf811a',date:'2026-11-03',hora:'18:48',desc:'Transferência | Pix | Izaias Gomes de Aquino',amt:114.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Izaias Gomes de Aquino',meio:'PIX'},
+  {id:'st_de4670ba',date:'2026-11-03',hora:'19:28',desc:'Transferência | Pix | DHFIT NUTRICAO ESPORTIVA LTDA',amt:617.49,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA',meio:'PIX'},
+  {id:'xp_040d135c',date:'2026-11-03',hora:'17:17',desc:'Pix recebido de Andressa Trindade da Silva',amt:6.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Andressa Trindade da Silva',meio:'PIX'}
 ];
 
 // Estado
@@ -2636,8 +2666,8 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
-  'df_5e0a1583': ['2026-11-03','pix_natanel_400','Alimentação nov/26: R$ 400 Rodrigo (espécie) + R$ 400 Nathan (Pix Stone 18:27)'], // ALIMENTAÇÃO MOTOBOYS nov
-  'pvc_nutrata2_01': ['2026-11-03','pix_dhholding_3000','Pix Stone R$ 3.000,00 via DH Holding 03/11 18:14'], // NUTRATA novo acordo 1/8
+  'df_5e0a1583': ['2026-11-03','st_f4c8483c','Alimentação nov/26: R$ 400 Rodrigo (espécie) + R$ 400 Nathan (Pix Stone 18:27)'], // ALIMENTAÇÃO MOTOBOYS nov
+  'pvc_nutrata2_01': ['2026-11-03','st_b6217d1b','Pix Stone R$ 3.000,00 via DH Holding 03/11 18:14'], // NUTRATA novo acordo 1/8
   'df_brisarod_202611': ['2026-11-03','st_7b28cc3b','Pix Brisanet 03/11 R$ 22,99'], // BRISANET Rodrigo nov/26
   'pv_36178c6a': ['2026-11-03','st_a48aaf47','boleto Body Food 03/11 R$ 1.420,15 = R$ 1.389,84 + R$ 30,31 juros'], // DR PEANUT 7/7
   'pvc_canibal_05': ['2026-11-02','st_6ff01314','R$ 1.626,61 Pix Stone via DH Holding + R$ 1.260,00 depósito em espécie — QUITADA'], // CANIBAL 5/11
@@ -3453,7 +3483,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-03';
+  const hoje = '2026-11-04';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -4034,7 +4064,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-03';
+const HOJE_SISTEMA = '2026-11-04';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -4680,7 +4710,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-03';
+  const hoje = '2026-11-04';
 
   let txData;
   if(cfMes){
@@ -5590,7 +5620,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1872.41, em:'03/11/2026 14:54'}, XP:{valor:111.34, em:'03/11/2026 14:54'}};
+const SALDO_BANCO = {Stone:{valor:1872.41, em:'04/11/2026 07:21'}, XP:{valor:117.34, em:'04/11/2026 07:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
