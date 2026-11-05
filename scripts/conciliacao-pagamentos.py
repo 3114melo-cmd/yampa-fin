@@ -29,14 +29,12 @@ Regras:
    (aceita comprovante menor em pagamento dividido). Comprovante pode ser de até 3 dias antes.
  - PIX ↔ Stone: com a hora da foto, mesmo valor e até 10 min de diferença (não precisa de nome). Sem hora: mesmo valor,
    2 dias antes até 1h depois do lançamento, preferindo o pagador com o mesmo nome.
- - Cartão/débito/link: cupom ↔ crédito "Antecipação/Recebimento vendas" de 5 a 60 min depois da hora do cupom, líquido
-   entre 90% e 99,5% do valor. A Stone às vezes junta vendas, então também confere o total do dia
-   (loja + delivery x Stone, entre 93% e 99,5%).
+ - Cartão/débito/link: só confere se tem comprovante e se o valor bate com o pedido (sem conferência de "cartão do dia").
  - Voucher cai depois (Alelo/Pluxee etc.): só confere se tem comprovante.
- - GRAVE (manda WhatsApp): PIX que não entrou, entrega sem comprovante, comprovante de outra data,
-   comprovante repetido de outro pedido, cartão do dia que não bate.
- - Ajustes (só vão no relatório se ele for enviado): lançamento duplicado, forma de pagamento ou valor diferente
-   da foto, PIX entrou mas o pedido continua "PIX Pendente", foto ilegível.
+ - Pendências (manda WhatsApp, Felipe 04/11/2026): valor do comprovante diferente do pedido, entrega sem comprovante,
+   PIX que não entrou, comprovante de outra data, mesmo comprovante em 2 lançamentos. Tudo batendo → não envia nada.
+ - Relatório: "Relatório geral" (conferidos ✅, valor que não bate, sem comprovante) + "Relatório de pendências" com
+   cliente, valor e forma de pagamento, vendedor, entregador e rota (Norte/Sul) de cada pedido.
 """
 import json, sys, os, re, subprocess, unicodedata, argparse, base64
 from datetime import datetime, timezone, timedelta
@@ -265,7 +263,6 @@ def main():
     if not ped:
         ped = {k: v for k, v in fb('pedidos.json').items() if isinstance(v, dict) and ini * 1000 <= (v.get('tsEntregue') or 0) < fim * 1000}
     pedidos = [dict(v, _k=k) for k, v in ped.items() if isinstance(v, dict) and v.get('status') == 'entregue']
-    loja_cartao = [p for p in pedidos if p.get('rota') == 'loja' and eh_cartao(tipo_de(p.get('pag')))]
     entregas = [p for p in pedidos if p.get('rota') not in ('loja', 'retirada')]
 
     def precisa_comp(p):
@@ -278,7 +275,7 @@ def main():
 
     # ---- pedido x comprovante (nome à caneta > nome lançado > pagador da foto)
     livres = [c for c in comps if not c.get('duplicado') and not c.get('repetido')]
-    for rodada in ('caneta', 'qualquer'):
+    for rodada in ('caneta', 'qualquer', 'valor_difere'):
         for p in alvo:
             if p.get('_comp'):
                 continue
@@ -289,9 +286,12 @@ def main():
                 if rodada == 'caneta':
                     return c['caneta'] and nome_bate(p.get('nome'), c['caneta'])
                 return nome_bate(p.get('nome'), c['n'], c['caneta'], c['pagador'])
-            cand = [c for c in livres if c['pedido'] is None and bate(c)
-                    and (abs(c['v'] - pv) < 0.5 or (split and c['v'] <= pv + 0.01))]
-            cand = [c for c in cand if c['t'] >= tsp - 600] or [c for c in cand if c['t'] >= tsp - 3 * 86400 and abs(c['v'] - pv) < 0.01]
+            if rodada == 'valor_difere':  # mesmo cliente, valor diferente: só comprovante do dia, depois do pedido criado
+                cand = [c for c in livres if c['pedido'] is None and bate(c) and tsp - 600 <= c['t'] < fim]
+            else:
+                cand = [c for c in livres if c['pedido'] is None and bate(c)
+                        and (abs(c['v'] - pv) < 0.01 or (split and c['v'] <= pv + 0.01))]
+                cand = [c for c in cand if c['t'] >= tsp - 600] or [c for c in cand if c['t'] >= tsp - 3 * 86400]
             if cand:
                 c = min(cand, key=lambda c: abs(c['t'] - (p.get('tsEntregue') or 0) / 1000))
                 c['pedido'] = p['_k']
@@ -332,84 +332,127 @@ def main():
             s['usado'] = True
             c['stone'] = s
 
+    # ---- pendências no formato do relatório (Felipe, 04/11/2026). Sem conferência de "cartão do dia".
+    MOTOS = {'1': 'Nathan', '2': 'Juninho', '3': 'Rodrigo', '4': 'Cooperativa'}
+    ped_k = {p['_k']: p for p in alvo}
+    comp_k = {c['id']: c for c in comps}
+
+    def ficha(p, c=None):
+        if p:
+            return dict(cliente=p.get('nome'), pedido=p.get('id'), valor=valor(p.get('valor')), pag=p.get('pag'),
+                        vendedor=p.get('vendedor'), entregador=MOTOS.get(str(p.get('motoId')), f"motoboy {p.get('motoId', '?')}"),
+                        rota=(p.get('rota') or '-').capitalize())
+        return dict(cliente=c['caneta'] or c['n'], pedido=None, valor=c['v'], pag=c['pag'], vendedor=c['vend'],
+                    entregador='(pedido não encontrado no MotoRun)', rota='-')
+
+    pend, com_pend = [], set()
+
+    def addp(tipo, ref, f, detalhe='', v=0.0, imagem=None, pedido_k=None):
+        pid = f'{tipo}:{ref}'
+        if pid in ignorar:
+            return
+        pend.append(dict(id=pid, tipo=tipo, ficha=f, detalhe=detalhe, valor=v, imagem=imagem))
+        if pedido_k:
+            com_pend.add(pedido_k)
+
+    for p in alvo:
+        pv, c = valor(p.get('valor')), p.get('_comp')
+        split = '+' in (p.get('pag') or '') or p.get('pagSplit')
+        if not c:
+            addp('sem_comprovante', p['_k'], ficha(p), v=pv, pedido_k=p['_k'])
+        elif not split and abs(c['v'] - pv) >= 0.01:
+            addp('valor_difere', p['_k'], ficha(p, c),
+                 f"Comprovante mostra R$ {brl(c['v'])}\nMas o pedido foi lançado R$ {brl(pv)} (verificar)",
+                 v=round(abs(pv - c['v']), 2), imagem=c.get('imagem'), pedido_k=p['_k'])
+
+    aguardando = []
     for c in pix_comps:
         if not (ini <= c['t'] < fim) or c['stone']:
             continue
-        ref = c['t_trans'] or c['t']
-        if ref > ultimo - 1800:
-            add(ajustes, 'pix_aguardando', f"PIX {c['n']} R$ {brl(c['v'])} ({c['vend']}, {hm(c['t'])}) — extrato da Stone ainda não chegou nesse horário", c['id'], c['v'])
-        else:
-            quem = f" (pagador na foto: {c['pagador'].title()})" if c['pagador'] else ''
-            add(graves, 'pix_nao_entrou', f"PIX NÃO ENTROU na Stone: {c['n']} R$ {brl(c['v'])}{quem} — lançado por {c['vend']} em {hm(c['t'])}", c['id'], c['v'],
-                {'imagem': c.get('imagem')})
-
-    for p in alvo:
-        nome, pv = p.get('nome'), valor(p.get('valor'))
-        tag = f"#{p.get('id')} {nome} R$ {brl(pv)} ({p.get('pag')}, {p.get('vendedor')}, motoboy {p.get('motoId', '?')})"
-        c = p.get('_comp')
-        if not c:
-            add(graves, 'sem_comprovante', f"ENTREGA SEM COMPROVANTE: {tag} — {p.get('end', '')}", p['_k'], pv,
-                {'pedido': p.get('id'), 'pag': p.get('pag')})
+        p = ped_k.get(c['pedido'])
+        if (c['t_trans'] or c['t']) > ultimo - 1800:
+            aguardando.append(f"{c['n']} R$ {brl(c['v'])} ({hm(c['t'])})")
             continue
-        tp = tipo_de(p.get('pag'))
-        if tp != c['tipo'] and '+' not in (p.get('pag') or '') and not any(g['id'] == f"tipo_diferente:{c['id']}" for g in ajustes):
-            add(ajustes, 'forma_diferente', f"{tag}: no pedido está {p.get('pag')}, mas o comprovante é {c['tipo'].upper()} — corrigir no MotoRun", c['id'])
-        if 'PENDENTE' in norm(p.get('pag')) and c.get('stone'):
-            add(ajustes, 'pix_pendente', f"{tag}: PIX já entrou na Stone — marcar como pago no MotoRun", p['_k'])
+        quem = f" — pagador: {c['pagador'].title()}" if c['pagador'] else ''
+        addp('pix_nao_entrou', c['id'], ficha(p, c), f"PIX de R$ {brl(c['v'])} do comprovante ({hm(c['t_trans'] or c['t'])}) não entrou na Stone{quem}",
+             v=c['v'], imagem=c.get('imagem'), pedido_k=c['pedido'])
 
-    # ---- cartão: total do dia
-    bruto_loja = sum(valor(p.get('valor')) for p in loja_cartao)
-    bruto_entr = sum(valor(p.get('valor')) for p in alvo if eh_cartao(tipo_de(p.get('pag'))))
-    bruto = round(bruto_loja + bruto_entr, 2)
-    liquido = round(sum(s['v'] for s in cartao if ini <= s['t'] < fim + 2 * 3600), 2)
-    cartao_res = dict(bruto_loja=bruto_loja, bruto_delivery=bruto_entr, bruto=bruto, liquido_stone=liquido,
-                      percentual=round(liquido / bruto * 100, 2) if bruto else None,
-                      cupons_conferidos=len([c for c in comps_dia if eh_cartao(c['tipo']) and c['stone']]),
-                      cupons_do_dia=len([c for c in comps_dia if eh_cartao(c['tipo']) and not c.get('duplicado')]))
-    if bruto and extrato_completo and not (0.93 * bruto <= liquido <= 0.995 * bruto):
-        falta = round(bruto * 0.96 - liquido, 2)
-        if falta > 0:
-            add(graves, 'cartao_dia', f"CARTÃO DO DIA NÃO BATE: vendas brutas R$ {brl(bruto)} (loja {brl(bruto_loja)} + delivery {brl(bruto_entr)}), "
-                f"caiu na Stone R$ {brl(liquido)} ({cartao_res['percentual']}%) — falta ~R$ {brl(falta)}", 'dia', falta)
-        else:
-            add(ajustes, 'cartao_sobra', f"Cartão: caiu na Stone R$ {brl(liquido)}, mais que as vendas registradas (R$ {brl(bruto)}) — alguma venda no cartão sem pedido/NFC-e", 'dia')
-    if cartao_res['percentual'] and not any(g['tipo'] == 'cartao_dia' for g in graves):
-        for g in graves:
-            if g['tipo'] == 'sem_comprovante' and tipo_de(g.get('pag')) != 'pix':
-                g['texto'] += ' (o total de cartão do dia bateu com a Stone: o dinheiro provavelmente entrou, falta lançar o cupom)'
+    for g in graves:  # comprovante de outra data / mesmo comprovante em 2 lançamentos
+        c = comp_k.get(g['id'].split(':', 1)[1])
+        p = ped_k.get(c['pedido']) if c else None
+        addp(g['tipo'], g['id'].split(':', 1)[1], ficha(p, c) if c else {}, g['texto'], g['valor'], g.get('imagem'), c and c['pedido'])
 
+    conferidos = len([p for p in alvo if p['_k'] not in com_pend])
+    texto = relatorio_texto(a.dia, conferidos, pend)
     res = dict(dia=a.dia, fotos_lidas=leitura_ok, extrato_stone_ate=hm(ultimo), extrato_completo=extrato_completo,
-               pedidos_entregues=len(entregas), exigem_comprovante=len(alvo), comprovantes_do_dia=len(comps_dia),
-               fotos_conferidas=len([c for c in comps_dia if c['lido']]),
-               pix_do_dia=len([c for c in pix_comps if ini <= c['t'] < fim]),
-               pix_na_stone=len([c for c in pix_comps if ini <= c['t'] < fim and c['stone']]),
-               cartao=cartao_res, graves=graves, ajustes=ajustes, valor_grave=round(sum(g['valor'] for g in graves), 2))
-    if a.enviar and graves:
+               pedidos_entregues=len(entregas), exigem_comprovante=len(alvo), conferidos=conferidos,
+               comprovantes_do_dia=len(comps_dia), fotos_conferidas=len([c for c in comps_dia if c['lido']]),
+               pix_aguardando_stone=aguardando, pendencias=pend, tem_pendencia=bool(pend),
+               relatorio_texto=texto, ajustes_internos=[g['texto'] for g in ajustes])
+    if a.enviar and pend:
         res['envio'] = enviar(res, a.out)
     print(json.dumps(res, ensure_ascii=False, indent=1))
+
+
+TITULOS = [('valor_difere', 'com valor que não bate', 'com valor diferente'),
+           ('sem_comprovante', 'sem comprovante', 'sem comprovante'),
+           ('pix_nao_entrou', 'com PIX que não entrou na Stone', 'com PIX que não entrou na Stone'),
+           ('comprovante_antigo', 'com comprovante de outra data', 'com comprovante de outra data'),
+           ('comprovante_repetido', 'com comprovante repetido', 'com comprovante repetido')]
+
+
+def qtd(n):
+    return f"{n} {'pedido' if n == 1 else 'pedidos'}"
+
+
+def contagem(pend):
+    return {t: len([x for x in pend if x['tipo'] == t]) for t, _, _ in TITULOS}
+
+
+def relatorio_texto(dia, conferidos, pend):
+    d = datetime.strptime(dia, '%Y-%m-%d').strftime('%d/%m/%Y')
+    n = contagem(pend)
+    L = [f'*Relatório geral – {d}*', f'{qtd(conferidos)} conferidos ✅']
+    for t, txt, _ in TITULOS:
+        if n[t] or t in ('valor_difere', 'sem_comprovante'):
+            L.append(f'{qtd(n[t])} {txt}')
+    if pend:
+        L += ['', '*Relatório de pendências*']
+        for t, _, tit in TITULOS:
+            itens = [x for x in pend if x['tipo'] == t]
+            if not itens:
+                continue
+            L += ['', f'*{qtd(len(itens))} {tit}*']
+            for x in itens:
+                f = x['ficha']
+                L.append('')
+                L.append(f"{f.get('cliente')}" + (f" – pedido #{f['pedido']}" if f.get('pedido') else ''))
+                if x['detalhe']:
+                    L += x['detalhe'].split('\n')
+                L += [f"Valor: R$ {brl(f.get('valor') or 0)} – {f.get('pag')}", f"Vendedor: {f.get('vendedor')}",
+                      f"Entregador: {f.get('entregador')}", f"Rota: {f.get('rota')}"]
+    return '\n'.join(L)
 
 
 def enviar(res, out):
     from reportlab.lib.pagesizes import A4
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
     from reportlab.lib.styles import getSampleStyleSheet
+    from xml.sax.saxutils import escape
     d = datetime.strptime(res['dia'], '%Y-%m-%d').strftime('%d/%m/%Y')
     pdf = os.path.join(out, f'conciliacao-{res["dia"]}.pdf')
     ss = getSampleStyleSheet()
-    c = res['cartao']
-    el = [Paragraph(f'Conciliação de pagamentos — {d}', ss['Title']),
-          Paragraph(f"Entregas que exigem comprovante: {res['exigem_comprovante']} · comprovantes do dia: {res['comprovantes_do_dia']} "
-                    f"(fotos conferidas: {res['fotos_conferidas']}) · PIX na Stone: {res['pix_na_stone']}/{res['pix_do_dia']} · "
-                    f"extrato Stone até {res['extrato_stone_ate']}", ss['Normal']), Spacer(1, 10),
-          Paragraph('Pendências (dinheiro não entrou / comprovante faltando)', ss['Heading2'])]
-    el += [Paragraph('• ' + g['texto'], ss['Normal']) for g in res['graves']]
-    el += [Spacer(1, 8), Paragraph('Cartão do dia', ss['Heading2']),
-           Paragraph(f"Vendas brutas R$ {brl(c['bruto'])} (loja {brl(c['bruto_loja'])} + delivery {brl(c['bruto_delivery'])}) · "
-                     f"líquido na Stone R$ {brl(c['liquido_stone'])} ({c['percentual']}%) · cupons conferidos {c['cupons_conferidos']}/{c['cupons_do_dia']}", ss['Normal'])]
-    if res['ajustes']:
-        el += [Spacer(1, 8), Paragraph('Ajustes de lançamento no MotoRun', ss['Heading2'])]
-        el += [Paragraph('• ' + g['texto'], ss['Normal']) for g in res['ajustes']]
-    SimpleDocTemplate(pdf, pagesize=A4).build(el)
+    el = []
+    for linha in res['relatorio_texto'].split('\n'):
+        if not linha:
+            el.append(Spacer(1, 6))
+        elif linha.startswith('*Relatório'):
+            el.append(Paragraph(escape(linha.strip('*')), ss['Heading1']))
+        elif linha.startswith('*'):
+            el.append(Paragraph(escape(linha.strip('*')), ss['Heading3']))
+        else:
+            el.append(Paragraph(escape(linha.replace('✅', '(ok)')), ss['Normal']))
+    SimpleDocTemplate(pdf, pagesize=A4, title=f'Conciliação {d}').build(el)
 
     tok = os.environ['WA_TOKEN']
     def curl(args):
@@ -417,17 +460,14 @@ def enviar(res, out):
         return json.loads(o or b'{}')
     up = curl(['-X', 'POST', f'https://graph.facebook.com/v21.0/{PHONE_ID}/media', '-F', 'messaging_product=whatsapp',
                '-F', 'type=application/pdf', '-F', f'file=@{pdf};type=application/pdf;filename=conciliacao.pdf'])
-    nomes = {'pix_nao_entrou': 'PIX não entrou', 'sem_comprovante': 'entrega sem comprovante', 'cartao_dia': 'cartão do dia não bate',
-             'comprovante_antigo': 'comprovante de outra data', 'comprovante_repetido': 'comprovante repetido'}
-    tipos = {}
-    for g in res['graves']:
-        tipos[g['tipo']] = tipos.get(g['tipo'], 0) + 1
-    resumo = '; '.join(f'{n} {nomes.get(t, t)}' for t, n in tipos.items())
+    n = contagem(res['pendencias'])
+    outros = n['comprovante_antigo'] + n['comprovante_repetido']
+    params = [d, qtd(res['conferidos']), qtd(n['valor_difere']), qtd(n['sem_comprovante']),
+              qtd(n['pix_nao_entrou'] + outros)]
     body = {'messaging_product': 'whatsapp', 'to': DESTINO, 'type': 'template', 'template': {
         'name': 'alerta_conciliacao', 'language': {'code': 'pt_BR'}, 'components': [
             {'type': 'header', 'parameters': [{'type': 'document', 'document': {'id': up.get('id'), 'filename': f'Conciliacao {d.replace("/", "-")}.pdf'}}]},
-            {'type': 'body', 'parameters': [{'type': 'text', 'text': x} for x in
-                                            (d, str(len(res['graves'])), brl(res['valor_grave']), resumo)]}]}}
+            {'type': 'body', 'parameters': [{'type': 'text', 'text': x} for x in params]}]}}
     r = curl(['-X', 'POST', f'https://graph.facebook.com/v21.0/{PHONE_ID}/messages', '-H', 'Content-Type: application/json',
               '--data-binary', json.dumps(body, ensure_ascii=False)])
     return dict(enviado=bool(r.get('messages')), resposta=r, pdf=pdf)
