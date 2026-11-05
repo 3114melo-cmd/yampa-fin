@@ -2810,9 +2810,34 @@ let timeOpen = false;
 try{ if(localStorage.getItem('yf_data_ver')!=='2026-10-01'){ localStorage.removeItem('yf_ed'); localStorage.setItem('yf_data_ver','2026-10-01'); } }catch(e){}
 try{ EDITED = JSON.parse(localStorage.getItem('yf_ed')||'{}'); }catch(e){}
 
+// ── Conciliações na nuvem: o que o Felipe concilia no app vai para o Firebase (vale em qualquer aparelho
+//    e o Claude incorpora no sistema a cada atualização com scripts/edicoes.py) ──
+const ED_URL = 'https://delivery-dhfit-4a399-default-rtdb.firebaseio.com/yampafin/ed.json';
+let _edTimer = null, _edPronto = false;
+function persistED(){
+  try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){}
+  clearTimeout(_edTimer);
+  _edTimer = setTimeout(()=>{
+    fetch(ED_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.keys(EDITED).length?EDITED:null)})
+      .then(r=>{ if(!r.ok) throw 0; try{ localStorage.removeItem('yf_ed_pend'); }catch(e){} })
+      .catch(()=>{ try{ localStorage.setItem('yf_ed_pend','1'); }catch(e){} });
+  }, 600);
+}
+function carregarEDNuvem(){
+  fetch(ED_URL+'?t='+Date.now()).then(r=>r.json()).then(rem=>{
+    rem = rem || {};
+    let pend=false; try{ pend = localStorage.getItem('yf_ed_pend')==='1' || localStorage.getItem('yf_ed_nuvem')!=='1'; }catch(e){}
+    // 1ª vez neste aparelho (ou envio pendente): junta o que estava só aqui com o da nuvem e envia
+    EDITED = pend ? {...rem, ...EDITED} : rem;
+    try{ localStorage.setItem('yf_ed_nuvem','1'); localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){}
+    if(pend) persistED();
+    _edPronto = true; render();
+  }).catch(()=>{});
+}
+
 function saveEd(id, data){
   EDITED[id] = {...(EDITED[id]||{}), ...data};
-  try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){}
+  persistED();
 }
 
 // ── REGRAS DE CONCILIAÇÃO AUTOMÁTICA ──
@@ -3674,7 +3699,8 @@ function desconcEl(el){ desconc(el.dataset.id); }
 function ignEl(el){ ign(el.dataset.id); }
 
 function resetConciliacao(){
-  if(!confirm('Isso vai apagar TODAS as conciliações salvas neste navegador (edições, categorias, status) e recarregar do zero. Confirma?')) return;
+  if(!confirm('Isso vai apagar TODAS as conciliações salvas no app (em todos os aparelhos) (edições, categorias, status) e recarregar do zero. Confirma?')) return;
+  EDITED = {}; persistED();
   localStorage.removeItem('yf_ed');
   localStorage.removeItem('yf_cad');
   localStorage.removeItem('yf_meta_forn');
@@ -3987,7 +4013,7 @@ function aplicarCompLote(){
   if(!alvo.length){ toast('Nenhum pendente sem competência neste filtro'); return; }
   if(!confirm('Aplicar competência '+fmtComp(v)+' em '+alvo.length+' lançamento(s) pendente(s) sem competência'+(busca?' (busca: "'+busca+'")':'')+'?')) return;
   alvo.forEach(t=>{ t.comp=v; EDITED[t.id]={...(EDITED[t.id]||{}),comp:v}; });
-  try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){}
+  persistED();
   toast('✓ Competência '+fmtComp(v)+' aplicada em '+alvo.length,'ok');
   render();
 }
@@ -4011,9 +4037,9 @@ function desconc(id){
   // Se for um espelho de transferência, desfaz o original em vez dele
   if(t.espelhoDe){ desconc(t.espelhoDe); return; }
   // Remover espelho vinculado, se houver
-  if(EDITED['esp_'+id]){ delete EDITED['esp_'+id]; try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){} }
+  if(EDITED['esp_'+id]){ delete EDITED['esp_'+id]; persistED(); }
   // Transferência criada manualmente: desfazer = excluir os dois lançamentos
-  if(EDITED[id] && EDITED[id].manual){ delete EDITED[id]; try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){} toast('🗑 Transferência excluída'); render(); return; }
+  if(EDITED[id] && EDITED[id].manual){ delete EDITED[id]; persistED(); toast('🗑 Transferência excluída'); render(); return; }
   t.status='pendente';
   saveEd(id,{status:'pendente',cat:undefined,contaTransf:null});
   toast('↩ Desfeito');
@@ -5853,7 +5879,7 @@ function diagnosticoSaldo(){
 }
 function corrigirItemSaldo(id){
   const r = RAW.find(x=>x.id===id);
-  if(r && r.previsto){ EDITED[id]={...(EDITED[id]||{}),status:'ignorado',obs:'Baixado (pago pelo extrato)'}; try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){} render(); abrirConferencia(); return; }
+  if(r && r.previsto){ EDITED[id]={...(EDITED[id]||{}),status:'ignorado',obs:'Baixado (pago pelo extrato)'}; persistED(); render(); abrirConferencia(); return; }
   if(r){
     const ed = {...(EDITED[id]||{})};
     delete ed.amt; delete ed.conta;
@@ -5873,7 +5899,7 @@ function corrigirItemSaldo(id){
     }
     delete EDITED[id];
   }
-  try{ localStorage.setItem('yf_ed', JSON.stringify(EDITED)); }catch(e){}
+  persistED();
   render(); abrirConferencia();
 }
 function corrigirItemSaldoEl(el){
@@ -6731,6 +6757,7 @@ function toggleTime(){
 
 // INIT
 render();
+if(typeof window.fetch==='function') carregarEDNuvem();
 </script>
 <!-- MODAL SELETOR DE CATEGORIA -->
 <div class="modal-bg" id="catpicker-bg" onclick="if(event.target===this) fecharCatPicker()">
