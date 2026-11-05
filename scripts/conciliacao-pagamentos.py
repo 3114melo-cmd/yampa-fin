@@ -111,6 +111,7 @@ def main():
     ap.add_argument('--leitura')
     ap.add_argument('--ignorar', default='')
     ap.add_argument('--enviar', action='store_true')
+    ap.add_argument('--pdf', action='store_true', help='só gera o PDF, sem enviar')
     ap.add_argument('--out', default='/tmp/conciliacao')
     a = ap.parse_args()
     ignorar = set(x for x in a.ignorar.split(',') if x)
@@ -389,6 +390,8 @@ def main():
                comprovantes_do_dia=len(comps_dia), fotos_conferidas=len([c for c in comps_dia if c['lido']]),
                pix_aguardando_stone=aguardando, pendencias=pend, tem_pendencia=bool(pend),
                relatorio_texto=texto, ajustes_internos=[g['texto'] for g in ajustes])
+    if a.pdf:
+        res['pdf'] = gerar_pdf(res, a.out)
     if a.enviar and pend:
         res['envio'] = enviar(res, a.out)
     print(json.dumps(res, ensure_ascii=False, indent=1))
@@ -429,30 +432,84 @@ def relatorio_texto(dia, conferidos, pend):
                 L.append(f"{f.get('cliente')}" + (f" – pedido #{f['pedido']}" if f.get('pedido') else ''))
                 if x['detalhe']:
                     L += x['detalhe'].split('\n')
-                L += [f"Valor: R$ {brl(f.get('valor') or 0)} – {f.get('pag')}", f"Vendedor: {f.get('vendedor')}",
+                L += [f"Valor: R$ {brl(f.get('valor') or 0)} – {limpa(f.get('pag'))}", f"Vendedor: {f.get('vendedor')}",
                       f"Entregador: {f.get('entregador')}", f"Rota: {f.get('rota')}"]
     return '\n'.join(L)
 
 
-def enviar(res, out):
+def limpa(t):
+    return re.sub(r'[\u2300-\u23FF\u2600-\u27BF\u2B00-\u2BFF\U0001F300-\U0001FAFF\uFE0F]', '', str(t or '')).strip()
+
+
+def gerar_pdf(res, out):
     from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-    from reportlab.lib.styles import getSampleStyleSheet
-    from xml.sax.saxutils import escape
+    from reportlab.lib import colors
+    from reportlab.lib.units import mm
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepTogether
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from xml.sax.saxutils import escape as esc
+    F, FB = 'Helvetica', 'Helvetica-Bold'
+    try:
+        pdfmetrics.registerFont(TTFont('DJ', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'))
+        pdfmetrics.registerFont(TTFont('DJB', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'))
+        F, FB = 'DJ', 'DJB'
+    except Exception:
+        pass
+    VERDE, VERM, AMAR, CINZA = colors.HexColor('#1a7f37'), colors.HexColor('#c62828'), colors.HexColor('#b26a00'), colors.HexColor('#555555')
+    st = lambda **k: ParagraphStyle('x', fontName=k.pop('f', F), fontSize=k.pop('s', 10), leading=k.pop('l', 14), **k)
     d = datetime.strptime(res['dia'], '%Y-%m-%d').strftime('%d/%m/%Y')
     pdf = os.path.join(out, f'conciliacao-{res["dia"]}.pdf')
-    ss = getSampleStyleSheet()
-    el = []
-    for linha in res['relatorio_texto'].split('\n'):
-        if not linha:
-            el.append(Spacer(1, 6))
-        elif linha.startswith('*Relatório'):
-            el.append(Paragraph(escape(linha.strip('*')), ss['Heading1']))
-        elif linha.startswith('*'):
-            el.append(Paragraph(escape(linha.strip('*')), ss['Heading3']))
-        else:
-            el.append(Paragraph(escape(linha.replace('✅', '(ok)')), ss['Normal']))
-    SimpleDocTemplate(pdf, pagesize=A4, title=f'Conciliação {d}').build(el)
+    n = contagem(res['pendencias'])
+    el = [Paragraph('Conciliação de pagamentos', st(f=FB, s=18, l=22)),
+          Paragraph(f'Dia {d} · MotoRun × comprovantes × Stone', st(s=10, textColor=CINZA)), Spacer(1, 8 * mm),
+          Paragraph('Relatório geral', st(f=FB, s=14, l=18)), Spacer(1, 2 * mm)]
+    linhas = [[Paragraph('✓', st(f=FB, s=12, textColor=VERDE)), Paragraph(f'<b>{qtd(res["conferidos"])}</b> conferidos', st(s=11))]]
+    for t, txt, _ in TITULOS:
+        if n[t] or t in ('valor_difere', 'sem_comprovante'):
+            cor = VERM if n[t] else CINZA
+            linhas.append([Paragraph('!' if n[t] else '–', st(f=FB, s=12, textColor=cor)), Paragraph(f'<b>{qtd(n[t])}</b> {txt}', st(s=11))])
+    tg = Table(linhas, colWidths=[8 * mm, 150 * mm])
+    tg.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), ('LINEBELOW', (0, 0), (-1, -2), 0.3, colors.HexColor('#e0e0e0')),
+                            ('TOPPADDING', (0, 0), (-1, -1), 4), ('BOTTOMPADDING', (0, 0), (-1, -1), 4)]))
+    el += [tg, Spacer(1, 8 * mm)]
+    if res['pendencias']:
+        el.append(Paragraph('Relatório de pendências', st(f=FB, s=14, l=18)))
+        for t, _, tit in TITULOS:
+            itens = [x for x in res['pendencias'] if x['tipo'] == t]
+            if not itens:
+                continue
+            el += [Spacer(1, 4 * mm), Paragraph(f'{qtd(len(itens))} {tit}', st(f=FB, s=11, textColor=VERM))]
+            for x in itens:
+                f = x['ficha']
+                nome = esc(str(f.get('cliente'))) + (f"  <font color='#555555'>· pedido #{f['pedido']}</font>" if f.get('pedido') else '')
+                rows = [[Paragraph(nome, st(f=FB, s=11)), '']]
+                for dl in (x['detalhe'] or '').split('\n'):
+                    if dl:
+                        rows.append([Paragraph(esc(dl), st(s=10, textColor=AMAR, f=FB)), ''])
+                for k, v in (('Valor', f"R$ {brl(f.get('valor') or 0)} – {limpa(f.get('pag'))}"), ('Vendedor', f.get('vendedor')),
+                             ('Entregador', f.get('entregador')), ('Rota', f.get('rota'))):
+                    rows.append([Paragraph(k, st(s=10, textColor=CINZA)), Paragraph(esc(str(v)), st(s=10))])
+                tb = Table(rows, colWidths=[28 * mm, 132 * mm])
+                sty = [('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f6f6f6')), ('BOX', (0, 0), (-1, -1), 0.4, colors.HexColor('#d0d0d0')),
+                       ('LINEBEFORE', (0, 0), (0, -1), 3, VERM), ('TOPPADDING', (0, 0), (-1, -1), 3), ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                       ('LEFTPADDING', (0, 0), (-1, -1), 8)]
+                for i in range(len(rows)):
+                    if rows[i][1] == '':
+                        sty.append(('SPAN', (0, i), (1, i)))
+                tb.setStyle(TableStyle(sty))
+                el += [Spacer(1, 3 * mm), KeepTogether(tb)]
+    else:
+        el.append(Paragraph('Nenhuma pendência.', st(s=11, textColor=VERDE)))
+    SimpleDocTemplate(pdf, pagesize=A4, title=f'Conciliação {d}', leftMargin=20 * mm, rightMargin=20 * mm,
+                      topMargin=18 * mm, bottomMargin=18 * mm).build(el)
+    return pdf
+
+
+def enviar(res, out):
+    d = datetime.strptime(res['dia'], '%Y-%m-%d').strftime('%d/%m/%Y')
+    pdf = gerar_pdf(res, out)
 
     tok = os.environ['WA_TOKEN']
     def curl(args):
