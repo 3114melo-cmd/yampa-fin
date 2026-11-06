@@ -2853,6 +2853,7 @@ const REGRAS_AUTO = [
   {nome:'Natanel (Nathan) 03/11 R$ 400 → Alimentação motoboy', tipo:'DEBIT', pix:true, termos:['NATANEL SANTANA'], valor:400, data:'2026-11-03', cat:'5.3.13', desc:'Alimentação motoboy NATHAN (Pix)'},
   {nome:'Pix DH Holding 04/11 R$ 500 → Pró-labore', tipo:'DEBIT', pix:true, termos:['DH HOLDING'], valor:500, data:'2026-11-04', cat:'5.3.2', desc:'Pró-labore (Pix via DH Holding)'},
   {nome:'Alisson Amaro 05/11 R$ 200 → Manutenção energia solar', tipo:'DEBIT', pix:true, termos:['ALISSON AMARO'], valor:200, data:'2026-11-05', cat:'5.2.19', desc:'Manutenção equipamento da energia solar (Alisson Amaro Alves)'},
+  {nome:'Pix DH Holding 06/11 R$ 3.080 → FITOWAY acordo 4/5', tipo:'DEBIT', pix:true, termos:['DH HOLDING'], valor:3080, data:'2026-11-06', cat:'4.2.1', desc:'FITOWAY - ACORDO - PARCELA 4/5 (Pix via DH Holding)'},
   {nome:'D T Suplementos → Fornecedor', tipo:'DEBIT', pix:true, termos:['D T SUPLEMENTOS DISTRIBUIDORA'], cat:'4.2.1'},
   {nome:'João Maria Moura de Melo Elias → Motoboy Terceirizado', tipo:'DEBIT', pix:true, termos:['JOAO MARIA MOURA DE MELO ELIAS'], cat:'4.4.6'},
   {nome:'Vindi/Yapay → App Converta (mensalidade)', tipo:'DEBIT', pix:false, termos:['VINDI INTERMEDIADORA','YAPAY'], cat:'5.2.99'},
@@ -2890,6 +2891,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pv_79872155': ['2026-11-06','pix_dhholding_3080','Pix Stone R$ 3.080,00 via DH Holding 06/11 16:22 (parcela R$ 3.079,87)'], // FITOWAY acordo 4/5
   'pv_fcaaabf0': ['2026-11-05','pag_bodyfood_1533','Boleto Stone pago 05/11 21:47 (Body Food R$ 1.533,11)'], // DR PEANUT nfe 37.487 1/6
   'pvc_canibal_06': ['2026-11-05','st_89b490a4','Pix R$ 1.436,61 (saldo) + R$ 1.450,00 espécie — QUITADA'],
   'pv_9a6a5f76': ['2026-11-05','st_a97dd025','Boleto Max Titanium parc. 7/10 pago com juros'],
