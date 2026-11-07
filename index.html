@@ -2900,7 +2900,7 @@ const RAW = [
   {id:'st_1e80123f',date:'2026-11-06',hora:'21:06',desc:'Transferência | Pix | Andre Dos Santos Ribeiro',amt:1680.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Andre Dos Santos Ribeiro',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Salário SOLDADO (André) ref. out/26'},
   {id:'st_23d9f9bc',date:'2026-11-06',hora:'21:38',desc:'Antecipação | Recebimento vendas',amt:59.35,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_4242db24',date:'2026-11-06',hora:'21:40',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:200.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'DH HOLDING IMOBILIARIA LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Pró-labore (via DH Holding)'},
-  {id:'st_beb2d6ce',date:'2026-11-06',hora:'21:41',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:110.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'DH HOLDING IMOBILIARIA LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Mensalidade Claude (via DH Holding)'},
+  {id:'st_beb2d6ce',date:'2026-11-06',hora:'21:41',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:110.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'DH HOLDING IMOBILIARIA LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Saldo colocado no cartão Nubank (via DH Holding) — usado na fatura; previsões da fatura de 17/11 mantidas'},
   {id:'st_8403be44',date:'2026-11-06',hora:'22:06',desc:'Antecipação | Recebimento vendas',amt:59.35,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_4f9d28b5',date:'2026-11-07',hora:'08:29',desc:'Transferência | Pix | ITALO IGO DA SILVA DOMINGOS',amt:10.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ITALO IGO DA SILVA DOMINGOS',meio:'PIX'},
   {id:'st_93f84bd4',date:'2026-11-07',hora:'08:43',desc:'Pix | Maquininha | FRANCISCA CAMARA DAS CHAGAS DO NASCIMENTO',amt:132.34,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'FRANCISCA CAMARA DAS CHAGAS DO NASCIMENTO',meio:'PIX',obs:'Líquido: tarifa de R$ 0,66 abatida'},
@@ -3021,7 +3021,6 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
-  'df_claude_202611': ['2026-11-06','st_beb2d6ce','Pago via Pix DH Holding R$ 110,00 em 06/11'], // CLAUDE nov/26
   'pvs_soldado_20261109': ['2026-11-06','st_1e80123f','Pix André (Soldado) 06/11 21:06'], // SALÁRIO SOLDADO out/26
   'pv_3a2b07ea': ['2026-11-06','st_99be7560','Boleto Leader Consultoria R$ 795,68 pago 06/11 17:18'], // DUX 1/3
   'pv_79872155': ['2026-11-06','st_66a69011','Pix Stone R$ 3.080,00 via DH Holding 06/11 16:22 (parcela R$ 3.079,87)'], // FITOWAY acordo 4/5
