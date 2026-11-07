@@ -2919,7 +2919,8 @@ const RAW = [
   {id:'xp_4e73577a',date:'2026-11-06',hora:'10:59',desc:'Pix recebido de Erielle Ferreira Vidal',amt:15.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Erielle Ferreira Vidal',meio:'PIX'},
   {id:'xp_230b5eae',date:'2026-11-06',hora:'13:57',desc:'Pix recebido de Jonatas Brainer Seabra da Silva',amt:30.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Jonatas Brainer Seabra da Silva',meio:'PIX'},
   {id:'xp_64a2556b',date:'2026-11-07',hora:'10:22',desc:'Pix recebido de Fernanda Gabriele de Moura Pires',amt:6.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Fernanda Gabriele de Moura Pires',meio:'PIX'},
-  {id:'cx_20261107_coop',date:'2026-11-07',hora:'10:51',desc:'Motoboy cooperativa - taxa de entrega (espécie)',amt:13.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.4.6',cli:'Motoboy Cooperativa',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11'}
+  {id:'cx_20261107_coop',date:'2026-11-07',hora:'10:51',desc:'Motoboy cooperativa - taxa de entrega (espécie)',amt:13.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.4.6',cli:'Motoboy Cooperativa',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11'},
+  {id:'cx_20261107_sal_rodrigo',date:'2026-11-07',hora:'13:17',desc:'Salário RODRIGO - ref. out/26 (espécie)',amt:1226.56,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10',obs:'Salário R$ 1.296,80 − R$ 70,24 descontados (1 dia de férias que estava pendente) = R$ 1.226,56 pago em dinheiro'}
 ];
 
 // Estado
@@ -3022,6 +3023,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pvs_rodrigo_20261109': ['2026-11-07','cx_20261107_sal_rodrigo','Pago em dinheiro R$ 1.226,56 (desconto de R$ 70,24 de 1 dia de férias)'], // SALÁRIO RODRIGO out/26
   'pvs_soldado_20261109': ['2026-11-06','st_1e80123f','Pix André (Soldado) 06/11 21:06'], // SALÁRIO SOLDADO out/26
   'pv_3a2b07ea': ['2026-11-06','st_99be7560','Boleto Leader Consultoria R$ 795,68 pago 06/11 17:18'], // DUX 1/3
   'pv_79872155': ['2026-11-06','st_66a69011','Pix Stone R$ 3.080,00 via DH Holding 06/11 16:22 (parcela R$ 3.079,87)'], // FITOWAY acordo 4/5
