@@ -332,7 +332,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 07/11 · 10:32
+        Stone · 07/11 · 14:14
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -2920,7 +2920,31 @@ const RAW = [
   {id:'xp_230b5eae',date:'2026-11-06',hora:'13:57',desc:'Pix recebido de Jonatas Brainer Seabra da Silva',amt:30.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Jonatas Brainer Seabra da Silva',meio:'PIX'},
   {id:'xp_64a2556b',date:'2026-11-07',hora:'10:22',desc:'Pix recebido de Fernanda Gabriele de Moura Pires',amt:6.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Fernanda Gabriele de Moura Pires',meio:'PIX'},
   {id:'cx_20261107_coop',date:'2026-11-07',hora:'10:51',desc:'Motoboy cooperativa - taxa de entrega (espécie)',amt:13.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.4.6',cli:'Motoboy Cooperativa',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11'},
-  {id:'cx_20261107_sal_rodrigo',date:'2026-11-07',hora:'13:17',desc:'Salário RODRIGO - ref. out/26 (espécie)',amt:1226.56,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10',obs:'Salário R$ 1.296,80 − R$ 70,24 descontados (1 dia de férias que estava pendente) = R$ 1.226,56 pago em dinheiro'}
+  {id:'cx_20261107_sal_rodrigo',date:'2026-11-07',hora:'13:17',desc:'Salário RODRIGO - ref. out/26 (espécie)',amt:1226.56,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10',obs:'Salário R$ 1.296,80 − R$ 70,24 descontados (1 dia de férias que estava pendente) = R$ 1.226,56 pago em dinheiro'},
+  // SYNC 07/11/2026 14:53
+  {id:'st_97df0c44',date:'2026-11-07',hora:'10:47',desc:'Transferência | Pix | DHFIT NUTRICAO ESPORTIVA LTDA',amt:225.64,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA',meio:'PIX'},
+  {id:'st_8797fe8e',date:'2026-11-07',hora:'10:47',desc:'Transferência | Pix | Tereza Cristina Caldas Da Silva',amt:99.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Tereza Cristina Caldas Da Silva',meio:'PIX'},
+  {id:'st_dc3cb131',date:'2026-11-07',hora:'10:48',desc:'Transferência | Pix | Flavio Henrique de Oliveira',amt:35.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Flávio Henrique de Oliveira',meio:'PIX'},
+  {id:'st_ff3fe20f',date:'2026-11-07',hora:'11:20',desc:'Pix | Maquininha | Alex Figueiredo de Oliveira',amt:45.38,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Alex Figueiredo de Oliveira',meio:'PIX',obs:'Líquido: tarifa de R$ 0,22 abatida'},
+  {id:'st_35434aaf',date:'2026-11-07',hora:'11:28',desc:'Antecipação | Recebimento vendas',amt:119.54,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_14edf564',date:'2026-11-07',hora:'11:28',desc:'Transferência | Pix | KEILA ADRIANA CUNHA DA SILVA',amt:20.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'KEILA ADRIANA CUNHA DA SILVA',meio:'PIX'},
+  {id:'st_2074db68',date:'2026-11-07',hora:'11:30',desc:'Antecipação | Recebimento vendas',amt:44.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_e5a7a8e0',date:'2026-11-07',hora:'11:41',desc:'Transferência | Pix | Jose Diogo Soares De Oliveira',amt:115.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Jose Diogo Soares De Oliveira',meio:'PIX'},
+  {id:'st_6a7433bb',date:'2026-11-07',hora:'11:59',desc:'Transferência | Pix | Renato Cesar Aguiar De Sousa',amt:1559.63,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Renato Cesar Aguiar De Sousa',meio:'PIX',status_fixo:'conciliado',comp:'2026-10'},
+  {id:'st_63980924',date:'2026-11-07',hora:'12:14',desc:'Pix | Maquininha | DANNIELA SILVA ALVES DE OLIVEIRA',amt:154.33,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Danniela Silva Alves',meio:'PIX',obs:'Líquido: tarifa de R$ 0,77 abatida'},
+  {id:'st_83ab38ad',date:'2026-11-07',hora:'12:14',desc:'Antecipação | Recebimento vendas',amt:62.01,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_958d32c7',date:'2026-11-07',hora:'12:23',desc:'Pix | Maquininha | ROSANGELA MARIA LIMA WILSON',amt:109.45,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ROSANGELA MARIA LIMA WILSON',meio:'PIX',obs:'Líquido: tarifa de R$ 0,55 abatida'},
+  {id:'st_634dae2f',date:'2026-11-07',hora:'12:26',desc:'Pix | Maquininha | JOSENILSON DA SILVA MENDES',amt:143.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Josenilson Da Silva Mendes',meio:'PIX',obs:'Líquido: tarifa de R$ 0,72 abatida'},
+  {id:'st_b79bb5cc',date:'2026-11-07',hora:'12:44',desc:'Pix | Maquininha | Eduardo Melo Queiroga',amt:47.76,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Eduardo Melo Queiroga',meio:'PIX',obs:'Líquido: tarifa de R$ 0,24 abatida'},
+  {id:'st_f83d0e2a',date:'2026-11-07',hora:'13:10',desc:'Transferência | Pix | PEDRO LUCAS SILVA DE SOUZA',amt:200.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PEDRO LUCAS SILVA DE SOUZA',meio:'PIX'},
+  {id:'st_35178f4d',date:'2026-11-07',hora:'13:20',desc:'Transferência | Pix | Valdir Eustaquio da Conceicao',amt:852.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Valdir Eustaquio da Conceicao',meio:'PIX',status_fixo:'conciliado',comp:'2026-10'},
+  {id:'st_1f822d21',date:'2026-11-07',hora:'13:26',desc:'Pix | Maquininha | ROBERTO FERREIRA CARVALHO',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ROBERTO FERREIRA CARVALHO',meio:'PIX',obs:'Líquido: tarifa de R$ 0,37 abatida'},
+  {id:'st_22d47d66',date:'2026-11-07',hora:'13:48',desc:'Transferência | Pix | Girlayne Maria da Silva',amt:25.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Girlayne Maria da Silva',meio:'PIX'},
+  {id:'st_40eef770',date:'2026-11-07',hora:'13:52',desc:'Transferência | Pix | SAMUEL PINHEIRO DA SILVA',amt:29.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'SAMUEL PINHEIRO DA SILVA',meio:'PIX'},
+  {id:'st_d9a20ed9',date:'2026-11-07',hora:'14:06',desc:'Antecipação | Recebimento vendas',amt:56.77,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_0d142c7b',date:'2026-11-07',hora:'14:14',desc:'Pix | Maquininha | MARCELO FELIX DE SOUZA',amt:47.76,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARCELO FELIX DE SOUZA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,24 abatida'},
+  {id:'xp_a99a4408',date:'2026-11-07',hora:'13:16',desc:'Pix recebido de Raislanne Karoline Diniz de Oliveira',amt:6.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Raislanne Karoline Diniz de Oliveira',meio:'PIX'},
+  {id:'xp_ffdae102',date:'2026-11-07',hora:'13:39',desc:'Pix recebido de Dhfit Nutricao Esportiva',amt:200.7,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'DHFIT NUTRICAO ESPORTIVA LTDA',meio:'PIX'}
 ];
 
 // Estado
@@ -3023,6 +3047,8 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pvs_renato_20261109': ['2026-11-07','st_6a7433bb','Pix Renato 07/11 11:59'], // SALÁRIO RENATO out/26
+  'pvs_valdir_20261109': ['2026-11-07','st_35178f4d','Pix Valdir 07/11 13:20'], // SALÁRIO VALDIR out/26
   'pvs_rodrigo_20261109': ['2026-11-07','cx_20261107_sal_rodrigo','Pago em dinheiro R$ 1.226,56 (desconto de R$ 70,24 de 1 dia de férias)'], // SALÁRIO RODRIGO out/26
   'pvs_soldado_20261109': ['2026-11-06','st_1e80123f','Pix André (Soldado) 06/11 21:06'], // SALÁRIO SOLDADO out/26
   'pv_3a2b07ea': ['2026-11-06','st_99be7560','Boleto Leader Consultoria R$ 795,68 pago 06/11 17:18'], // DUX 1/3
@@ -5986,7 +6012,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1190.89, em:'07/11/2026 10:35'}, XP:{valor:340.34, em:'07/11/2026 10:35'}};
+const SALDO_BANCO = {Stone:{valor:530.74, em:'07/11/2026 14:53'}, XP:{valor:547.04, em:'07/11/2026 14:53'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
