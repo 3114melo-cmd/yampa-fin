@@ -392,7 +392,7 @@ def main():
                relatorio_texto=texto, ajustes_internos=[g['texto'] for g in ajustes])
     if a.pdf:
         res['pdf'] = gerar_pdf(res, a.out)
-    if a.enviar and pend:
+    if a.enviar and entregas:  # Felipe 08/11/2026: envia todo dia que teve venda (com ou sem pendência)
         res['envio'] = enviar(res, a.out)
     print(json.dumps(res, ensure_ascii=False, indent=1))
 
