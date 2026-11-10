@@ -1,0 +1,30 @@
+{
+ "abertas": {
+  "sem_comprovante:-P5q27SNRmrg8mKAFXZU": {
+   "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
+   "tipo": "sem_comprovante",
+   "ficha": {
+    "cliente": "Reinaldo",
+    "pedido": 7168,
+    "valor": 75.0,
+    "pag": "Cartão 3x",
+    "vendedor": "Renato",
+    "entregador": "Rodrigo",
+    "rota": "Sul"
+   },
+   "detalhe": "",
+   "valor": 75.0,
+   "imagem": null,
+   "dia": "2026-11-09",
+   "pedido_k": "-P5q27SNRmrg8mKAFXZU",
+   "comp_id": null,
+   "comp_dia": null,
+   "t_comp": null,
+   "foto_valor": null,
+   "nomes": [
+    "Reinaldo"
+   ]
+  }
+ },
+ "resolvidas": []
+}

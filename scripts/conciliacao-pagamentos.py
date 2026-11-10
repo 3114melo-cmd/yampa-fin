@@ -103,7 +103,47 @@ def eh_cartao(tipo):
     return tipo in ('credito', 'debito', 'link')
 
 
+ESTADO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'dados', 'pendencias-conciliacao.json')
+ESTADO = os.path.normpath(ESTADO)
+
+
+def carregar_estado():
+    try:
+        e = json.load(open(ESTADO))
+    except (FileNotFoundError, ValueError):
+        e = {}
+    e.setdefault('abertas', {})
+    e.setdefault('resolvidas', [])
+    return e
+
+
+def salvar_estado(e):
+    os.makedirs(os.path.dirname(ESTADO), exist_ok=True)
+    e['resolvidas'] = e['resolvidas'][-300:]
+    json.dump(e, open(ESTADO, 'w'), ensure_ascii=False, indent=1)
+
+
+def resolver(argv):
+    """python3 scripts/conciliacao-pagamentos.py resolver <nº do pedido | id da pendência> --obs "o que foi"
+    """
+    ap = argparse.ArgumentParser()
+    ap.add_argument('alvo')
+    ap.add_argument('--obs', default='comprovante enviado pelo Felipe')
+    ap.add_argument('--listar', action='store_true')
+    a = ap.parse_args(argv)
+    e = carregar_estado()
+    achou = [k for k, v in e['abertas'].items() if k == a.alvo or str(v['ficha'].get('pedido')) == a.alvo.lstrip('#')]
+    for k in achou:
+        x = e['abertas'].pop(k)
+        e['resolvidas'].append(dict(x, resolvido_em=datetime.now(TZ).strftime('%Y-%m-%d'), motivo=a.obs))
+    salvar_estado(e)
+    print(json.dumps(dict(resolvidas=achou, ainda_abertas=[f"{v['ficha'].get('cliente')} #{v['ficha'].get('pedido')} ({v['tipo']}, desde {v['dia']})"
+                                                            for v in e['abertas'].values()]), ensure_ascii=False, indent=1))
+
+
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == 'resolver':
+        return resolver(sys.argv[2:])
     ap = argparse.ArgumentParser()
     ap.add_argument('dia')
     ap.add_argument('--stone', required=True)
@@ -112,6 +152,7 @@ def main():
     ap.add_argument('--ignorar', default='')
     ap.add_argument('--enviar', action='store_true')
     ap.add_argument('--pdf', action='store_true', help='só gera o PDF, sem enviar')
+    ap.add_argument('--salvar', action='store_true', help='grava as pendências em dados/pendencias-conciliacao.json')
     ap.add_argument('--out', default='/tmp/conciliacao')
     a = ap.parse_args()
     ignorar = set(x for x in a.ignorar.split(',') if x)
@@ -384,12 +425,88 @@ def main():
         addp(g['tipo'], g['id'].split(':', 1)[1], ficha(p, c) if c else {}, g['texto'], g['valor'], g.get('imagem'), c and c['pedido'])
 
     conferidos = len([p for p in alvo if p['_k'] not in com_pend])
-    texto = relatorio_texto(a.dia, conferidos, pend)
+
+    # ---- pendências de dias anteriores (Felipe, 10/11/2026): repetem no relatório até achar o pagamento
+    #      ou até o Felipe mandar o comprovante (aí: python3 scripts/conciliacao-pagamentos.py resolver <pedido|id> --obs "...")
+    estado = carregar_estado()
+    antigas, resolvidas_hoje = [], []
+    cache_comps = {}
+
+    def comps_do_dia(dd):
+        if dd not in cache_comps:
+            cache_comps[dd] = fb(f'comprovantes/{dd}.json') or {}
+        return cache_comps[dd]
+
+    for pid, x in list(estado['abertas'].items()):
+        if x['dia'] >= a.dia:
+            continue  # reprocessamento do mesmo dia: a pendência é recalculada abaixo
+        motivo = None
+        pk = x.get('pedido_k')
+        ped_atual = fb(f'pedidos/{pk}.json') if pk else None
+        if pk and (not ped_atual or ped_atual.get('status') != 'entregue'):
+            motivo = 'pedido removido ou não está mais como entregue no MotoRun'
+        elif x['tipo'] == 'sem_comprovante':
+            pv, tsp = valor(ped_atual.get('valor')), (ped_atual.get('ts') or 0) / 1000
+            d0 = datetime.strptime(x['dia'], '%Y-%m-%d').replace(tzinfo=TZ) - timedelta(days=3)
+            dd = d0
+            while dd <= dia and not motivo:
+                ds = dd.strftime('%Y-%m-%d')
+                for ck, cr in comps_do_dia(ds).items():
+                    cc = comp_k.get(ck)
+                    if cc and cc['pedido'] not in (None, pk):
+                        continue  # comprovante já é de outro pedido
+                    nomes = (cr.get('nome'), cc['caneta'] if cc else '', cc['pagador'] if cc else '')
+                    vv = cc['v'] if cc else valor(cr.get('valor'))
+                    if nome_bate(ped_atual.get('nome'), *nomes) and abs(vv - pv) < 0.01 and cr['ts'] / 1000 >= tsp - 600:
+                        motivo = f"comprovante localizado (lançado em {hm(cr['ts'] / 1000)} por {cr.get('vendedor', '?')})"
+                        break
+                dd += timedelta(days=1)
+        elif x['tipo'] == 'pix_nao_entrou':
+            tc = x.get('t_comp') or 0
+            for s_ in pix:
+                if not s_['usado'] and abs(s_['v'] - x['valor']) < 0.01 and tc - 2 * 86400 <= s_['t'] and \
+                        any(nome_bate(nm, s_['n']) for nm in x.get('nomes', []) if nm):
+                    s_['usado'] = True
+                    motivo = f"PIX localizado na Stone ({hm(s_['t'])})"
+                    break
+        elif x['tipo'] == 'valor_difere':
+            if ped_atual and abs(valor(ped_atual.get('valor')) - x.get('foto_valor', -1)) < 0.01:
+                motivo = 'valor do pedido corrigido no MotoRun'
+        elif x.get('comp_id') and not fb(f"comprovantes/{x.get('comp_dia')}/{x['comp_id']}.json"):
+            motivo = 'comprovante removido do MotoRun'
+        if motivo:
+            resolvidas_hoje.append(dict(x, resolvido_em=a.dia, motivo=motivo))
+        else:
+            if ped_atual:  # atualiza a ficha com o que está no MotoRun hoje
+                x['ficha'].update(valor=valor(ped_atual.get('valor')), pag=ped_atual.get('pag'), vendedor=ped_atual.get('vendedor'))
+            antigas.append(x)
+
+    texto = relatorio_texto(a.dia, conferidos, pend, antigas, resolvidas_hoje)
     res = dict(dia=a.dia, fotos_lidas=leitura_ok, extrato_stone_ate=hm(ultimo), extrato_completo=extrato_completo,
                pedidos_entregues=len(entregas), exigem_comprovante=len(alvo), conferidos=conferidos,
                comprovantes_do_dia=len(comps_dia), fotos_conferidas=len([c for c in comps_dia if c['lido']]),
-               pix_aguardando_stone=aguardando, pendencias=pend, tem_pendencia=bool(pend),
+               pix_aguardando_stone=aguardando, pendencias=pend, tem_pendencia=bool(pend or antigas),
+               pendencias_anteriores=antigas, resolvidas_hoje=resolvidas_hoje,
                relatorio_texto=texto, ajustes_internos=[g['texto'] for g in ajustes])
+
+    if a.salvar:
+        for x in resolvidas_hoje:
+            estado['abertas'].pop(x['id'], None)
+            estado['resolvidas'].append(x)
+        for pid in [k for k, v in estado['abertas'].items() if v['dia'] == a.dia]:
+            estado['abertas'].pop(pid)
+        for x in pend:
+            ref = x['id'].split(':', 1)[1]
+            c = comp_k.get(ref) or (ped_k.get(ref) or {}).get('_comp')
+            pk = ref if ref in ped_k else (c or {}).get('pedido')
+            estado['abertas'][x['id']] = dict(
+                x, dia=a.dia, pedido_k=pk, comp_id=(c or {}).get('id'), comp_dia=(c or {}).get('dia'),
+                t_comp=(c['t_trans'] or c['t']) if c else None, foto_valor=c['v'] if c else None,
+                nomes=[n for n in ((c or {}).get('n'), (c or {}).get('caneta'), (c or {}).get('pagador'), x['ficha'].get('cliente')) if n],
+                imagem=None)
+        salvar_estado(estado)
+        res['estado_salvo'] = ESTADO
+
     if a.pdf:
         res['pdf'] = gerar_pdf(res, a.out)
     if a.enviar and entregas:  # Felipe 08/11/2026: envia todo dia que teve venda (com ou sem pendência)
@@ -412,28 +529,56 @@ def contagem(pend):
     return {t: len([x for x in pend if x['tipo'] == t]) for t, _, _ in TITULOS}
 
 
-def relatorio_texto(dia, conferidos, pend):
+ROTULO = {t: tit for t, _, tit in TITULOS}
+
+
+def ddmm(d):
+    return datetime.strptime(d, '%Y-%m-%d').strftime('%d/%m')
+
+
+def secoes(pend, antigas):
+    """[(título, [itens])] na ordem do relatório; itens antigos ganham a linha "Em aberto desde DD/MM"."""
+    out = []
+    for t, _, tit in TITULOS:
+        itens = [x for x in pend if x['tipo'] == t]
+        if itens:
+            out.append((f'{qtd(len(itens))} {tit}', itens))
+    if antigas:
+        itens = [dict(x, detalhe=f"Em aberto desde {ddmm(x['dia'])} – {ROTULO.get(x['tipo'], x['tipo'])}" + (('\n' + x['detalhe']) if x.get('detalhe') else ''))
+                 for x in sorted(antigas, key=lambda x: x['dia'])]
+        out.append((f'{qtd(len(antigas))} de dias anteriores ainda em aberto', itens))
+    return out
+
+
+def relatorio_texto(dia, conferidos, pend, antigas=(), resolvidas=()):
     d = datetime.strptime(dia, '%Y-%m-%d').strftime('%d/%m/%Y')
     n = contagem(pend)
     L = [f'*Relatório geral – {d}*', f'{qtd(conferidos)} conferidos ✅']
     for t, txt, _ in TITULOS:
         if n[t] or t in ('valor_difere', 'sem_comprovante'):
             L.append(f'{qtd(n[t])} {txt}')
-    if pend:
+    if antigas:
+        L.append(f'{qtd(len(antigas))} de dias anteriores ainda em aberto')
+    if resolvidas:
+        L.append(f"{len(resolvidas)} {'pendência anterior resolvida' if len(resolvidas) == 1 else 'pendências anteriores resolvidas'} ✅")
+    sec = secoes(pend, antigas)
+    if sec:
         L += ['', '*Relatório de pendências*']
-        for t, _, tit in TITULOS:
-            itens = [x for x in pend if x['tipo'] == t]
-            if not itens:
-                continue
-            L += ['', f'*{qtd(len(itens))} {tit}*']
+        for tit, itens in sec:
+            L += ['', f'*{tit}*']
             for x in itens:
                 f = x['ficha']
                 L.append('')
                 L.append(f"{f.get('cliente')}" + (f" – pedido #{f['pedido']}" if f.get('pedido') else ''))
-                if x['detalhe']:
+                if x.get('detalhe'):
                     L += x['detalhe'].split('\n')
                 L += [f"Valor: R$ {brl(f.get('valor') or 0)} – {limpa(f.get('pag'))}", f"Vendedor: {f.get('vendedor')}",
                       f"Entregador: {f.get('entregador')}", f"Rota: {f.get('rota')}"]
+    if resolvidas:
+        L += ['', '*Pendências anteriores resolvidas ✅*']
+        for x in resolvidas:
+            f = x['ficha']
+            L.append(f"{f.get('cliente')}" + (f" – pedido #{f['pedido']}" if f.get('pedido') else '') + f" (desde {ddmm(x['dia'])}): {x['motivo']}")
     return '\n'.join(L)
 
 
@@ -473,19 +618,27 @@ def gerar_pdf(res, out):
     tg = Table(linhas, colWidths=[8 * mm, 150 * mm])
     tg.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), ('LINEBELOW', (0, 0), (-1, -2), 0.3, colors.HexColor('#e0e0e0')),
                             ('TOPPADDING', (0, 0), (-1, -1), 4), ('BOTTOMPADDING', (0, 0), (-1, -1), 4)]))
+    if res.get('pendencias_anteriores'):
+        tg._cellvalues.append([Paragraph('!', st(f=FB, s=12, textColor=VERM)),
+                               Paragraph(f"<b>{qtd(len(res['pendencias_anteriores']))}</b> de dias anteriores ainda em aberto", st(s=11))])
+    if res.get('resolvidas_hoje'):
+        k = len(res['resolvidas_hoje'])
+        tg._cellvalues.append([Paragraph('✓', st(f=FB, s=12, textColor=VERDE)),
+                               Paragraph(f"<b>{k}</b> {'pendência anterior resolvida' if k == 1 else 'pendências anteriores resolvidas'}", st(s=11))])
+    tg = Table(tg._cellvalues, colWidths=[8 * mm, 150 * mm])
+    tg.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), ('LINEBELOW', (0, 0), (-1, -2), 0.3, colors.HexColor('#e0e0e0')),
+                            ('TOPPADDING', (0, 0), (-1, -1), 4), ('BOTTOMPADDING', (0, 0), (-1, -1), 4)]))
     el += [tg, Spacer(1, 8 * mm)]
-    if res['pendencias']:
+    sec = secoes(res['pendencias'], res.get('pendencias_anteriores', []))
+    if sec:
         el.append(Paragraph('Relatório de pendências', st(f=FB, s=14, l=18)))
-        for t, _, tit in TITULOS:
-            itens = [x for x in res['pendencias'] if x['tipo'] == t]
-            if not itens:
-                continue
-            el += [Spacer(1, 4 * mm), Paragraph(f'{qtd(len(itens))} {tit}', st(f=FB, s=11, textColor=VERM))]
+        for tit, itens in sec:
+            el += [Spacer(1, 4 * mm), Paragraph(esc(tit), st(f=FB, s=11, textColor=VERM))]
             for x in itens:
                 f = x['ficha']
                 nome = esc(str(f.get('cliente'))) + (f"  <font color='#555555'>· pedido #{f['pedido']}</font>" if f.get('pedido') else '')
                 rows = [[Paragraph(nome, st(f=FB, s=11)), '']]
-                for dl in (x['detalhe'] or '').split('\n'):
+                for dl in (x.get('detalhe') or '').split('\n'):
                     if dl:
                         rows.append([Paragraph(esc(dl), st(s=10, textColor=AMAR, f=FB)), ''])
                 for k, v in (('Valor', f"R$ {brl(f.get('valor') or 0)} – {limpa(f.get('pag'))}"), ('Vendedor', f.get('vendedor')),
@@ -502,6 +655,12 @@ def gerar_pdf(res, out):
                 el += [Spacer(1, 3 * mm), KeepTogether(tb)]
     else:
         el.append(Paragraph('Nenhuma pendência.', st(s=11, textColor=VERDE)))
+    if res.get('resolvidas_hoje'):
+        el += [Spacer(1, 8 * mm), Paragraph('Pendências anteriores resolvidas', st(f=FB, s=12, l=16, textColor=VERDE))]
+        for x in res['resolvidas_hoje']:
+            f = x['ficha']
+            el.append(Paragraph(esc(f"✓ {f.get('cliente')}" + (f" – pedido #{f['pedido']}" if f.get('pedido') else '') +
+                                    f" (desde {ddmm(x['dia'])}): {x['motivo']}"), st(s=10)))
     SimpleDocTemplate(pdf, pagesize=A4, title=f'Conciliação {d}', leftMargin=20 * mm, rightMargin=20 * mm,
                       topMargin=18 * mm, bottomMargin=18 * mm).build(el)
     return pdf
@@ -519,8 +678,11 @@ def enviar(res, out):
                '-F', 'type=application/pdf', '-F', f'file=@{pdf};type=application/pdf;filename=conciliacao.pdf'])
     n = contagem(res['pendencias'])
     outros = n['comprovante_antigo'] + n['comprovante_repetido']
-    params = [d, qtd(res['conferidos']), qtd(n['valor_difere']), qtd(n['sem_comprovante']),
-              qtd(n['pix_nao_entrou'] + outros)]
+    ant = {t: len([x for x in res.get('pendencias_anteriores', []) if x['tipo'] == t]) for t, _, _ in TITULOS}
+    def par(hoje, antes):
+        return qtd(hoje) + (f' (+{antes} de dias anteriores)' if antes else '')
+    params = [d, qtd(res['conferidos']), par(n['valor_difere'], ant['valor_difere']), par(n['sem_comprovante'], ant['sem_comprovante']),
+              par(n['pix_nao_entrou'] + outros, ant['pix_nao_entrou'] + ant['comprovante_antigo'] + ant['comprovante_repetido'])]
     body = {'messaging_product': 'whatsapp', 'to': DESTINO, 'type': 'template', 'template': {
         'name': 'alerta_conciliacao', 'language': {'code': 'pt_BR'}, 'components': [
             {'type': 'header', 'parameters': [{'type': 'document', 'document': {'id': up.get('id'), 'filename': f'Conciliacao {d.replace("/", "-")}.pdf'}}]},
