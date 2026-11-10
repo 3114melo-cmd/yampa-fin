@@ -2971,9 +2971,9 @@ const RAW = [
   {id:'st_8ef913e7',date:'2026-11-07',hora:'17:59',desc:'Antecipação | Recebimento vendas',amt:230.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_3a98ad1d',date:'2026-11-07',hora:'18:08',desc:'Antecipação | Recebimento vendas',amt:62.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_d4466749',date:'2026-11-07',hora:'18:30',desc:'Antecipação | Recebimento vendas',amt:350.06,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_41011706',date:'2026-11-07',hora:'18:32',desc:'Transferência | Pix | JOSE CARLOS SOARES NETO',amt:973.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'JOSE CARLOS SOARES NETO',meio:'PIX'},
+  {id:'st_41011706',date:'2026-11-07',hora:'18:32',desc:'Transferência | Pix | JOSE CARLOS SOARES NETO',amt:973.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'JOSE CARLOS SOARES NETO',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Salário SOARES ref. out/26 (parte Stone)'},
   {id:'st_0c189e23',date:'2026-11-07',hora:'18:34',desc:'Transferência | Pix | JONATHAN MATHEUS DE FRANCA SILVA',amt:492.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'JONATHAN MATHEUS DE FRANCA SILVA',meio:'PIX',status_fixo:'conciliado',comp:'2026-10'},
-  {id:'st_675d86c0',date:'2026-11-07',hora:'18:37',desc:'Transferência | Pix | Flavio Alves de Assis Junior',amt:780.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Flavio Alves de Assis Junior',meio:'PIX'},
+  {id:'st_675d86c0',date:'2026-11-07',hora:'18:37',desc:'Transferência | Pix | Flavio Alves de Assis Junior',amt:780.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Flavio Alves de Assis Junior',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Salário FLÁVIO ref. out/26'},
   {id:'st_bf935ff2',date:'2026-11-07',hora:'19:01',desc:'Pix | Maquininha | 64 744 226 JOSAILTON JOSE DE LIRA FILHO',amt:41.79,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'64.744.226 JOSAILTON JOSE DE LIRA FILHO',meio:'PIX',obs:'Líquido: tarifa de R$ 0,21 abatida'},
   {id:'st_3ca7ba9e',date:'2026-11-07',hora:'21:53',desc:'Transferência | Pix | Joao Maria Moura De Melo Elias',amt:170.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Joao Maria Moura De Melo Elias',meio:'PIX'},
   {id:'st_bdd245aa',date:'2026-11-07',hora:'22:03',desc:'Transferência | Pix | PAGALI SERVICOS DE PAGAMENTO S A',amt:57.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'PAGALI INSTITUICAO DE PAGAMENTO S.A.',meio:'PIX'},
@@ -3083,15 +3083,16 @@ const RAW = [
   {id:'st_14bb2372',date:'2026-11-09',hora:'19:30',desc:'Débito | Físico | STRONGEST BRAZIL',amt:1.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'STRONGEST BRAZIL',meio:'Cartão'},
   {id:'st_e8a2b0a9',date:'2026-11-09',hora:'20:12',desc:'Antecipação | Recebimento vendas',amt:113.48,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_c633ebaa',date:'2026-11-09',hora:'20:12',desc:'Antecipação | Recebimento vendas',amt:56.73,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_24c4798c',date:'2026-11-09',hora:'20:30',desc:'Transferência | Pix | JOSE CARLOS SOARES NETO',amt:988.91,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'JOSE CARLOS SOARES NETO',meio:'PIX'},
-  {id:'st_3465fbfb',date:'2026-11-09',hora:'20:31',desc:'Transferência | Pix | JOSE CARLOS SOARES NETO',amt:200.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'JOSE CARLOS SOARES NETO',meio:'PIX'},
+  {id:'st_24c4798c',date:'2026-11-09',hora:'20:30',desc:'Transferência | Pix | JOSE CARLOS SOARES NETO',amt:988.91,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'JOSE CARLOS SOARES NETO',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Probiótica 8/10 — enviado ao Soares para pagar o boleto (resto em espécie)'},
+  {id:'st_3465fbfb',date:'2026-11-09',hora:'20:31',desc:'Transferência | Pix | JOSE CARLOS SOARES NETO',amt:200.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'JOSE CARLOS SOARES NETO',meio:'PIX',transf:'Caixa (Dinheiro)',obs:'Transferência para o caixa (dinheiro)'},
   {id:'xp_1777c36d',date:'2026-11-07',hora:'14:58',desc:'Pix recebido de Aldeize Bandeira Pinheiro',amt:10.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Aldeize Bandeira Pinheiro',meio:'PIX'},
-  {id:'xp_5448cc3b',date:'2026-11-07',hora:'18:30',desc:'Pix enviado para Jose Carlos Soares Neto',amt:557.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'JOSE CARLOS SOARES NETO',meio:'PIX'},
+  {id:'xp_5448cc3b',date:'2026-11-07',hora:'18:30',desc:'Pix enviado para Jose Carlos Soares Neto',amt:557.0,type:'DEBIT',conta:'XP',cat:'5.3.1',cli:'JOSE CARLOS SOARES NETO',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Salário SOARES ref. out/26 (parte XP)'},
   {id:'xp_8d6c2f0d',date:'2026-11-09',hora:'10:34',desc:'Pix recebido de Pricila da Silva Arruda',amt:10.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Pricila Da Silva Arruda',meio:'PIX'},
   {id:'xp_51e3c32c',date:'2026-11-09',hora:'17:18',desc:'Pix recebido de Fabio Rodrigues da Silva',amt:5.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Fabio Rodrigues da Silva',meio:'PIX'},
   {id:'xp_ed3281c7',date:'2026-11-09',hora:'17:24',desc:'Pix recebido de Elisandra Matos Cardoso',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Elisandra Matos Cardoso',meio:'PIX'},
 {id:'pvr_strongtx_20261109',date:'2026-11-09',hora:'--:--',desc:'Taxas de entrega STRONGEST - semana 02/11 a 07/11',amt:149.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'STRONGEST BRAZIL LTDA',meio:'PIX',previsto:true,comp:'2026-11',obs:'Fechamento semanal: R$ 297,00 de taxas − R$ 148,00 recebidos na XP'},
-  {id:'cx_20261110_prolabore',date:'2026-11-10',hora:'11:31',desc:'Pró-labore (espécie)',amt:226.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.2',cli:'Pró-labore',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11'}
+  {id:'cx_20261110_prolabore',date:'2026-11-10',hora:'11:31',desc:'Pró-labore (espécie)',amt:226.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.2',cli:'Pró-labore',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11'},
+  {id:'cx_20261109_probiotica',date:'2026-11-09',hora:'20:30',desc:'PROBIÓTICA - nf-e 1056079 - PARCELA 8/10 (parte em espécie)',amt:1020.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.2.1',cli:'PROBIÓTICA',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'Boleto R$ 2.008,91 = R$ 988,91 (Pix ao Soares, st_24c4798c) + R$ 1.020,00 em espécie'}
 ];
 
 // Estado
@@ -3194,6 +3195,9 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pv_501d5dd1': ['2026-11-09','st_24c4798c','Pago via Soares: R$ 988,91 Pix + R$ 1.020,00 espécie'], // PROBIÓTICA 8/10
+  'pvs_soares_20261109': ['2026-11-07','st_41011706','R$ 973 Stone + R$ 557 XP + R$ 150 espécie'], // SALÁRIO SOARES out/26
+  'pvs_flavio_20261109': ['2026-11-07','st_675d86c0','Pix R$ 780,00 (previsto R$ 790,00)'], // SALÁRIO FLÁVIO out/26
   'pvs_nathan_20261109': ['2026-11-07','st_73923fd2','Pix Natanel (Nathan) 07/11 15:47'], // SALÁRIO NATHAN out/26
   'pvs_sonic_20261109': ['2026-11-07','st_0c189e23','Pix Jonathan (Sonic) 07/11 18:34'], // SALÁRIO SONIC out/26
   'pv_29c658be': ['2026-11-09','st_40d49ad4','Boleto Supley 09/11 17:57'], // MAX TITANIUM 8/10
