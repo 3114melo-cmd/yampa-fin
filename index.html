@@ -332,7 +332,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 10/11 · 12:15
+        Stone · 10/11 · 13:50
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -3133,7 +3133,17 @@ const RAW = [
   {id:'st_31c61ed0',date:'2026-11-10',hora:'11:57',desc:'Antecipação | Recebimento vendas',amt:133.76,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_22edfc93',date:'2026-11-10',hora:'12:00',desc:'Antecipação | Recebimento vendas',amt:144.92,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_f0083943',date:'2026-11-10',hora:'12:02',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:82.15,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
-  {id:'st_557edd59',date:'2026-11-10',hora:'12:15',desc:'Transferência | Pix | I & R COMERCIO DE PURIFICADORES DE AGUA LTDA',amt:180.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'I & R COMERCIO DE PURIFICADORES DE AGUA LTDA',meio:'PIX'}
+  {id:'st_557edd59',date:'2026-11-10',hora:'12:15',desc:'Transferência | Pix | I & R COMERCIO DE PURIFICADORES DE AGUA LTDA',amt:180.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'I & R COMERCIO DE PURIFICADORES DE AGUA LTDA',meio:'PIX'},
+  // SYNC 10/11/2026 14:55
+  {id:'st_61cf6e79',date:'2026-11-10',hora:'12:24',desc:'Pix | Maquininha | Francisco Alex Mauricio da Silva',amt:160.2,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Francisco Alex Mauricio da Silva',meio:'PIX',obs:'Líquido: tarifa de R$ 0,80 abatida'},
+  {id:'st_db6a2b5b',date:'2026-11-10',hora:'12:42',desc:'Pix | Maquininha | Eduardo Bruno Santana de Oliveira',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Eduardo Bruno Santana de Oliveira',meio:'PIX',obs:'Líquido: tarifa de R$ 0,37 abatida'},
+  {id:'st_68da81e4',date:'2026-11-10',hora:'12:50',desc:'Antecipação | Recebimento vendas',amt:150.64,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_1dbf43c9',date:'2026-11-10',hora:'12:59',desc:'Antecipação | Recebimento vendas',amt:47.56,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c4c900ac',date:'2026-11-10',hora:'13:02',desc:'Pix | Maquininha | Eduardo Bruno Santana de Oliveira',amt:129.35,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Eduardo Bruno Santana de Oliveira',meio:'PIX',obs:'Líquido: tarifa de R$ 0,65 abatida'},
+  {id:'st_3d8cc5db',date:'2026-11-10',hora:'13:21',desc:'Transferência | Pix | JAMILLY SILVA LIMA DE ANDRADE',amt:25.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'JAMILLY SILVA LIMA DE ANDRADE',meio:'PIX'},
+  {id:'st_f875088a',date:'2026-11-10',hora:'13:46',desc:'Transferência | Pix | MACIEL MEDEIROS DE MORAIS',amt:35.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MACIEL MEDEIROS DE MORAIS',meio:'PIX'},
+  {id:'st_8da0fc43',date:'2026-11-10',hora:'13:47',desc:'Transferência | Pix | MARIA JANEIDE SILVA DE BRITO',amt:35.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'MARIA JANEIDE SILVA DE BRITO',meio:'PIX'},
+  {id:'st_edf38933',date:'2026-11-10',hora:'13:50',desc:'Transferência | Pix | J N CABRAL NETO',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'50.820.660 JOAO NUNES CABRAL NETO',meio:'PIX'}
 ];
 
 // Estado
@@ -6208,7 +6218,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1720.51, em:'10/11/2026 12:16'}, XP:{valor:22.04, em:'10/11/2026 12:16'}};
+const SALDO_BANCO = {Stone:{valor:2327.89, em:'10/11/2026 14:55'}, XP:{valor:22.04, em:'10/11/2026 14:55'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
