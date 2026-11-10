@@ -332,7 +332,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 09/11 · 20:31
+        Stone · 10/11 · 12:15
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -3103,7 +3103,37 @@ const RAW = [
   {id:'pvc_underlabzfat_03',date:'2027-01-05',hora:'--:--',desc:'UNDERLABZ - J.A. HARD NUTRITION - PEDIDO 29/10 (FATURADO) - PARCELA 3/5',amt:4025.66,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'UNDERLABZ',meio:'Boleto',previsto:true,comp:'2027-01',obs:'Boleto real (buscador Stone) · parte faturada do pedido de R$ 60.000: R$ 20.128,32'},
   {id:'pvc_underlabzfat_04',date:'2027-01-20',hora:'--:--',desc:'UNDERLABZ - J.A. HARD NUTRITION - PEDIDO 29/10 (FATURADO) - PARCELA 4/5',amt:4025.66,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'UNDERLABZ',meio:'Boleto',previsto:true,comp:'2027-01',obs:'Boleto real (buscador Stone) · parte faturada do pedido de R$ 60.000: R$ 20.128,32'},
   {id:'pvc_underlabzfat_05',date:'2027-02-04',hora:'--:--',desc:'UNDERLABZ - J.A. HARD NUTRITION - PEDIDO 29/10 (FATURADO) - PARCELA 5/5',amt:4025.66,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'UNDERLABZ',meio:'Boleto',previsto:true,comp:'2027-02',obs:'Boleto real (buscador Stone) · parte faturada do pedido de R$ 60.000: R$ 20.128,32'},
-  {id:'df_ibpt_20270105',date:'2027-01-05',hora:'--:--',desc:'ADVOGADO PARTE FISCAL (IBPT LA BUSINESS TAX) - boleto 05/01',amt:937.5,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'IBPT LA BUSINESS TAX',meio:'Boleto',previsto:true,comp:'2027-01',obs:'Boleto do buscador Stone (10/11)'}
+  {id:'df_ibpt_20270105',date:'2027-01-05',hora:'--:--',desc:'ADVOGADO PARTE FISCAL (IBPT LA BUSINESS TAX) - boleto 05/01',amt:937.5,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'IBPT LA BUSINESS TAX',meio:'Boleto',previsto:true,comp:'2027-01',obs:'Boleto do buscador Stone (10/11)'},
+  // SYNC 10/11/2026 12:16
+  {id:'st_d54cd432',date:'2026-11-10',hora:'08:31',desc:'Antecipação | Recebimento vendas',amt:44.59,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_dd3de8f3',date:'2026-11-10',hora:'08:45',desc:'Transferência | Pix | MYRELLE PACHECO DE SOUZA',amt:149.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MYRELLE PACHECO DE SOUZA',meio:'PIX'},
+  {id:'st_8e2d626c',date:'2026-11-10',hora:'08:50',desc:'Transferência | Pix | Reinaldo Araujo de Assis',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Reinaldo Araujo de Assis',meio:'PIX'},
+  {id:'st_ceed865b',date:'2026-11-10',hora:'08:51',desc:'Transferência | Pix | Michael dos Santos Freitas',amt:65.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Michael dos Santos Freitas',meio:'PIX'},
+  {id:'st_6da5c9cc',date:'2026-11-10',hora:'09:33',desc:'Transferência | Pix | SILAS DE SOUZA SILVA',amt:50.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'SILAS DE SOUZA SILVA',meio:'PIX'},
+  {id:'st_05de2634',date:'2026-11-10',hora:'09:35',desc:'Pix | Maquininha | CLEITON LIMA DE OLIVEIRA',amt:99.26,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'CLEITON LIMA DE OLIVEIRA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,49 abatida'},
+  {id:'st_6e4eb722',date:'2026-11-10',hora:'09:39',desc:'Transferência | Pix | EDILEIDE NASCIMENTO DA SILVA',amt:50.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'EDILEIDE NASCIMENTO DA SILVA',meio:'PIX'},
+  {id:'st_b64e57b0',date:'2026-11-10',hora:'10:00',desc:'Transferência | Pix | DILMA MARIA BEZERRA DE LIMA',amt:79.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DILMA MARIA BEZERRA DE LIMA',meio:'PIX'},
+  {id:'st_97ce55f4',date:'2026-11-10',hora:'10:01',desc:'Transferência | Pix | SG COMERCIAL DE COMBUSTIVEIS PLANALTO LTDA',amt:28.22,type:'DEBIT',conta:'Stone',cat:'4.6.1',cli:'SG COMERCIAL DE COMBUSTIVEIS PLANALTO LTDA',meio:'PIX'},
+  {id:'st_feaaa7c2',date:'2026-11-10',hora:'10:04',desc:'Transferência | Pix | SARA RAIANE OLIVEIRA DA SILVA',amt:95.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'SARA R O SILVA',meio:'PIX'},
+  {id:'st_8fcf5c49',date:'2026-11-10',hora:'10:06',desc:'Transferência | Pix | Joao Maria Moura De Melo Elias',amt:120.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Joao Maria Moura De Melo Elias',meio:'PIX'},
+  {id:'st_462c9aba',date:'2026-11-10',hora:'10:07',desc:'Transferência | Pix | EMANNUELY LIMA DA SILVA',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Emannuely Lima Da Silva',meio:'PIX'},
+  {id:'st_f3bdc516',date:'2026-11-10',hora:'10:16',desc:'Transferência | Pix | JOSE RONALDO DA SILVA',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JOSE RONALDO DA SILVA',meio:'PIX'},
+  {id:'st_8fd3bdc0',date:'2026-11-10',hora:'10:56',desc:'Antecipação | Recebimento vendas',amt:148.52,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_2c99e46e',date:'2026-11-10',hora:'11:00',desc:'Pix | Maquininha | ROBERIO JOAQUIM DA SILVA',amt:158.71,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ROBERIO JOAQUIM DA SILVA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,79 abatida'},
+  {id:'st_bf22f536',date:'2026-11-10',hora:'11:02',desc:'Pix | Maquininha | PAULO WILLAMY MELO DA SILVA',amt:59.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PAULO WILLAMY MELO DA SILVA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,30 abatida'},
+  {id:'st_bc463133',date:'2026-11-10',hora:'11:03',desc:'Transferência | Pix | LETICIA PINHEIRO DO NASCIMENTO',amt:95.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LETICIA PINHEIRO DO NASCIMENTO',meio:'PIX'},
+  {id:'st_2d1c557f',date:'2026-11-10',hora:'11:07',desc:'Transferência | Pix | VICTOR HUGO DA SILVA GARCIA',amt:105.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Victor Hugo Da Silva Garcia',meio:'PIX'},
+  {id:'st_c8a04565',date:'2026-11-10',hora:'11:14',desc:'Transferência | Pix | Lazaro Otavio Teixeira da Silva',amt:17.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Lazaro Otavio Teixeira da Silva',meio:'PIX'},
+  {id:'st_95bbff45',date:'2026-11-10',hora:'11:22',desc:'Pix | Maquininha | Rafael Pereira de Moura',amt:47.76,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Rafael Pereira de Moura',meio:'PIX',obs:'Líquido: tarifa de R$ 0,24 abatida'},
+  {id:'st_cfb545b0',date:'2026-11-10',hora:'11:24',desc:'Débito | Físico | COMERCIAL 2001',amt:75.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'COMERCIAL 2001',meio:'Cartão'},
+  {id:'st_7e794a0f',date:'2026-11-10',hora:'11:25',desc:'Antecipação | Recebimento vendas',amt:8.82,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_ab493942',date:'2026-11-10',hora:'11:28',desc:'Pix | Maquininha | ANDERSON GOMES SILVA',amt:61.45,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ANDERSON GOMES SILVA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,30 abatida'},
+  {id:'st_f5b186d0',date:'2026-11-10',hora:'11:33',desc:'Transferência | Pix | PAGALI INSTITUICAO DE PAGAM...',amt:239.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PAGALI INSTITUICAO DE PAGAMENTO S.A.',meio:'PIX'},
+  {id:'st_e700a313',date:'2026-11-10',hora:'11:57',desc:'Antecipação | Recebimento vendas',amt:115.93,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_31c61ed0',date:'2026-11-10',hora:'11:57',desc:'Antecipação | Recebimento vendas',amt:133.76,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_22edfc93',date:'2026-11-10',hora:'12:00',desc:'Antecipação | Recebimento vendas',amt:144.92,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_f0083943',date:'2026-11-10',hora:'12:02',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:82.15,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
+  {id:'st_557edd59',date:'2026-11-10',hora:'12:15',desc:'Transferência | Pix | I & R COMERCIO DE PURIFICADORES DE AGUA LTDA',amt:180.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'I & R COMERCIO DE PURIFICADORES DE AGUA LTDA',meio:'PIX'}
 ];
 
 // Estado
@@ -6178,7 +6208,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:10.96, em:'10/11/2026 07:21'}, XP:{valor:22.04, em:'10/11/2026 07:21'}};
+const SALDO_BANCO = {Stone:{valor:1720.51, em:'10/11/2026 12:16'}, XP:{valor:22.04, em:'10/11/2026 12:16'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){

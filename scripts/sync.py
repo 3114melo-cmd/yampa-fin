@@ -141,7 +141,9 @@ for n in novas:
 # ---------- DH HOLDING (CNPJ 57.875.466/0001-58): meta de R$ 20.000 por mês ----------
 META_DH = 20000.0
 mes = HOJE[:7]
-dh = [(m.group(1), float(m.group(2))) for m in re.finditer(r"\{id:'(st_[0-9a-f]{8})',date:'" + mes + r"-\d\d'[^\n]*?DH HOLDING[^\n]*?amt:([\d.]+),type:'DEBIT',conta:'Stone'", s)]
+dh = []
+for m in re.finditer(r"\{id:'(st_[0-9a-f]{8})',date:'" + mes + r"-\d\d'[^\n]*?amt:([\d.]+),type:'DEBIT',conta:'Stone'[^\n]*", s):
+    if 'DH HOLDING' in m.group(0).upper(): dh.append((m.group(1), float(m.group(2))))
 dh_tot = round(sum(v for _, v in dh), 2)
 dh_info = {'mes': mes, 'total': dh_tot, 'meta': META_DH, 'falta': round(max(0, META_DH - dh_tot), 2),
            'novos': [n['amt'] for n in novas if n['type'] == 'DEBIT' and 'DH HOLDING' in n['desc'].upper()]}
