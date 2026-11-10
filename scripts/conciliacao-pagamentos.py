@@ -152,6 +152,7 @@ def main():
     ap.add_argument('--ignorar', default='')
     ap.add_argument('--enviar', action='store_true')
     ap.add_argument('--pdf', action='store_true', help='só gera o PDF, sem enviar')
+    ap.add_argument('--forcar', action='store_true', help='envia de novo mesmo se o dia já foi enviado')
     ap.add_argument('--salvar', action='store_true', help='grava as pendências em dados/pendencias-conciliacao.json')
     ap.add_argument('--out', default='/tmp/conciliacao')
     a = ap.parse_args()
@@ -510,7 +511,14 @@ def main():
     if a.pdf:
         res['pdf'] = gerar_pdf(res, a.out)
     if a.enviar and entregas:  # Felipe 08/11/2026: envia todo dia que teve venda (com ou sem pendência)
-        res['envio'] = enviar(res, a.out)
+        est = carregar_estado()
+        if a.dia in est.get('enviados', []) and not a.forcar:
+            res['envio'] = dict(enviado=False, motivo=f'relatório de {a.dia} já tinha sido enviado (use --forcar para mandar de novo)')
+        else:
+            res['envio'] = enviar(res, a.out)
+            if res['envio'].get('enviado'):
+                est['enviados'] = sorted(set(est.get('enviados', []) + [a.dia]))[-60:]
+                salvar_estado(est)
     print(json.dumps(res, ensure_ascii=False, indent=1))
 
 
