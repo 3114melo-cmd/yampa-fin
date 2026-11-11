@@ -1,6 +1,33 @@
 {
  "abertas": {
-  "sem_comprovante:-P5q27SNRmrg8mKAFXZU": {
+  "sem_comprovante:-P61SpTK-B5FC1siGbW0": {
+   "id": "sem_comprovante:-P61SpTK-B5FC1siGbW0",
+   "tipo": "sem_comprovante",
+   "ficha": {
+    "cliente": "Millena",
+    "pedido": 7294,
+    "valor": 50.0,
+    "pag": "PIX Pago ✅",
+    "vendedor": "Soares",
+    "entregador": "Juninho",
+    "rota": "Norte"
+   },
+   "detalhe": "",
+   "valor": 50.0,
+   "imagem": null,
+   "dia": "2026-11-10",
+   "pedido_k": "-P61SpTK-B5FC1siGbW0",
+   "comp_id": null,
+   "comp_dia": null,
+   "t_comp": null,
+   "foto_valor": null,
+   "nomes": [
+    "Millena"
+   ]
+  }
+ },
+ "resolvidas": [
+  {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
    "tipo": "sem_comprovante",
    "ficha": {
@@ -23,11 +50,13 @@
    "foto_valor": null,
    "nomes": [
     "Reinaldo"
-   ]
+   ],
+   "resolvido_em": "2026-11-11",
+   "motivo": "PIX R$ 75,00 de Reinaldo Araujo de Assis na Stone em 10/11 08:50 (lançado como cartão 3x)"
   }
- },
- "resolvidas": [],
+ ],
  "enviados": [
-  "2026-11-09"
+  "2026-11-09",
+  "2026-11-10"
  ]
 }
