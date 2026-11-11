@@ -29,6 +29,8 @@ const TABELA_COOP = {
   'academia vieira raca': 7,
   // confirmados pelo Felipe em 31/10/2026
   'petropolis': 10, 'rocas': 10,
+  // confirmado pelo Felipe em 10/11/2026
+  'canaa': 4,
 };
 // Grafias alternativas → bairro da tabela
 const ALIAS = {
@@ -37,6 +39,7 @@ const ALIAS = {
   'jardins de extremoz': 'extremoz', 'centro de parnamirim': 'parnamirim centro', 'dix sept rosado': 'dix-sept rosado',
   'olho dagua': "olho d'agua", 'conj. brasil novo': 'conjunto brasil novo', 'cidade das flores': 'flores do campo',
 };
+const BUSCA_LIVRE = ['canaa'];
 const CIDADES = ['sao goncalo do amarante', 'natal', 'parnamirim', 'extremoz', 'macaiba'];
 
 const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -63,6 +66,10 @@ function bairroDe(end) {
   const achados = trechos.map(s => CHAVES.find(k => s === k)).filter(Boolean).map(resolve);
   const bairro = achados.find(k => !CIDADES.includes(k)) || achados[0];
   if (bairro) return { k: bairro };
+  // Endereço digitado à mão sem vírgulas (ex.: "Rua Antúrio 04 Canaã São Gonçalo"): só bairros de nome único, que não
+  // aparecem como nome de rua, podem ser achados soltos no texto
+  const livre = BUSCA_LIVRE.find(k => new RegExp('(^|[^a-z])' + k + '([^a-z]|$)').test(e));
+  if (livre) return { k: livre };
   // Sem formato Google: só aceita se o texto for uma cidade da tabela sem nada mais (ex.: "EXTREMOZ")
   const so = e.replace(/[^a-z' -]/g, '').replace(/ - rn$/, '').trim();
   if (TABELA_COOP[resolve(so)] !== undefined) return { k: resolve(so) };
