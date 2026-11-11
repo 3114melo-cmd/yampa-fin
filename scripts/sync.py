@@ -101,6 +101,44 @@ for r in sorted(outras, key=lambda r: r['date']):
     linhas.append(f"  {{id:'{i}',date:'{d}',hora:'{h}',desc:'{esc(desc)}',amt:{amt},type:'{ty}',conta:'Stone',cat:'{c}',cli:'{esc(cli)}',meio:'{meio}'{extra}}}")
     novas.append({'id': i, 'conta': 'Stone', 'date': d, 'hora': h, 'type': ty, 'amt': amt, 'cat': c, 'desc': desc, 'cli': str(cli)})
 
+# ---------- trocos em Pix registrados no MotoRun (aba Espécie) → transferência para o caixa ----------
+# Cada troco lançado no MotoRun (especie/<data>/<pedido>/troco) é um Pix que saiu da Stone para alguém
+# que deu o dinheiro em espécie. Pix de saída do mesmo dia e mesmo valor, sem categoria definida, vira
+# transferência Stone → Caixa (dinheiro) automaticamente (um troco para cada Pix).
+import subprocess
+_troco_cache = {}
+def trocos_do_dia(d):
+    if d not in _troco_cache:
+        try:
+            out = subprocess.check_output(['curl', '-sS', '-m', '20', f'https://delivery-dhfit-4a399-default-rtdb.firebaseio.com/especie/{d}.json']).decode()
+            j = json.loads(out or 'null') or {}
+            _troco_cache[d] = [round(float(v['troco']), 2) for v in j.values() if isinstance(v, dict) and v.get('troco')]
+        except Exception:
+            _troco_cache[d] = []
+    return _troco_cache[d]
+# trocos já usados por transferências existentes no mesmo dia
+def _usados(d):
+    return [round(float(x), 2) for x in re.findall(r"\{id:'st_[0-9a-f]{8}',date:'" + d + r"'[^\n]*?amt:([\d.]+),type:'DEBIT'[^\n]*?transf:'Caixa \(Dinheiro\)'", s)]
+trocos_marcados = []
+_pend = {}
+for k, ln in enumerate(linhas):
+    m = re.match(r"  \{id:'(st_[0-9a-f]{8})',date:'([\d-]+)'[^\n]*?amt:([\d.]+),type:'DEBIT',conta:'Stone',cat:'5\.2\.99'[^\n]*?meio:'PIX'", ln)
+    if not m: continue
+    d, v = m.group(2), round(float(m.group(3)), 2)
+    if d not in _pend:
+        livres = list(trocos_do_dia(d))
+        for u in _usados(d):
+            h = next((x for x in livres if abs(x - u) <= 0.2), None)
+            if h is not None: livres.remove(h)
+        _pend[d] = livres
+    hit = next((x for x in _pend[d] if abs(x - v) <= 0.2), None)
+    if hit is not None:
+        _pend[d].remove(hit)
+        linhas[k] = ln[:-1] + ",transf:'Caixa (Dinheiro)',obs:'Troco em Pix (lançado no MotoRun) — transferência para o caixa'}"
+        trocos_marcados.append({'id': m.group(1), 'date': d, 'amt': v})
+        for n in novas:
+            if n['id'] == m.group(1): n['cat'] = 'transf'; n['troco_motorun'] = True
+
 # ---------- XP ----------
 for r in sorted([r for r in carregar(a.xp) if 'xp_' + r['id'][:8] not in existentes], key=lambda r: r['date']):
     desc = str(r.get('description', '')); ty = tipo(r)
@@ -154,5 +192,6 @@ res = {'hoje': HOJE, 'em': EM, 'novas': len(novas),
        'saidas': round(sum(n['amt'] for n in novas if n['type'] == 'DEBIT'), 2),
        'tarifas_abatidas': round(sum(abat.values()), 2),
        'dh_holding': dh_info,
-       'saidas_novas': [n for n in novas if n['type'] == 'DEBIT']}
+       'trocos_motorun': trocos_marcados,
+       'saidas_novas': [n for n in novas if n['type'] == 'DEBIT' and not n.get('troco_motorun')]}
 print(json.dumps(res, ensure_ascii=False, indent=1))
