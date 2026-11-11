@@ -332,7 +332,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 11/11 · 11:24
+        Stone · 11/11 · 13:46
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -3214,7 +3214,26 @@ const RAW = [
   {id:'xp_0da6c95d',date:'2026-11-10',hora:'19:13',desc:'Pix enviado para Metta Fit Distribuidora de Suplementos Ltda',amt:330.0,type:'DEBIT',conta:'XP',cat:'4.2.1',cli:'Metta Fit Distribuidora de Suplementos Ltda',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Fornecedor Metta Fit (pago pela XP)'},
   {id:'xp_f1a403e8',date:'2026-11-10',hora:'23:24',desc:'Pix enviado para Pet Center Comercio e Participacoes S/A',amt:79.97,type:'DEBIT',conta:'XP',cat:'5.3.2',cli:'Pet Center Comercio e Participacoes S/A',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Pró-labore (Pet Center)'},
   {id:'xp_2bdb80b1',date:'2026-11-11',hora:'09:18',desc:'Pix recebido de Ranyelly Lucia da Silva Oliveira',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Ranyelly Lucia da Silva Oliveira',meio:'PIX'},
-  {id:'st_b6aae781_juros',date:'2026-11-10',hora:'19:43',desc:'Juros do boleto em atraso - Bodyaction 006449/6 (venc. 04/11)',amt:73.2,type:'DEBIT',conta:'Stone',cat:'4.2.4',cli:'RAINHA LABORATORIO NUTRACEUTIC',meio:'Boleto',status_fixo:'conciliado',comp:'2026-11',obs:'Parte de juros do pagamento st_b6aae781'}
+  {id:'st_b6aae781_juros',date:'2026-11-10',hora:'19:43',desc:'Juros do boleto em atraso - Bodyaction 006449/6 (venc. 04/11)',amt:73.2,type:'DEBIT',conta:'Stone',cat:'4.2.4',cli:'RAINHA LABORATORIO NUTRACEUTIC',meio:'Boleto',status_fixo:'conciliado',comp:'2026-11',obs:'Parte de juros do pagamento st_b6aae781'},
+  // SYNC 11/11/2026 14:53
+  {id:'st_b402b522',date:'2026-11-11',hora:'11:31',desc:'Pix | Maquininha | RENATO JOSE VARELA SILVA',amt:34.83,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'RENATO JOSE VARELA SILVA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,17 abatida'},
+  {id:'st_cf74cf7c',date:'2026-11-11',hora:'11:31',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:500.0,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
+  {id:'st_3bd9161f',date:'2026-11-11',hora:'11:42',desc:'Transferência | Pix | Kivia Monique Euzebio da Silva',amt:150.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Kivia Monique Euzebio da Silva',meio:'PIX'},
+  {id:'st_b3b80196',date:'2026-11-11',hora:'11:45',desc:'Transferência | Pix | IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.',amt:22.73,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.',meio:'PIX'},
+  {id:'st_d48f47a4',date:'2026-11-11',hora:'11:56',desc:'Transferência | Pix | PAGALI INSTITUICAO DE PAGAM...',amt:108.09,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PAGALI INSTITUICAO DE PAGAMENTO S.A.',meio:'PIX'},
+  {id:'st_ef27c712',date:'2026-11-11',hora:'11:59',desc:'Antecipação | Recebimento vendas',amt:453.82,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_226cdb2d',date:'2026-11-11',hora:'12:05',desc:'Antecipação | Recebimento vendas',amt:62.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_49248525',date:'2026-11-11',hora:'12:15',desc:'Transferência | Pix | D T SUPLEMENTOS DISTRIBUIDORA LTDA',amt:197.8,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'D T SUPLEMENTOS DISTRIBUIDORA LTDA',meio:'PIX'},
+  {id:'st_54cebccb',date:'2026-11-11',hora:'12:19',desc:'Transferência | Pix | ANA KARLA DA SILVA FERNANDES',amt:100.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ANA KARLA DA SILVA FERNANDES',meio:'PIX'},
+  {id:'st_efbcc0d6',date:'2026-11-11',hora:'12:31',desc:'Pix | Maquininha | ALEX DA SILVA FRANCA',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ALEX DA SILVA FRANCA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,37 abatida'},
+  {id:'st_a2ffbe51',date:'2026-11-11',hora:'12:45',desc:'Antecipação | Recebimento vendas',amt:71.55,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_8ad6a028',date:'2026-11-11',hora:'12:50',desc:'Transferência | Pix | JEFFERSON D PEREIRA SILVA',amt:160.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JEFFERSON D PEREIRA SILVA',meio:'PIX'},
+  {id:'st_c927f474',date:'2026-11-11',hora:'13:00',desc:'Transferência | Pix | MAIARA MAGRE DE FREIRE MELO',amt:85.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MAIARA MAGRE DE FREIRE MELO',meio:'PIX'},
+  {id:'st_514840b0',date:'2026-11-11',hora:'13:14',desc:'Transferência | Pix | SAMUEL ALVES DA SILVA',amt:96.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'SAMUEL ALVES DA SILVA',meio:'PIX'},
+  {id:'st_b9a7cef9',date:'2026-11-11',hora:'13:15',desc:'Antecipação | Recebimento vendas',amt:73.42,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_d1b82728',date:'2026-11-11',hora:'13:29',desc:'Transferência | Pix | PEDRO TIAGO LIMA GALVAO',amt:49.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PEDRO TIAGO LIMA GALVAO',meio:'PIX'},
+  {id:'st_35c6f4c9',date:'2026-11-11',hora:'13:38',desc:'Transferência | Pix | IVANEIDE DOS SANTOS BRITO',amt:95.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Ivaneide Dos Santos Brito',meio:'PIX'},
+  {id:'st_2267da3c',date:'2026-11-11',hora:'13:46',desc:'Pix | Maquininha | LARISSA CAMPOS DE MEDEIROS',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LARISSA CAMPOS DE MEDEIROS',meio:'PIX',obs:'Líquido: tarifa de R$ 0,37 abatida'}
 ];
 
 // Estado
@@ -6292,7 +6311,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1045.49, em:'11/11/2026 11:31'}, XP:{valor:39.97, em:'11/11/2026 11:31'}};
+const SALDO_BANCO = {Stone:{valor:2225.45, em:'11/11/2026 14:53'}, XP:{valor:39.97, em:'11/11/2026 14:53'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
