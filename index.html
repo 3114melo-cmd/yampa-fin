@@ -3300,6 +3300,7 @@ const REGRAS_AUTO = [
   {nome:'Pix DH Holding 06/11 R$ 3.080 → FITOWAY acordo 4/5', tipo:'DEBIT', pix:true, termos:['DH HOLDING'], valor:3080, data:'2026-11-06', cat:'4.2.1', desc:'FITOWAY - ACORDO - PARCELA 4/5 (Pix via DH Holding)'},
   {nome:'Leader Consultoria → DUX (fornecedor)', tipo:'DEBIT', pix:false, termos:['LEADER CONSULTORIA'], cat:'4.2.1', desc:'DUX COMPANY - renegociação (boleto Leader Consultoria)'},
   {nome:'Canindé Chaveiro 10/11 R$ 18 → cópia de chave', tipo:'DEBIT', pix:false, termos:['CHAVEIRO'], valor:18, data:'2026-11-10', cat:'5.2.19', desc:'Cópia de chave (Canindé Chaveiro)'},
+  {nome:'Pix DH Holding 11/11 R$ 2.886,61 → CANIBAL 7/11', tipo:'DEBIT', pix:true, termos:['DH HOLDING'], valor:2886.61, data:'2026-11-11', cat:'4.2.1', desc:'CANIBAL - PARCELA 7/11 (Pix via DH Holding)'},
   {nome:'D T Suplementos → Fornecedor', tipo:'DEBIT', pix:true, termos:['D T SUPLEMENTOS DISTRIBUIDORA'], cat:'4.2.1'},
   {nome:'João Maria Moura de Melo Elias → Motoboy Terceirizado', tipo:'DEBIT', pix:true, termos:['JOAO MARIA MOURA DE MELO ELIAS'], cat:'4.4.6'},
   {nome:'Vindi/Yapay → App Converta (mensalidade)', tipo:'DEBIT', pix:false, termos:['VINDI INTERMEDIADORA','YAPAY'], cat:'5.2.99'},
@@ -3337,6 +3338,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pvc_canibal_07': ['2026-11-11','pix_dhholding_2886','Pix Stone R$ 2.886,61 via DH Holding 11/11 16:10'], // CANIBAL 7/11
   'pv_7fae87e3': ['2026-11-10','st_b6aae781','Boleto pago 10/11 com juros R$ 73,20'], // BODYACTION 006449/6
   'pvc_uniao_01': ['2026-11-11','st_c9764faa','Pix Biodis R$ 500 em 11/11'], // UNIÃO VEGETAL 1/4
   'df_4d5d7f6a': ['2026-11-07','st_bdd245aa','Pix Pagali R$ 57,00 em 07/11'], // MENSALIDADE SITE nov/26
