@@ -239,6 +239,10 @@ body,.main,.sb{height:100dvh}
 .ct{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-x pan-y}
 .ct [style*="overflow-x:auto"]{touch-action:pan-x pan-y;overscroll-behavior-x:contain}
 .ct{padding-bottom:60px}
+@media (max-width:900px){
+  /* celular: listas internas com altura máxima prendiam o dedo (rolagem dentro de rolagem). Deixa tudo rolar com a página. */
+  .ct [style*="max-height"]{max-height:none!important}
+}
 </style>
 </head>
 <body>
