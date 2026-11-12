@@ -51,7 +51,7 @@ const dia = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(hoje + '
 
   const nAtr = R.atrasados.length;
   const params = [`${dia} ${br(hoje).slice(0, 5)}`, num(R.saldoTotal), num(R.totAtras),
-    nAtr === 0 ? 'nenhum boleto' : nAtr === 1 ? '1 boleto' : `${nAtr} boletos`, num(R.totSemana), `${num(R.precisaVender)} (média R$ ${num(R.mediaDia)}/dia em ${R.diasVenda} ${R.diasVenda === 1 ? 'dia' : 'dias'})`];
+    nAtr === 0 ? 'nenhum boleto' : nAtr === 1 ? '1 boleto' : `${nAtr} boletos`, `${num(R.totResto)} · a pagar hoje: R$ ${num(R.totHoje)}`, `${num(R.precisaVender)} (média R$ ${num(R.mediaDia)}/dia em ${R.diasVenda} ${R.diasVenda === 1 ? 'dia' : 'dias'})`];
   const diaE = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(E.dia + 'T12:00:00').getDay()] + ' ' + br(E.dia).slice(0, 5);
   const enviar = (nome, ps) => curl(['-X', 'POST', `https://graph.facebook.com/v21.0/${PHONE_ID}/messages`, '-H', 'Content-Type: application/json', '--data-binary', JSON.stringify(
     { messaging_product: 'whatsapp', to: DESTINO, type: 'template', template: { name: nome, language: { code: 'pt_BR' }, components: [
@@ -61,6 +61,6 @@ const dia = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(hoje + '
   let modelo = 'previsao_pagamentos_entregas';
   let r = enviar(modelo, [...params, diaE, num(E.cooperativa.total), num(E.juninho.total)]);
   if (!r.messages) { modelo = 'previsao_pagamentos'; r = enviar(modelo, params); }
-  console.log(JSON.stringify({ enviado: !!(r.messages && r.messages[0]), resposta: r, pdf, modelo, entregadores: { dia: E.dia, cooperativa: E.cooperativa.total, juninho: E.juninho.total }, resumo: { saldo: R.saldoTotal, atrasado: R.totAtras, semana: R.totSemana, vender: R.precisaVender } }));
+  console.log(JSON.stringify({ enviado: !!(r.messages && r.messages[0]), resposta: r, pdf, modelo, entregadores: { dia: E.dia, cooperativa: E.cooperativa.total, juninho: E.juninho.total }, resumo: { saldo: R.saldoTotal, atrasado: R.totAtras, hoje: R.totHoje, ateDomingo: R.totResto, semana: R.totSemana, vender: R.precisaVender } }));
   process.exit(r.messages ? 0 : 4);
 })();
