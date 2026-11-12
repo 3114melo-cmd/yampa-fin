@@ -24,6 +24,31 @@
    "nomes": [
     "Millena"
    ]
+  },
+  "sem_comprovante:-P6ASf56UvkDtqXfRSmB": {
+   "id": "sem_comprovante:-P6ASf56UvkDtqXfRSmB",
+   "tipo": "sem_comprovante",
+   "ficha": {
+    "cliente": "Kleberson",
+    "pedido": 7421,
+    "valor": 89.9,
+    "pag": "PIX Pago ✅",
+    "vendedor": "Soares",
+    "entregador": "Juninho",
+    "rota": "Norte"
+   },
+   "detalhe": "",
+   "valor": 89.9,
+   "imagem": null,
+   "dia": "2026-11-11",
+   "pedido_k": "-P6ASf56UvkDtqXfRSmB",
+   "comp_id": null,
+   "comp_dia": null,
+   "t_comp": null,
+   "foto_valor": null,
+   "nomes": [
+    "Kleberson"
+   ]
   }
  },
  "resolvidas": [
@@ -57,6 +82,7 @@
  ],
  "enviados": [
   "2026-11-09",
-  "2026-11-10"
+  "2026-11-10",
+  "2026-11-11"
  ]
 }
