@@ -1,58 +1,5 @@
 {
- "abertas": {
-  "sem_comprovante:-P6ASf56UvkDtqXfRSmB": {
-   "id": "sem_comprovante:-P6ASf56UvkDtqXfRSmB",
-   "tipo": "sem_comprovante",
-   "ficha": {
-    "cliente": "Kleberson",
-    "pedido": 7421,
-    "valor": 89.9,
-    "pag": "PIX Pago ✅",
-    "vendedor": "Soares",
-    "entregador": "Juninho",
-    "rota": "Norte"
-   },
-   "detalhe": "",
-   "valor": 89.9,
-   "imagem": null,
-   "dia": "2026-11-11",
-   "pedido_k": "-P6ASf56UvkDtqXfRSmB",
-   "comp_id": null,
-   "comp_dia": null,
-   "t_comp": null,
-   "foto_valor": null,
-   "nomes": [
-    "Kleberson"
-   ]
-  },
-  "valor_difere:-P6Ez3iD1j17RnK_wV1_": {
-   "id": "valor_difere:-P6Ez3iD1j17RnK_wV1_",
-   "tipo": "valor_difere",
-   "ficha": {
-    "cliente": "Guedes",
-    "pedido": 7480,
-    "valor": 259.9,
-    "pag": "Link",
-    "vendedor": "Soares",
-    "entregador": "Nathan",
-    "rota": "Sul"
-   },
-   "detalhe": "Comprovante mostra R$ 259,00\nMas o pedido foi lançado R$ 259,90 (verificar)",
-   "valor": 0.9,
-   "imagem": null,
-   "dia": "2026-11-12",
-   "pedido_k": "-P6Ez3iD1j17RnK_wV1_",
-   "comp_id": "-P6F2hdXVYRUepjzkjqs",
-   "comp_dia": "2026-11-12",
-   "t_comp": 1794491820.0,
-   "foto_valor": 259.0,
-   "nomes": [
-    "Guedes",
-    "guedes",
-    "Guedes"
-   ]
-  }
- },
+ "abertas": {},
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -107,6 +54,62 @@
    ],
    "resolvido_em": "2026-11-12",
    "motivo": "Pedido cancelado (informado pelo Felipe em 12/11)"
+  },
+  {
+   "id": "valor_difere:-P6Ez3iD1j17RnK_wV1_",
+   "tipo": "valor_difere",
+   "ficha": {
+    "cliente": "Guedes",
+    "pedido": 7480,
+    "valor": 259.9,
+    "pag": "Link",
+    "vendedor": "Soares",
+    "entregador": "Nathan",
+    "rota": "Sul"
+   },
+   "detalhe": "Comprovante mostra R$ 259,00\nMas o pedido foi lançado R$ 259,90 (verificar)",
+   "valor": 0.9,
+   "imagem": null,
+   "dia": "2026-11-12",
+   "pedido_k": "-P6Ez3iD1j17RnK_wV1_",
+   "comp_id": "-P6F2hdXVYRUepjzkjqs",
+   "comp_dia": "2026-11-12",
+   "t_comp": 1794491820.0,
+   "foto_valor": 259.0,
+   "nomes": [
+    "Guedes",
+    "guedes",
+    "Guedes"
+   ],
+   "resolvido_em": "2026-11-13",
+   "motivo": "resolvido pelo Felipe (13/11)"
+  },
+  {
+   "id": "sem_comprovante:-P6ASf56UvkDtqXfRSmB",
+   "tipo": "sem_comprovante",
+   "ficha": {
+    "cliente": "Kleberson",
+    "pedido": 7421,
+    "valor": 89.9,
+    "pag": "PIX Pago ✅",
+    "vendedor": "Soares",
+    "entregador": "Juninho",
+    "rota": "Norte"
+   },
+   "detalhe": "",
+   "valor": 89.9,
+   "imagem": null,
+   "dia": "2026-11-11",
+   "pedido_k": "-P6ASf56UvkDtqXfRSmB",
+   "comp_id": null,
+   "comp_dia": null,
+   "t_comp": null,
+   "foto_valor": null,
+   "nomes": [
+    "Kleberson"
+   ],
+   "resolvido_em": "2026-11-13",
+   "motivo": "resolvido pelo Felipe (13/11)"
   }
  ],
  "enviados": [
