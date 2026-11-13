@@ -24,6 +24,33 @@
    "nomes": [
     "Kleberson"
    ]
+  },
+  "valor_difere:-P6Ez3iD1j17RnK_wV1_": {
+   "id": "valor_difere:-P6Ez3iD1j17RnK_wV1_",
+   "tipo": "valor_difere",
+   "ficha": {
+    "cliente": "Guedes",
+    "pedido": 7480,
+    "valor": 259.9,
+    "pag": "Link",
+    "vendedor": "Soares",
+    "entregador": "Nathan",
+    "rota": "Sul"
+   },
+   "detalhe": "Comprovante mostra R$ 259,00\nMas o pedido foi lançado R$ 259,90 (verificar)",
+   "valor": 0.9,
+   "imagem": null,
+   "dia": "2026-11-12",
+   "pedido_k": "-P6Ez3iD1j17RnK_wV1_",
+   "comp_id": "-P6F2hdXVYRUepjzkjqs",
+   "comp_dia": "2026-11-12",
+   "t_comp": 1794491820.0,
+   "foto_valor": 259.0,
+   "nomes": [
+    "Guedes",
+    "guedes",
+    "Guedes"
+   ]
   }
  },
  "resolvidas": [
@@ -85,6 +112,7 @@
  "enviados": [
   "2026-11-09",
   "2026-11-10",
-  "2026-11-11"
+  "2026-11-11",
+  "2026-11-12"
  ]
 }
