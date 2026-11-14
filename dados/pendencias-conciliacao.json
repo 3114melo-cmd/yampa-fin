@@ -1,31 +1,5 @@
 {
- "abertas": {
-  "sem_comprovante:-P6K_k0uMMx3ch1TQs0i": {
-   "id": "sem_comprovante:-P6K_k0uMMx3ch1TQs0i",
-   "tipo": "sem_comprovante",
-   "ficha": {
-    "cliente": "Avila",
-    "pedido": 7560,
-    "valor": 195.0,
-    "pag": "Voucher",
-    "vendedor": "Renato",
-    "entregador": "Juninho",
-    "rota": "Norte"
-   },
-   "detalhe": "",
-   "valor": 195.0,
-   "imagem": null,
-   "dia": "2026-11-13",
-   "pedido_k": "-P6K_k0uMMx3ch1TQs0i",
-   "comp_id": null,
-   "comp_dia": null,
-   "t_comp": null,
-   "foto_valor": null,
-   "nomes": [
-    "Avila"
-   ]
-  }
- },
+ "abertas": {},
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -165,6 +139,33 @@
    ],
    "resolvido_em": "2026-11-14",
    "motivo": "foto é do Thiago (#7537): crédito à vista R$ 75,00 13/11 14:42, AUT 528300; caiu na Stone R$ 72,46 às 14:57 — conferido pelo Felipe"
+  },
+  {
+   "id": "sem_comprovante:-P6K_k0uMMx3ch1TQs0i",
+   "tipo": "sem_comprovante",
+   "ficha": {
+    "cliente": "Avila",
+    "pedido": 7560,
+    "valor": 195.0,
+    "pag": "Voucher",
+    "vendedor": "Renato",
+    "entregador": "Juninho",
+    "rota": "Norte"
+   },
+   "detalhe": "",
+   "valor": 195.0,
+   "imagem": null,
+   "dia": "2026-11-13",
+   "pedido_k": "-P6K_k0uMMx3ch1TQs0i",
+   "comp_id": null,
+   "comp_dia": null,
+   "t_comp": null,
+   "foto_valor": null,
+   "nomes": [
+    "Avila"
+   ],
+   "resolvido_em": "2026-11-14",
+   "motivo": "Avila: pagamento confirmado pelo Felipe (14/11)"
   }
  ],
  "enviados": [
