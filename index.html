@@ -475,6 +475,7 @@ const CATS = [
   {code:'5.5.99',nome:'Outras desp. com veículos',   grupo:'Despesas com Veículos',       nivel:3, cor:'#eda100'},
   {code:'5.8',  nome:'Outros tipos de despesas',     grupo:'Outros Tipos de Despesas',    nivel:2, cor:'#2a78d6'},
   {code:'5.8.1',nome:'Tráfego Pago',                 grupo:'Outros Tipos de Despesas',    nivel:3, cor:'#2a78d6'},
+  {code:'5.8.3',nome:'Transmissão / API Oficial',    grupo:'Outros Tipos de Despesas',    nivel:3, cor:'#2a78d6'},
   {code:'5.8.2',nome:'Outros tipos de despesas',     grupo:'Outros Tipos de Despesas',    nivel:3, cor:'#2a78d6'},
 
   // ── 6 INVESTIMENTOS ──
@@ -5959,7 +5960,7 @@ function renderCF(){
     p5312: Math.abs(txMes(m,['5.3.12'],'DEBIT',false)),
     p5313: Math.abs(txMes(m,['5.3.13'],'DEBIT',false)),
     veic:  Math.abs(txMes(m,['5.5.3','5.5.4','5.5.5','5.5.99'],'DEBIT',false)),
-    traf:  Math.abs(txMes(m,['5.8.1','5.8.2'],'DEBIT',false)),
+    traf:  Math.abs(txMes(m,['5.8.1','5.8.2','5.8.3'],'DEBIT',false)),
     inv:   Math.abs(txMes(m,['6.4.1','6.4.2'],'DEBIT',false)),
     noin:  txMes(m,['7.1.4','7.1.6','7.1.7','7.1.99'],'CREDIT',false),
     nout:  Math.abs(txMes(m,['7.2.1','7.2.13','7.2.99'],'DEBIT',false)),
@@ -6007,7 +6008,7 @@ function renderCF(){
     p5312: Math.abs(txMes(m,['5.3.12'],'DEBIT',true)),
     p5313: Math.abs(txMes(m,['5.3.13'],'DEBIT',true)),
     veic:  Math.abs(txMes(m,['5.5.3','5.5.4','5.5.5','5.5.99'],'DEBIT',true)),
-    traf:  Math.abs(txMes(m,['5.8.1','5.8.2'],'DEBIT',true)),
+    traf:  Math.abs(txMes(m,['5.8.1','5.8.2','5.8.3'],'DEBIT',true)),
     inv:   Math.abs(txMes(m,['6.4.1','6.4.2'],'DEBIT',true)),
     noin:  txMes(m,['7.1.4','7.1.6','7.1.7','7.1.99'],'CREDIT',true),
     nout:  Math.abs(txMes(m,['7.2.1','7.2.13','7.2.99'],'DEBIT',true)),
@@ -6140,7 +6141,7 @@ function renderCF(){
     a521:['5.2.1'], a523:['5.2.3'], a5211:['5.2.11'], a5217:['5.2.17'], a5299:['5.2.99'], a5219:['5.2.19'],
     pes:['5.3.1','5.3.2','5.3.4','5.3.5','5.3.6','5.3.7','5.3.11','5.3.12','5.3.13','5.3.99'],
     p531:['5.3.1'], p532:['5.3.2'], p535:['5.3.5'], p536:['5.3.6'], p537:['5.3.7'], p5312:['5.3.12'], p5313:['5.3.13'],
-    veic:['5.5.3','5.5.4','5.5.5','5.5.99'], traf:['5.8.1','5.8.2'],
+    veic:['5.5.3','5.5.4','5.5.5','5.5.99'], traf:['5.8.1','5.8.2','5.8.3'],
     inv:['6.4.1','6.4.2'],
     noin:['7.1.4','7.1.6','7.1.7','7.1.99'], nout:['7.2.1','7.2.13','7.2.99'], n7213:['7.2.13'],
   };
