@@ -24,33 +24,6 @@
    "nomes": [
     "Avila"
    ]
-  },
-  "comprovante_repetido:-P6L6dI6wtdq5hH5ataG": {
-   "id": "comprovante_repetido:-P6L6dI6wtdq5hH5ataG",
-   "tipo": "comprovante_repetido",
-   "ficha": {
-    "cliente": "Thiago",
-    "pedido": null,
-    "valor": 75.0,
-    "pag": "Cartão",
-    "vendedor": "Valdir",
-    "entregador": "(pedido não encontrado no MotoRun)",
-    "rota": "-"
-   },
-   "detalhe": "MESMO COMPROVANTE EM 2 LANÇAMENTOS: Avila (Valdir, 13/11 15:13) e Thiago (Valdir, 13/11 15:14), R$ 75,00",
-   "valor": 75.0,
-   "imagem": null,
-   "dia": "2026-11-13",
-   "pedido_k": null,
-   "comp_id": "-P6L6dI6wtdq5hH5ataG",
-   "comp_dia": "2026-11-13",
-   "t_comp": 1794591720.0,
-   "foto_valor": 75.0,
-   "nomes": [
-    "Thiago",
-    "Thiago",
-    "Thiago"
-   ]
   }
  },
  "resolvidas": [
@@ -163,6 +136,35 @@
    ],
    "resolvido_em": "2026-11-13",
    "motivo": "resolvido pelo Felipe (13/11)"
+  },
+  {
+   "id": "comprovante_repetido:-P6L6dI6wtdq5hH5ataG",
+   "tipo": "comprovante_repetido",
+   "ficha": {
+    "cliente": "Thiago",
+    "pedido": null,
+    "valor": 75.0,
+    "pag": "Cartão",
+    "vendedor": "Valdir",
+    "entregador": "(pedido não encontrado no MotoRun)",
+    "rota": "-"
+   },
+   "detalhe": "MESMO COMPROVANTE EM 2 LANÇAMENTOS: Avila (Valdir, 13/11 15:13) e Thiago (Valdir, 13/11 15:14), R$ 75,00",
+   "valor": 75.0,
+   "imagem": null,
+   "dia": "2026-11-13",
+   "pedido_k": null,
+   "comp_id": "-P6L6dI6wtdq5hH5ataG",
+   "comp_dia": "2026-11-13",
+   "t_comp": 1794591720.0,
+   "foto_valor": 75.0,
+   "nomes": [
+    "Thiago",
+    "Thiago",
+    "Thiago"
+   ],
+   "resolvido_em": "2026-11-14",
+   "motivo": "foto é do Thiago (#7537): crédito à vista R$ 75,00 13/11 14:42, AUT 528300; caiu na Stone R$ 72,46 às 14:57 — conferido pelo Felipe"
   }
  ],
  "enviados": [
