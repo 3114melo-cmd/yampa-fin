@@ -1,5 +1,58 @@
 {
- "abertas": {},
+ "abertas": {
+  "sem_comprovante:-P6K_k0uMMx3ch1TQs0i": {
+   "id": "sem_comprovante:-P6K_k0uMMx3ch1TQs0i",
+   "tipo": "sem_comprovante",
+   "ficha": {
+    "cliente": "Avila",
+    "pedido": 7560,
+    "valor": 195.0,
+    "pag": "Voucher",
+    "vendedor": "Renato",
+    "entregador": "Juninho",
+    "rota": "Norte"
+   },
+   "detalhe": "",
+   "valor": 195.0,
+   "imagem": null,
+   "dia": "2026-11-13",
+   "pedido_k": "-P6K_k0uMMx3ch1TQs0i",
+   "comp_id": null,
+   "comp_dia": null,
+   "t_comp": null,
+   "foto_valor": null,
+   "nomes": [
+    "Avila"
+   ]
+  },
+  "comprovante_repetido:-P6L6dI6wtdq5hH5ataG": {
+   "id": "comprovante_repetido:-P6L6dI6wtdq5hH5ataG",
+   "tipo": "comprovante_repetido",
+   "ficha": {
+    "cliente": "Thiago",
+    "pedido": null,
+    "valor": 75.0,
+    "pag": "Cartão",
+    "vendedor": "Valdir",
+    "entregador": "(pedido não encontrado no MotoRun)",
+    "rota": "-"
+   },
+   "detalhe": "MESMO COMPROVANTE EM 2 LANÇAMENTOS: Avila (Valdir, 13/11 15:13) e Thiago (Valdir, 13/11 15:14), R$ 75,00",
+   "valor": 75.0,
+   "imagem": null,
+   "dia": "2026-11-13",
+   "pedido_k": null,
+   "comp_id": "-P6L6dI6wtdq5hH5ataG",
+   "comp_dia": "2026-11-13",
+   "t_comp": 1794591720.0,
+   "foto_valor": 75.0,
+   "nomes": [
+    "Thiago",
+    "Thiago",
+    "Thiago"
+   ]
+  }
+ },
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -116,6 +169,7 @@
   "2026-11-09",
   "2026-11-10",
   "2026-11-11",
-  "2026-11-12"
+  "2026-11-12",
+  "2026-11-13"
  ]
 }
