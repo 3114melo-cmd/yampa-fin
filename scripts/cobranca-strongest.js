@@ -48,7 +48,7 @@ if (process.env.XP_JSON && fs.existsSync(process.env.XP_JSON)) {
     const d = new Date(new Date(t.date).getTime() - 3 * 3600e3).toISOString().slice(0, 10);
     const amt = Math.abs(+t.amount);
     const credit = t.type ? t.type === 'CREDIT' : +t.amount > 0;
-    return { date: d, amt, credit, desc: String(t.description || '') + ' ' + String((t.paymentData && t.paymentData.payer && t.paymentData.payer.name) || '') };
+    return { date: d, amt, credit, desc: String(t.description || '') + ' ' + String((t.paymentData && (t.paymentData.payer && t.paymentData.payer.name || t.paymentData.payer)) || '') };
   }).filter(t => t.credit && /STRONGEST/i.test(t.desc));
 }
 
@@ -59,15 +59,33 @@ setTimeout(() => {
   const w = dom.window;
   const lista = JSON.parse(w.eval(`(function(HOJE){
     buildTX();
-    return JSON.stringify(TX.filter(t=>t.status==='previsto' && /^pvr_strong(tx)?_/.test(t.id) && t.date<HOJE)
-      .map(t=>({id:t.id, date:t.date, amt:t.amt, desc:t.desc, comp:t.comp})));
+    return JSON.stringify(TX.filter(t=>(t.status==='previsto' || t.baixado) && /^pvr_strong(tx)?_/.test(t.id))
+      .map(t=>({id:t.id, date:t.date, amt:t.amt, desc:t.desc, comp:t.comp, baixado:!!t.baixado})));
   })('${HOJE}')`));
 
   const addD = (s, n) => { const x = new Date(s + 'T12:00:00'); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
-  const pago = p => /^pvr_strongtx_/.test(p.id)
-    ? extra.some(x => Math.abs(x.amt - p.amt) < 0.01 && x.date >= addD(p.date, -1) && x.date <= addD(p.date, 6))
-    : extra.some(x => x.amt >= 500 && x.date.slice(0, 7) === (p.comp || p.date.slice(0, 7)));
-  const vencidos = lista.filter(p => !pago(p));
+  // Conferência dos Pix da Strongest contra TODAS as previsões em aberto (vencidas ou não).
+  // Um Pix pode quitar um item só (mesmo valor) ou a SOMA de vários itens (ex.: R$ 749 = mensalidade R$ 600 + taxas R$ 149).
+  const pagos = new Set(), quitacao = {};
+  const abertos = () => lista.filter(p => !pagos.has(p.id));
+  const elegivel = (p, x) => x.date >= addD(p.date, -1) && p.date <= addD(x.date, 6) && x.date <= addD(p.date, 45);
+  const subconj = (itens, alvo) => {          // menor combinação de itens cuja soma = alvo (±0,01)
+    const n = Math.min(itens.length, 12); let melhor = null;
+    for (let m = 1; m < (1 << n); m++) {
+      let s = 0, c = []; for (let i = 0; i < n; i++) if (m & (1 << i)) { s += itens[i].amt; c.push(itens[i]); }
+      if (Math.abs(s - alvo) < 0.01 && (!melhor || c.length < melhor.length)) melhor = c;
+    }
+    return melhor;
+  };
+  for (const x of [...extra].sort((a, b) => a.date.localeCompare(b.date))) {
+    const cand = abertos().filter(p => elegivel(p, x)).sort((a, b) => a.date.localeCompare(b.date));
+    let c = subconj(cand, x.amt);
+    // compatibilidade: Pix da Strongest ≥ R$ 500 no mês quita a mensalidade daquele mês, se não bateu valor exato
+    if (!c && x.amt >= 500) { const m = abertos().find(p => /^pvr_strong_/.test(p.id) && (p.comp || p.date.slice(0, 7)) === x.date.slice(0, 7)); if (m) c = [m]; }
+    if (c) c.forEach(p => { pagos.add(p.id); quitacao[p.id] = { data: x.date, valor: x.amt }; });
+  }
+  const vencidos = lista.filter(p => !p.baixado && p.date < HOJE && !pagos.has(p.id));
+  const quitados = lista.filter(p => pagos.has(p.id) && !p.baixado).map(p => ({ id: p.id, amt: p.amt, pix: quitacao[p.id] }));
 
   const num = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const br = s => s.split('-').reverse().join('/');
@@ -89,6 +107,6 @@ setTimeout(() => {
       res.push({ id: p.id, to, params, enviado: !!(r.messages && r.messages[0]), erro: r.error ? r.error.message : undefined });
     }
   }
-  console.log(JSON.stringify({ hoje: HOJE, destino: DESTINO, conferidosXP: extra.length, vencidos: vencidos.length, mensagens: res }, null, 1));
+  console.log(JSON.stringify({ hoje: HOJE, destino: DESTINO, conferidosXP: extra.length, vencidos: vencidos.length, quitados, mensagens: res }, null, 1));
   process.exit(res.some(r => r.erro) ? 4 : 0);
 }, 3000);

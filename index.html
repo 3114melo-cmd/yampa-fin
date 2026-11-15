@@ -3669,6 +3669,22 @@ function buildTX(){
     const rc = TX.find(x=>x.type==='CREDIT' && x.conta==='XP' && !x.previsto && x.status==='conciliado' && /STRONGEST/i.test((x.desc||'')+' '+(x.cli||'')) && Math.abs(x.amt-p.amt)<0.01 && x.date>=iso(ini) && x.date<=iso(fim));
     if(rc){ p.status='ignorado'; p.baixado=true; p.obs='Baixado: recebido em '+rc.date.split('-').reverse().join('/')+' ('+fmtR(rc.amt)+')'; }
   });
+  // PIX DA STRONGEST QUE QUITA VÁRIOS ITENS JUNTOS (ex.: R$ 749 = mensalidade R$ 600 + taxas R$ 149):
+  // se a soma das previsões Strongest (já baixadas por esse Pix + em aberto) bate com o valor, dá baixa nas em aberto.
+  (function(){
+    const add=(s,n)=>{const d=new Date(s+'T12:00:00'); d.setDate(d.getDate()+n); return d.toISOString().substring(0,10);};
+    const br=s=>s.split('-').reverse().join('/');
+    TX.filter(x=>x.type==='CREDIT' && x.conta==='XP' && !x.previsto && x.status==='conciliado' && /STRONGEST/i.test((x.desc||'')+' '+(x.cli||''))).forEach(x=>{
+      const ja = TX.filter(p=>/^pvr_strong(tx)?_/.test(p.id) && p.baixado && String(p.obs||'').indexOf('recebido em '+br(x.date)+' ('+fmtR(x.amt)+')')>=0);
+      const resto = x.amt - ja.reduce((s,p)=>s+p.amt,0);
+      if(resto < 0.01) return;
+      const cand = TX.filter(p=>p.status==='previsto' && /^pvr_strong(tx)?_/.test(p.id) && x.date>=add(p.date,-1) && p.date<=add(x.date,6) && x.date<=add(p.date,45))
+        .sort((a,b)=>a.date.localeCompare(b.date)).slice(0,12);
+      let melhor=null;
+      for(let m=1;m<(1<<cand.length);m++){ let s=0,c=[]; cand.forEach((p,i)=>{ if(m&(1<<i)){ s+=p.amt; c.push(p);} }); if(Math.abs(s-resto)<0.01 && (!melhor||c.length<melhor.length)) melhor=c; }
+      if(melhor) melhor.forEach(p=>{ p.status='ignorado'; p.baixado=true; p.obs='Baixado: recebido em '+br(x.date)+' ('+fmtR(x.amt)+') junto com outros itens da Strongest'; });
+    });
+  })();
 
   // CAIXA NEGATIVO → ENTRADA EM DINHEIRO automática (vendas em espécie), dia a dia
   (function(){
