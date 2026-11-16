@@ -336,7 +336,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 14/11 · 11:53
+        Stone · 16/11 · 14:39
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -357,7 +357,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-14"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-16"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -2926,6 +2926,7 @@ const RAW = [
   {id:'cx_20261107_sal_rodrigo',date:'2026-11-07',hora:'13:17',desc:'Salário RODRIGO - ref. out/26 (espécie)',amt:1226.56,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10',obs:'Salário R$ 1.296,80 − R$ 70,24 descontados (1 dia de férias que estava pendente) = R$ 1.226,56 pago em dinheiro'},
   {id:'cx_20261116_adi_rodrigo',date:'2026-11-16',hora:'13:03',desc:'Adiantamento RODRIGO - ref. nov/26 (espécie)',amt:810.5,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'Adiantamento fixo do dia 15 pago em dinheiro'},
   {id:'cx_20261116_com_soares',date:'2026-11-16',hora:'13:51',desc:'Comissão SOARES - vendas out/26 (1%) (espécie)',amt:566.67,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.4.2',cli:'Soares',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10',obs:'1% sobre R$ 56.667,31 vendidos no Bling em out/2026 · pago em dinheiro'},
+  {id:'cx_20261116_adi_sonic',date:'2026-11-16',hora:'14:40',desc:'Adiantamento SONIC - ref. nov/26 (parte em espécie)',amt:455.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Sonic',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'Restante do adiantamento de R$ 648,00 (R$ 193,00 foi por Pix)'},
   // SYNC 07/11/2026 14:53
   {id:'st_97df0c44',date:'2026-11-07',hora:'10:47',desc:'Transferência | Pix | DHFIT NUTRICAO ESPORTIVA LTDA',amt:225.64,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA',meio:'PIX'},
   {id:'st_8797fe8e',date:'2026-11-07',hora:'10:47',desc:'Transferência | Pix | Tereza Cristina Caldas Da Silva',amt:99.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Tereza Cristina Caldas Da Silva',meio:'PIX'},
@@ -3429,7 +3430,72 @@ const RAW = [
   {id:'xp_18eb921d',date:'2026-11-13',hora:'20:24',desc:'uma parte dos pre treino inferno',amt:50.0,type:'DEBIT',conta:'XP',cat:'4.2.1',cli:'Jordano José Morais Fernandes',meio:'PIX',comp:'2026-11',status_fixo:'conciliado'},
   {id:'xp_2524c7a9',date:'2026-11-13',hora:'20:25',desc:'Pix enviado para Rafael da Costa Araujo',amt:50.0,type:'DEBIT',conta:'XP',cat:'5.3.2',cli:'46.816.663 RAFAEL DA COSTA ARAUJO',meio:'PIX',comp:'2026-11',status_fixo:'conciliado'},
   {id:'cx_20261114_prolabore95',date:'2026-11-14',hora:'15:07',desc:'Pró-labore - espécie',amt:95.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.2',cli:'Pró-labore',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11'},
-{id:'pvr_strongtx_20261116',date:'2026-11-16',hora:'--:--',desc:'Taxas de entrega STRONGEST - semana 09/11 a 14/11',amt:237.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'STRONGEST BRAZIL LTDA',meio:'PIX',previsto:true,comp:'2026-11',obs:'Fechamento semanal: R$ 354,00 de taxa DHFIT − R$ 117,00 abatidos pelos clientes na XP'}
+{id:'pvr_strongtx_20261116',date:'2026-11-16',hora:'--:--',desc:'Taxas de entrega STRONGEST - semana 09/11 a 14/11',amt:237.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'STRONGEST BRAZIL LTDA',meio:'PIX',previsto:true,comp:'2026-11',obs:'Fechamento semanal: R$ 354,00 de taxa DHFIT − R$ 117,00 abatidos pelos clientes na XP'},
+  // SYNC 16/11/2026 14:41
+  {id:'st_e3e29604',date:'2026-11-14',hora:'12:05',desc:'Pix | Maquininha | NATANAEL JAMIL DA ROCHA',amt:34.83,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'NATANAEL JAMIL DA ROCHA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,17 abatida'},
+  {id:'st_f026842f',date:'2026-11-14',hora:'12:09',desc:'Antecipação | Recebimento vendas',amt:203.41,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_de390e7b',date:'2026-11-14',hora:'12:29',desc:'Antecipação | Recebimento vendas',amt:108.99,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_fa1e20c6',date:'2026-11-14',hora:'12:32',desc:'Antecipação | Recebimento vendas',amt:74.31,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_5ca45926',date:'2026-11-14',hora:'12:32',desc:'Antecipação | Recebimento vendas',amt:175.03,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_b37480a0',date:'2026-11-14',hora:'12:37',desc:'Pix | Maquininha | Juliete Nascimento da Silva',amt:54.73,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Juliete Nascimento da Silva',meio:'PIX',obs:'Líquido: tarifa de R$ 0,27 abatida'},
+  {id:'st_965f17fd',date:'2026-11-14',hora:'12:58',desc:'Pix | Maquininha | Austerliano da Silva Menezes',amt:4.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Austerliano da Silva Menezes',meio:'PIX',obs:'Líquido: tarifa de R$ 0,02 abatida'},
+  {id:'st_88910c3c',date:'2026-11-14',hora:'12:58',desc:'Pix | Maquininha | Kamila Silva de Oliveira',amt:47.76,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Kamila Silva de Oliveira',meio:'PIX',obs:'Líquido: tarifa de R$ 0,24 abatida'},
+  {id:'st_8f66b621',date:'2026-11-14',hora:'13:03',desc:'Pix | Maquininha | LUCIANA NASCIMENTO DA SILVA',amt:9.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LUCIANA NASCIMENTO DA SILVA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,05 abatida'},
+  {id:'st_81efafa7',date:'2026-11-14',hora:'13:39',desc:'Antecipação | Recebimento vendas',amt:144.75,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_bfe356f2',date:'2026-11-14',hora:'14:14',desc:'Pix | Maquininha | JETSON DE MELO LIRA',amt:129.35,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JETSON DE MELO LIRA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,65 abatida'},
+  {id:'st_c5843f96',date:'2026-11-14',hora:'14:19',desc:'Antecipação | Recebimento vendas',amt:48.08,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_cc7a696f',date:'2026-11-14',hora:'14:19',desc:'Antecipação | Recebimento vendas',amt:144.23,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_71f5062b',date:'2026-11-14',hora:'14:44',desc:'Antecipação | Recebimento vendas',amt:70.96,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_1f0509a8',date:'2026-11-14',hora:'14:49',desc:'Transferência | Pix | Wilton Venancio da Silva',amt:5.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Wilton Venancio da Silva',meio:'PIX',transf:'Caixa (Dinheiro)',obs:'Troco em Pix (lançado no MotoRun) — transferência para o caixa'},
+  {id:'st_0f436391',date:'2026-11-14',hora:'14:58',desc:'Antecipação | Recebimento vendas',amt:74.31,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_fa70d81e',date:'2026-11-14',hora:'15:36',desc:'Antecipação | Recebimento vendas',amt:59.45,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_827a101b',date:'2026-11-14',hora:'16:05',desc:'Antecipação | Recebimento vendas',amt:22.22,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_c49c0ed9',date:'2026-11-14',hora:'16:06',desc:'Transferência | Pix | GISLENE CAMARA DOS SANTOS',amt:185.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'GISLENE CAMARA DOS SANTOS',meio:'PIX'},
+  {id:'st_c5c47047',date:'2026-11-14',hora:'16:09',desc:'Pix | Maquininha | MATHEUS AVELINO DE LIMA FERREIRA',amt:64.68,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MATHEUS AVELINO DE LIMA FERREIRA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,32 abatida'},
+  {id:'st_940f0bc9',date:'2026-11-14',hora:'16:53',desc:'Transferência | Pix | LARISSA STHEFFANY MELO DA SILVA',amt:55.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'LARISSA STHEFFANY MELO DA SILVA',meio:'PIX'},
+  {id:'st_f042fdd2',date:'2026-11-14',hora:'17:02',desc:'Transferência | Pix | Marcos Flaviano Câmara Cardoso',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Marcos Flaviano Câmara Cardoso',meio:'PIX'},
+  {id:'st_9afdfd8c',date:'2026-11-14',hora:'17:32',desc:'Pix | Maquininha | Paulo Lourenço Oliveira Macedo',amt:119.31,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Paulo Lourenço Oliveira Macedo',meio:'PIX',obs:'Líquido: tarifa de R$ 0,59 abatida'},
+  {id:'st_ad2547d0',date:'2026-11-14',hora:'17:58',desc:'Antecipação | Recebimento vendas',amt:133.46,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_330c9b30',date:'2026-11-14',hora:'18:18',desc:'Antecipação | Recebimento vendas',amt:30.71,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_e50a22d2',date:'2026-11-14',hora:'18:39',desc:'Transferência | Pix | SUPERMERCADO NORDESTAO LTDA',amt:119.71,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'SUPERMERCADO NORDESTAO LTDA',meio:'PIX'},
+  {id:'st_e5649013',date:'2026-11-15',hora:'10:38',desc:'Transferência | Pix | Graciele Kelly de Alencar Lopes da Silva',amt:60.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Graciele Kelly de Alencar Lopes da Silva',meio:'PIX'},
+  {id:'st_9db53826',date:'2026-11-15',hora:'13:52',desc:'Antecipação | Recebimento vendas',amt:224.19,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_55a025f0',date:'2026-11-15',hora:'14:10',desc:'Antecipação | Recebimento vendas',amt:72.46,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_12e7d6a0',date:'2026-11-15',hora:'19:30',desc:'Transferência | Pix | IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.',amt:10.48,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.',meio:'PIX'},
+  {id:'st_c337af0c',date:'2026-11-15',hora:'22:38',desc:'Transferência | Pix | NU PAGAMENTOS S/A',amt:40.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'NU PAGAMENTOS S/A',meio:'PIX'},
+  {id:'st_7242462e',date:'2026-11-16',hora:'03:32',desc:'Antecipação | Crédito | Recebimento vendas',amt:72.08,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_fb7aad6e',date:'2026-11-16',hora:'09:25',desc:'Transferência | Pix | Dionaldo Mendes da Silva',amt:65.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Dionaldo Mendes da Silva',meio:'PIX'},
+  {id:'st_b44dc328',date:'2026-11-16',hora:'09:43',desc:'Transferência | Pix | Maria Valciclecia Sousa da Silva',amt:130.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Maria Valciclecia Sousa da Silva',meio:'PIX'},
+  {id:'st_82c317a7',date:'2026-11-16',hora:'10:05',desc:'Pix | Maquininha | ISMYRLLA KAROLINY DANTAS SANTANA',amt:60.7,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ISMYRLLA KAROLINY DANTAS SANTANA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,30 abatida'},
+  {id:'st_2814c7e2',date:'2026-11-16',hora:'10:36',desc:'Transferência | TED | BANCO TOPAZIO S.A.',amt:446.6,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'BANCO TOPAZIO S.A.',meio:'TED'},
+  {id:'st_3d6876c4',date:'2026-11-16',hora:'10:37',desc:'Transferência | Pix | Edson Francisco Do Nascimento',amt:139.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Edson Francisco Do Nascimento',meio:'PIX'},
+  {id:'st_dec94e55',date:'2026-11-16',hora:'10:57',desc:'Antecipação | Recebimento vendas',amt:221.1,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_9295e3cb',date:'2026-11-16',hora:'11:27',desc:'Transferência | Pix | VALDIR EUSTAQUIO DA CONCEICAO',amt:75.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'VALDIR EUSTAQUIO DA CONCEICAO',meio:'PIX'},
+  {id:'st_426986d9',date:'2026-11-16',hora:'11:38',desc:'Antecipação | Recebimento vendas',amt:107.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_fc8645d5',date:'2026-11-16',hora:'12:11',desc:'Antecipação | Recebimento vendas',amt:245.89,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_0e71bb95',date:'2026-11-16',hora:'12:11',desc:'Antecipação | Recebimento vendas',amt:98.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_69f9ffda',date:'2026-11-16',hora:'12:31',desc:'Transferência | Pix | D T SUPLEMENTOS DISTRIBUIDORA LTDA',amt:1600.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'D T SUPLEMENTOS DISTRIBUIDORA LTDA',meio:'PIX'},
+  {id:'st_8f6ca6ae',date:'2026-11-16',hora:'12:42',desc:'Antecipação | Recebimento vendas',amt:76.32,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_f975377f',date:'2026-11-16',hora:'12:42',desc:'Transferência | Pix | METTA FIT NUTRICAO ESPORTIVA LTDA',amt:165.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'METTA FIT NUTRICAO ESPORTIVA LTDA',meio:'PIX'},
+  {id:'st_a1fbec12',date:'2026-11-16',hora:'12:43',desc:'Transferência | Pix | JAILTON DOS SANTOS SILVA',amt:195.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'JAILTON DOS SANTOS SILVA',meio:'PIX'},
+  {id:'st_169c7d63',date:'2026-11-16',hora:'12:52',desc:'Antecipação | Recebimento vendas',amt:90.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_4f65af00',date:'2026-11-16',hora:'13:00',desc:'Transferência | Pix | PAGALI INSTITUICAO DE PAGAM...',amt:256.52,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'PAGALI INSTITUICAO DE PAGAM...',meio:'PIX'},
+  {id:'st_e90d2ce3',date:'2026-11-16',hora:'13:15',desc:'Pix | Maquininha | ALEX DA SILVA LIMA',amt:118.41,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'ALEX DA SILVA LIMA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,59 abatida'},
+  {id:'st_fc400d32',date:'2026-11-16',hora:'13:30',desc:'Antecipação | Recebimento vendas',amt:132.36,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_573e1556',date:'2026-11-16',hora:'13:41',desc:'Antecipação | Recebimento vendas',amt:132.36,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_6934b177',date:'2026-11-16',hora:'13:50',desc:'Transferência | Pix | RHAIANE REBECA A. DA S. FREITAS',amt:59.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'RHAIANE REBECA A. DA S. FREITAS',meio:'PIX'},
+  {id:'st_8add8e1e',date:'2026-11-16',hora:'13:51',desc:'Antecipação | Recebimento vendas',amt:9.91,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_b1c52998',date:'2026-11-16',hora:'14:01',desc:'Antecipação | Recebimento vendas',amt:79.26,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_de9bc6bc',date:'2026-11-16',hora:'14:22',desc:'Antecipação | Recebimento vendas',amt:148.62,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_8b108ef8',date:'2026-11-16',hora:'14:32',desc:'Pix | Maquininha | Walisson Dantas Araújo',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Walisson Dantas Araújo',meio:'PIX',obs:'Líquido: tarifa de R$ 0,37 abatida'},
+  {id:'st_a632d154',date:'2026-11-16',hora:'14:39',desc:'Adiantamento SONIC - ref. nov/26 (parte em Pix)',amt:193.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Sonic',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Adiantamento de R$ 648,00: R$ 193,00 em Pix + R$ 455,00 em dinheiro'},
+  {id:'xp_66658bf3',date:'2026-11-14',hora:'09:47',desc:'Pró-labore (Pix PAGGPIX)',amt:53.25,type:'DEBIT',conta:'XP',cat:'5.3.2',cli:'PAGGPIX-GESTAO DE RECEBIVEIS LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-11'},
+  {id:'xp_d7d5b6c7',date:'2026-11-14',hora:'10:35',desc:'Pix enviado para Facebook Servicos Online do Brasil Ltda.',amt:300.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
+  {id:'xp_84554e0d',date:'2026-11-14',hora:'10:52',desc:'Pix enviado para Joao Maria Moura de Melo Elias',amt:40.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'Joao Maria Moura de Melo Elias',meio:'PIX'},
+  {id:'xp_e2b00bf1',date:'2026-11-14',hora:'11:51',desc:'Pix recebido de Francisco Jose de Macedo Xavier',amt:10.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Francisco Jose de Macedo Xavier',meio:'PIX'},
+  {id:'xp_9f024d77',date:'2026-11-14',hora:'20:42',desc:'Pix enviado para Ifood.Com Agencia de Restaurantes Online S.',amt:34.48,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.',meio:'PIX'},
+  {id:'xp_67c46293',date:'2026-11-15',hora:'15:19',desc:'Pix enviado para Romilson Pedro da Silva',amt:31.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'Romilson Pedro da Silva',meio:'PIX'},
+  {id:'xp_bccf83a3',date:'2026-11-15',hora:'16:34',desc:'Pix enviado para Empreendimentos Farmaceuticos Globo Ltda',amt:30.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'EMPREENDIMENTOS FARMACEUTICOS GLOBO LTDA',meio:'PIX'}
 ];
 
 // Estado
@@ -3534,6 +3600,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pvs_sonic_adi_20261115': ['2026-11-16','st_a632d154','Adiantamento R$ 648: Pix R$ 193 + R$ 455 em dinheiro'], // ADIANTAMENTO SONIC nov/26
   'pvcom_soares_202610': ['2026-11-16','cx_20261116_com_soares','Comissão paga em dinheiro R$ 566,67'], // COMISSÃO SOARES out/26
   'pvs_rodrigo_adi_20261115': ['2026-11-16','cx_20261116_adi_rodrigo','Adiantamento pago em dinheiro R$ 810,50'], // ADIANTAMENTO RODRIGO nov/26
   'pvc_icmsparc_01': ['2026-11-12','st_80712df5','GRI ICMS parcelamento paga em 12/11 (R$ 592,58)'], // ICMS PARCELAMENTO parc. 1
@@ -4395,7 +4462,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-14';
+  const hoje = '2026-11-16';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -4976,7 +5043,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-14';
+const HOJE_SISTEMA = '2026-11-16';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -5622,7 +5689,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-14';
+  const hoje = '2026-11-16';
 
   let txData;
   if(cfMes){
@@ -6532,7 +6599,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:9149.96, em:'14/11/2026 11:59'}, XP:{valor:487.6, em:'14/11/2026 11:59'}};
+const SALDO_BANCO = {Stone:{valor:12480.89, em:'16/11/2026 14:41'}, XP:{valor:8.87, em:'16/11/2026 14:41'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
