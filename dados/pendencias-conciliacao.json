@@ -1,5 +1,33 @@
 {
- "abertas": {},
+ "abertas": {
+  "comprovante_repetido:-P6aD7BT58Cmd8flZ7Ga": {
+   "id": "comprovante_repetido:-P6aD7BT58Cmd8flZ7Ga",
+   "tipo": "comprovante_repetido",
+   "ficha": {
+    "cliente": "katianne",
+    "pedido": null,
+    "valor": 120.0,
+    "pag": "PIX",
+    "vendedor": "Sonic",
+    "entregador": "(pedido não encontrado no MotoRun)",
+    "rota": "-"
+   },
+   "detalhe": "MESMO COMPROVANTE EM 2 LANÇAMENTOS: Katiane (Renato, 16/11 16:47) e katianne (Sonic, 16/11 18:17), R$ 120,00",
+   "valor": 120.0,
+   "imagem": null,
+   "dia": "2026-11-16",
+   "pedido_k": null,
+   "comp_id": "-P6aD7BT58Cmd8flZ7Ga",
+   "comp_dia": "2026-11-16",
+   "t_comp": 1794858240.0,
+   "foto_valor": 120.0,
+   "nomes": [
+    "katianne",
+    "Katiane Valeria Batista da Silva",
+    "katianne"
+   ]
+  }
+ },
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -258,6 +286,7 @@
   "2026-11-12",
   "2026-11-13",
   "2026-11-14",
-  "2026-11-15"
+  "2026-11-15",
+  "2026-11-16"
  ]
 }
