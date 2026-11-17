@@ -2926,7 +2926,7 @@ const RAW = [
   {id:'cx_20261107_sal_rodrigo',date:'2026-11-07',hora:'13:17',desc:'Salário RODRIGO - ref. out/26 (espécie)',amt:1226.56,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10',obs:'Salário R$ 1.296,80 − R$ 70,24 descontados (1 dia de férias que estava pendente) = R$ 1.226,56 pago em dinheiro'},
   {id:'cx_20261116_adi_rodrigo',date:'2026-11-16',hora:'13:03',desc:'Adiantamento RODRIGO - ref. nov/26 (espécie)',amt:810.5,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'Adiantamento fixo do dia 15 pago em dinheiro'},
   {id:'cx_20261116_com_soares',date:'2026-11-16',hora:'13:51',desc:'Comissão SOARES - vendas out/26 (1%) (espécie)',amt:566.67,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'4.4.2',cli:'Soares',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-10',obs:'1% sobre R$ 56.667,31 vendidos no Bling em out/2026 · pago em dinheiro'},
-  {id:'cx_20261116_adi_sonic',date:'2026-11-16',hora:'14:40',desc:'Adiantamento SONIC - ref. nov/26 (parte em espécie)',amt:455.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Sonic',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'Restante do adiantamento de R$ 648,00 (R$ 193,00 foi por Pix)'},
+  {id:'cx_20261116_adi_sonic',date:'2026-11-16',hora:'14:40',desc:'Adiantamento SONIC - ref. nov/26 (parte em espécie)',amt:413.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Sonic',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'Parte do adiantamento de R$ 648,00 (R$ 193,00 por Pix em 16/11 + R$ 42,00 por Pix em 17/11) · corrigido de R$ 455,00 para R$ 413,00 a pedido do Felipe em 17/11'},
   {id:'cx_20261116_adi_nathan66',date:'2026-11-16',hora:'15:06',desc:'Adiantamento NATHAN - ref. nov/26 (parte em espécie)',amt:66.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Nathan',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'Adiantamento R$ 810,50: R$ 744,50 em Pix + R$ 66,00 em dinheiro'},
   {id:'cx_20261117_hextra_soares208',date:'2026-11-17',hora:'08:43',desc:'Horas extras SOARES nov/26 (parte em espécie)',amt:208.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.12',cli:'Soares',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'Horas extras R$ 700: R$ 208 em dinheiro + R$ 492 em Pix'},
   {id:'cx_20261116_adi_valdir25',date:'2026-11-16',hora:'14:43',desc:'Adiantamento VALDIR - ref. nov/26 (parte em espécie)',amt:25.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.1',cli:'Valdir',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'R$ 25,00 do salário pagos em dinheiro; restante do adiantamento (R$ 623,00) por Pix'},
@@ -3493,7 +3493,7 @@ const RAW = [
   {id:'st_b1c52998',date:'2026-11-16',hora:'14:01',desc:'Antecipação | Recebimento vendas',amt:79.26,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_de9bc6bc',date:'2026-11-16',hora:'14:22',desc:'Antecipação | Recebimento vendas',amt:148.62,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_8b108ef8',date:'2026-11-16',hora:'14:32',desc:'Pix | Maquininha | Walisson Dantas Araújo',amt:74.63,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Walisson Dantas Araújo',meio:'PIX',obs:'Líquido: tarifa de R$ 0,37 abatida'},
-  {id:'st_a632d154',date:'2026-11-16',hora:'14:39',desc:'Adiantamento SONIC - ref. nov/26 (parte em Pix)',amt:193.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Sonic',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Adiantamento de R$ 648,00: R$ 193,00 em Pix + R$ 455,00 em dinheiro'},
+  {id:'st_a632d154',date:'2026-11-16',hora:'14:39',desc:'Adiantamento SONIC - ref. nov/26 (parte em Pix)',amt:193.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'Sonic',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Adiantamento de R$ 648,00: R$ 193,00 em Pix (16/11) + R$ 413,00 em dinheiro + R$ 42,00 em Pix (17/11)'},
   {id:'xp_66658bf3',date:'2026-11-14',hora:'09:47',desc:'Pró-labore (Pix PAGGPIX)',amt:53.25,type:'DEBIT',conta:'XP',cat:'5.3.2',cli:'PAGGPIX-GESTAO DE RECEBIVEIS LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-11'},
   {id:'xp_d7d5b6c7',date:'2026-11-14',hora:'10:35',desc:'Pix enviado para Facebook Servicos Online do Brasil Ltda.',amt:300.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
   {id:'xp_84554e0d',date:'2026-11-14',hora:'10:52',desc:'Pix enviado para Joao Maria Moura de Melo Elias',amt:40.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'Joao Maria Moura de Melo Elias',meio:'PIX'},
@@ -3560,7 +3560,7 @@ const RAW = [
   {id:'xp_6a1224fa',date:'2026-11-16',hora:'21:11',desc:'Pix recebido de Strongest Brazil Ltda',amt:237.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'STRONGEST BRAZIL LTDA',meio:'PIX'},
   // SYNC 17/11/2026 08:48
   {id:'st_1ce1fee1',date:'2026-11-17',hora:'08:40',desc:'UNIÃO VEGETAL (BIODIS) - ACORDO SEMANAL - PARCELA 2/4',amt:500.0,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'BIODIS INDUSTRIAL LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Parcela 2/4 do acordo (R$ 500 toda segunda)'},
-  {id:'st_49bdf728',date:'2026-11-17',hora:'08:44',desc:'Transferência | Pix | JONATHAN MATHEUS DE FRANCA SILVA',amt:42.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'JONATHAN MATHEUS DE FRANCA SILVA',meio:'PIX'}
+  {id:'st_49bdf728',date:'2026-11-17',hora:'08:44',desc:'Adiantamento SONIC - ref. nov/26 (parte em Pix 17/11)',amt:42.0,type:'DEBIT',conta:'Stone',cat:'5.3.1',cli:'JONATHAN MATHEUS DE FRANCA SILVA',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Resto do adiantamento de R$ 648,00 pago por Pix na manhã de 17/11 (saiu da parte em espécie)'}
 ];
 
 // Estado
@@ -3680,7 +3680,7 @@ const BAIXAS_PREV = {
   'pvcom_soldado_202610': ['2026-11-16','st_9127c790','Comissão Soldado: R$ 250 espécie + R$ 310,39 Pix'],
   'pvs_nathan_adi_20261115': ['2026-11-16','st_0950cd43','Adiantamento Nathan: R$ 744,50 Pix + R$ 66 espécie'],
   'pvc_hextra_soares_202611': ['2026-11-16','st_4e1c72d0','Horas extras Soares: R$ 208 espécie + R$ 492 Pix'],
-  'pvs_sonic_adi_20261115': ['2026-11-16','st_a632d154','Adiantamento R$ 648: Pix R$ 193 + R$ 455 em dinheiro'], // ADIANTAMENTO SONIC nov/26
+  'pvs_sonic_adi_20261115': ['2026-11-16','st_a632d154','Adiantamento R$ 648: Pix R$ 193 (16/11) + R$ 413 em dinheiro + Pix R$ 42 (17/11)'], // ADIANTAMENTO SONIC nov/26
   'pvcom_soares_202610': ['2026-11-16','cx_20261116_com_soares','Comissão paga em dinheiro R$ 566,67'], // COMISSÃO SOARES out/26
   'pvs_rodrigo_adi_20261115': ['2026-11-16','cx_20261116_adi_rodrigo','Adiantamento pago em dinheiro R$ 810,50'], // ADIANTAMENTO RODRIGO nov/26
   'pvc_icmsparc_01': ['2026-11-12','st_80712df5','GRI ICMS parcelamento paga em 12/11 (R$ 592,58)'], // ICMS PARCELAMENTO parc. 1
