@@ -30,12 +30,14 @@ setTimeout(() => {
     const protDias = t => { const k=Object.keys(PROT).find(k=>(nomeForn(t)+' '+(t.desc||'')).toUpperCase().includes(k.toUpperCase())); return k!==undefined?PROT[k]:null; };
     const addD = (s,n) => { const x=new Date(s+'T12:00:00'); x.setDate(x.getDate()+n); return iso(x); };
     const diasEntre = (a,b) => Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
+    // contas que vencem no domingo são pagas na segunda (pedido do Felipe 18/11/2026)
+    const efet = s => new Date(s+'T12:00:00').getDay()===0 ? addD(s,1) : s;
     const prev = TX.filter(t=>t.status==='previsto' && t.type==='DEBIT' && t.amt>0.004);
-    const atras = prev.filter(t=>t.date<HOJE).sort((a,b)=>a.date.localeCompare(b.date)).map(t=>{
+    const atras = prev.filter(t=>efet(t.date)<HOJE).sort((a,b)=>a.date.localeCompare(b.date)).map(t=>{
       const pd=protDias(t); return {data:t.date, forn:nomeForn(t), desc:t.desc, valor:+t.amt.toFixed(2), cat:t.cat,
         diasAtraso:diasEntre(t.date,HOJE), protestoDias:pd, pagarAte: pd!=null? addD(t.date,pd) : null};
     });
-    const semana = prev.filter(t=>t.date>=HOJE && t.date<=DOM).sort((a,b)=>a.date.localeCompare(b.date)).map(t=>({data:t.date, forn:nomeForn(t), desc:t.desc, valor:+t.amt.toFixed(2), cat:t.cat}));
+    const semana = prev.filter(t=>efet(t.date)>=HOJE && efet(t.date)<=DOM).sort((a,b)=>efet(a.date).localeCompare(efet(b.date))||a.date.localeCompare(b.date)).map(t=>({data:efet(t.date), venc:t.date, forn:nomeForn(t), desc:t.desc, valor:+t.amt.toFixed(2), cat:t.cat}));
     const receber = TX.filter(t=>t.status==='previsto' && t.type==='CREDIT' && t.date>=HOJE && t.date<=DOM).map(t=>({data:t.date, desc:t.desc, valor:+t.amt.toFixed(2)}));
     const saldo = c => TX.filter(t=>t.conta===c&&(t.status==='conciliado'||t.status==='transferencia')).reduce((s,t)=>s+(t.type==='CREDIT'?t.amt:-t.amt),0);
     // saldo: banco (env SALDO_STONE/SALDO_XP > SALDO_BANCO do app); Caixa pelo app
@@ -59,9 +61,16 @@ setTimeout(() => {
   const br = s => s ? s.split('-').reverse().join('/') : '';
   const diaSem = s => ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(s + 'T12:00:00').getDay()];
   const linhasAtr = R.atrasados.map(a => `<tr><td>${br(a.data)}</td><td>${a.forn}<div class="d">${a.desc}</div></td><td class="n">${a.diasAtraso}d</td><td>${a.pagarAte ? '<b>' + br(a.pagarAte) + '</b>' : '<span class="m">prazo a informar</span>'}</td><td class="n">${fmt(a.valor)}</td></tr>`).join('');
-  const linhas = L => L.map(a => `<tr><td>${diaSem(a.data)} ${br(a.data)}</td><td>${a.forn}<div class="d">${a.desc}</div></td><td class="n">${fmt(a.valor)}</td></tr>`).join('');
+  const linhas = L => L.map(a => `<tr><td>${diaSem(a.data)} ${br(a.data)}${a.venc && a.venc !== a.data ? '<div class="d">venc. dom ' + br(a.venc).slice(0, 5) + '</div>' : ''}</td><td>${a.forn}<div class="d">${a.desc}</div></td><td class="n">${fmt(a.valor)}</td></tr>`).join('');
   const amanha = (() => { const x = new Date(R.hoje + 'T12:00:00'); x.setDate(x.getDate() + 1); return x.toISOString().slice(0, 10); })();
-  const restoDe = R.hoje >= R.semana.ate ? '' : `${diaSem(amanha)} ${br(amanha).slice(0, 5)} a dom ${br(R.semana.ate).slice(0, 5)}`;
+  const sab = (() => { const x = new Date(R.semana.ate + 'T12:00:00'); x.setDate(x.getDate() - 1); return x.toISOString().slice(0, 10); })();
+  const restoDe = R.hoje >= sab ? '' : `${diaSem(amanha)} ${br(amanha).slice(0, 5)} a sáb ${br(sab).slice(0, 5)}`;
+  // dias restantes da semana (amanhã até sábado), um bloco por dia; domingo vai para a segunda
+  const NOMES = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+  const diasResto = []; for (let x = new Date(amanha + 'T12:00:00'); x.toISOString().slice(0, 10) <= sab; x.setDate(x.getDate() + 1)) diasResto.push(x.toISOString().slice(0, 10));
+  const porDia = diasResto.map(d => { const L = R.pagarResto.filter(a => a.data === d); return { d, L, tot: +L.reduce((s, a) => s + a.valor, 0).toFixed(2) }; });
+  const resumoDias = porDia.map(x => `${diaSem(x.d)} ${fmt(x.tot)}`).join(' · ');
+  const blocosDias = porDia.map(x => `<h3 style="font-size:12.5px;margin:14px 0 4px">${NOMES[new Date(x.d + 'T12:00:00').getDay()]} ${br(x.d).slice(0, 5)} — ${fmt(x.tot)}${x.L.length ? ' (' + x.L.length + ')' : ''}</h3><table><thead><tr><th>Dia</th><th>Descrição</th><th class="n">Valor</th></tr></thead><tbody>${linhas(x.L) || '<tr><td colspan=3>Nada previsto.</td></tr>'}</tbody><tfoot><tr><td colspan=2>Total de ${NOMES[new Date(x.d + 'T12:00:00').getDay()].toLowerCase()}</td><td class="n">${fmt(x.tot)}</td></tr></tfoot></table>`).join('');
   const out = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Pagamentos ${br(R.hoje)}</title><style>
 body{font-family:Arial,Helvetica,sans-serif;color:#1f2430;margin:28px;font-size:12px}h1{font-size:19px;margin:0}h2{font-size:14px;margin:22px 0 6px;border-bottom:2px solid #e5e7eb;padding-bottom:4px}
 .sub{color:#6b7280;margin:4px 0 14px}.cards{display:flex;gap:10px;flex-wrap:wrap}.c{flex:1;min-width:110px;border:1px solid #e5e7eb;border-radius:8px;padding:10px}.c .l{color:#6b7280;font-size:11px}.c .v{font-size:16px;font-weight:700;margin-top:3px}
@@ -69,12 +78,12 @@ body{font-family:Arial,Helvetica,sans-serif;color:#1f2430;margin:28px;font-size:
 </style></head><body><h1>YampaFin · Previsão de pagamentos</h1><div class="sub">${diaSem(R.hoje)} ${br(R.hoje)} · semana ${br(R.semana.de)} a ${br(R.semana.ate)}</div>
 <div class="cards"><div class="c"><div class="l">Saldo total</div><div class="v">${fmt(R.saldoTotal)}</div><div class="d">Stone ${fmt(R.saldos.Stone)} · XP ${fmt(R.saldos.XP)} · Caixa ${fmt(R.saldos.Caixa)}</div></div>
 <div class="c"><div class="l">Atrasado</div><div class="v red">${fmt(R.totAtras)}</div></div><div class="c"><div class="l">A pagar hoje</div><div class="v ${R.totHoje > 0 ? 'red' : ''}">${fmt(R.totHoje)}</div><div class="d">${R.pagarHoje.length} ${R.pagarHoje.length === 1 ? 'conta' : 'contas'}</div></div>
-<div class="c"><div class="l">A pagar até domingo</div><div class="v">${fmt(R.totResto)}</div><div class="d">${restoDe || 'semana encerrada'} · semana toda ${fmt(R.totSemana)}</div></div>
+<div class="c"><div class="l">A pagar até domingo</div><div class="v">${fmt(R.totResto)}</div><div class="d">${resumoDias || 'semana encerrada'} · semana toda ${fmt(R.totSemana)}</div></div>
 <div class="c"><div class="l">Precisa vender</div><div class="v ${R.precisaVender > 0 ? 'red' : 'grn'}">${fmt(R.precisaVender)}</div><div class="d">atrasado + semana − saldo${R.totReceber ? ' − a receber ' + fmt(R.totReceber) : ''}</div></div>
 <div class="c"><div class="l">Média por dia</div><div class="v ${R.mediaDia > 0 ? 'red' : 'grn'}">${fmt(R.mediaDia)}</div><div class="d">${R.diasVenda} ${R.diasVenda === 1 ? 'dia' : 'dias'} de venda até sábado</div></div></div>
 <h2>⚠️ Atrasados (${R.atrasados.length})</h2><table><thead><tr><th>Venc.</th><th>Fornecedor</th><th class="n">Atraso</th><th>Pagar até (cartório)</th><th class="n">Valor</th></tr></thead><tbody>${linhasAtr || '<tr><td colspan=5>Nada atrasado.</td></tr>'}</tbody><tfoot><tr><td colspan=4>Total atrasado</td><td class="n">${fmt(R.totAtras)}</td></tr></tfoot></table>
 <h2>🔴 A pagar hoje — ${diaSem(R.hoje)} ${br(R.hoje)} (${R.pagarHoje.length})</h2><table><thead><tr><th>Dia</th><th>Descrição</th><th class="n">Valor</th></tr></thead><tbody>${linhas(R.pagarHoje) || '<tr><td colspan=3>Nada para hoje.</td></tr>'}</tbody><tfoot><tr><td colspan=2>Total de hoje</td><td class="n">${fmt(R.totHoje)}</td></tr></tfoot></table>
-<h2>📅 A pagar até domingo${restoDe ? ' — ' + restoDe : ''} (${R.pagarResto.length})</h2><table><thead><tr><th>Dia</th><th>Descrição</th><th class="n">Valor</th></tr></thead><tbody>${linhas(R.pagarResto) || '<tr><td colspan=3>Nada previsto.</td></tr>'}</tbody><tfoot><tr><td colspan=2>Total até domingo</td><td class="n">${fmt(R.totResto)}</td></tr><tr><td colspan=2>Total da semana (hoje + até domingo)</td><td class="n">${fmt(R.totSemana)}</td></tr></tfoot></table>
+<h2>📅 A pagar até domingo${restoDe ? ' — ' + restoDe : ''} (${R.pagarResto.length})</h2><div class="d" style="font-size:11px">Contas que vencem no domingo entram na segunda-feira.</div>${blocosDias || '<table><tbody><tr><td>Nada previsto.</td></tr></tbody></table>'}<table style="margin-top:10px"><tfoot><tr><td>Total até domingo</td><td class="n">${fmt(R.totResto)}</td></tr><tr><td>Total da semana (hoje + até domingo)</td><td class="n">${fmt(R.totSemana)}</td></tr></tfoot></table>
 ${R.aReceber.length ? '<h2>💰 A receber na semana</h2><table><tbody>' + R.aReceber.map(a => `<tr><td>${br(a.data)}</td><td>${a.desc}</td><td class="n">${fmt(a.valor)}</td></tr>`).join('') + '</tbody></table>' : ''}
 <div class="sub" style="margin-top:20px">Saldos Stone e XP: ${R.saldos.fonte}. Caixa: saldo do app.</div></body></html>`;
   fs.mkdirSync(outDir, { recursive: true });
