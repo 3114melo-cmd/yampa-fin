@@ -3634,7 +3634,7 @@ const RAW = [
   {id:'st_e25c4790',date:'2026-11-17',hora:'21:16',desc:'Transferência | Pix | DHFIT NUTRICAO ESPORTIVA LTDA',amt:139.54,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'DHFIT NUTRICAO ESPORTIVA LTDA',meio:'PIX'},
   {id:'st_08edf195',date:'2026-11-17',hora:'21:38',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:3943.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'DH HOLDING IMOBILIARIA LTDA',meio:'PIX'},
   {id:'st_52d9c413',date:'2026-11-17',hora:'22:24',desc:'Transferência | Pix | OSVANIA PATRICIA MOREIRA PEREIRA DA SILVA LOPES',amt:150.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'OSVANIA PATRICIA MOREIRA PEREIRA DA SILVA LOPES',meio:'PIX'},
-  {id:'st_8028c7fa',date:'2026-11-17',hora:'23:47',desc:'Transferência | Pix | Felipe Elias de Melo da Conceicao',amt:110.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Felipe Elias De Melo Da Concei',meio:'PIX'},
+  {id:'st_8028c7fa',date:'2026-11-17',hora:'23:47',desc:'Saldo cartão Nubank - mensalidade do Claude (Pix para Felipe)',amt:110.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Felipe Elias De Melo Da Concei',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Recarga do saldo do cartão Nubank para pagar a mensalidade do Claude'},
   {id:'st_f3150e32',date:'2026-11-18',hora:'01:08',desc:'Transferência | Pix | Joao Maria Moura De Melo Elias',amt:70.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Joao Maria Moura De Melo Elias',meio:'PIX'},
   {id:'st_8fe631de',date:'2026-11-18',hora:'03:20',desc:'Antecipação | Crédito | Recebimento vendas',amt:174.1,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_e77f8c34',date:'2026-11-18',hora:'08:42',desc:'Antecipação | Recebimento vendas',amt:62.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
@@ -3840,6 +3840,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'df_claude_202611': ['2026-11-17','st_8028c7fa','Recarga do cartão Nubank R$ 110 (Pix 17/11) para a mensalidade do Claude'],
   'pv_9efe5f62': ['2026-11-18','st_a826caed','Underlabz parc. 1/5 paga 18/11 (R$ 3.795,94)'],
   'pv_3257a8ee': ['2026-11-18','st_c5f8db18','Underlabz parc. 1/5 (complemento) paga 18/11'],
   'df_b753fdd7': ['2026-11-12','st_79c176b7','Pix Smartplus R$ 3.037,77 em 12/11 17:01 = parcela R$ 2.866,00 + R$ 171,77 de serviço adicional — confirmado pelo Felipe 17/11'], // CONTADOR 2/3
