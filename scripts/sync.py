@@ -145,7 +145,8 @@ for r in sorted([r for r in carregar(a.xp) if 'xp_' + r['id'][:8] not in existen
     amt = round(abs(float(r['amount'])), 2)
     cli = nome_pd(r, 'payer' if ty == 'CREDIT' else 'receiver') or re.sub(r'^Pix (recebido de|enviado para)\s*', '', desc, flags=re.I)
     d, h, _ = local(r['date'])
-    c = '7.1.7' if ty == 'CREDIT' else '5.2.99'
+    D = (desc + ' ' + str(cli)).upper()
+    c = '7.1.7' if ty == 'CREDIT' else cat_stone(r, D)  # regra do Felipe 18/11/2026: mesmas categorias automáticas da Stone valem p/ saídas da XP
     i = 'xp_' + r['id'][:8]
     linhas.append(f"  {{id:'{i}',date:'{d}',hora:'{h}',desc:'{esc(desc)}',amt:{amt},type:'{ty}',conta:'XP',cat:'{c}',cli:'{esc(cli)}',meio:'PIX'}}")
     novas.append({'id': i, 'conta': 'XP', 'date': d, 'hora': h, 'type': ty, 'amt': amt, 'cat': c, 'desc': desc, 'cli': str(cli)})
