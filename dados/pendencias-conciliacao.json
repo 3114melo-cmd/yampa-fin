@@ -1,33 +1,5 @@
 {
- "abertas": {
-  "cartao_nao_entrou:-P6fg5_lPc6iyqWOeGpO": {
-   "id": "cartao_nao_entrou:-P6fg5_lPc6iyqWOeGpO",
-   "tipo": "cartao_nao_entrou",
-   "ficha": {
-    "cliente": "Fernanda",
-    "pedido": 7790,
-    "valor": 149.9,
-    "pag": "Link",
-    "vendedor": "Renato",
-    "entregador": "Rodrigo",
-    "rota": "Norte"
-   },
-   "detalhe": "Crédito de R$ 149,90 3x (17/11 18:21) não caiu na Stone",
-   "valor": 149.9,
-   "imagem": null,
-   "dia": "2026-11-17",
-   "pedido_k": "-P6fOqXD6xfL_J8x6Vhp",
-   "comp_id": "-P6fg5_lPc6iyqWOeGpO",
-   "comp_dia": "2026-11-17",
-   "t_comp": 1794950460.0,
-   "foto_valor": 149.9,
-   "nomes": [
-    "Fernanda",
-    "fernandagadelha2021",
-    "Fernanda"
-   ]
-  }
- },
+ "abertas": {},
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -306,6 +278,35 @@
    ],
    "resolvido_em": "2026-11-19",
    "motivo": "Baixa autorizada pelo Felipe em 19/11/2026 (comprovante repetido Katiane R$ 120,00)"
+  },
+  {
+   "id": "cartao_nao_entrou:-P6fg5_lPc6iyqWOeGpO",
+   "tipo": "cartao_nao_entrou",
+   "ficha": {
+    "cliente": "Fernanda",
+    "pedido": 7790,
+    "valor": 149.9,
+    "pag": "Link",
+    "vendedor": "Renato",
+    "entregador": "Rodrigo",
+    "rota": "Norte"
+   },
+   "detalhe": "Crédito de R$ 149,90 3x (17/11 18:21) não caiu na Stone",
+   "valor": 149.9,
+   "imagem": null,
+   "dia": "2026-11-17",
+   "pedido_k": "-P6fOqXD6xfL_J8x6Vhp",
+   "comp_id": "-P6fg5_lPc6iyqWOeGpO",
+   "comp_dia": "2026-11-17",
+   "t_comp": 1794950460.0,
+   "foto_valor": 149.9,
+   "nomes": [
+    "Fernanda",
+    "fernandagadelha2021",
+    "Fernanda"
+   ],
+   "resolvido_em": "2026-11-19",
+   "motivo": "Felipe conferiu em 19/11/2026: venda no Mercado Pago (R$ 139,54 líquido)"
   }
  ],
  "enviados": [
