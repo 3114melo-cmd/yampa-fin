@@ -3834,7 +3834,7 @@ function regraAuto(r){
   if(r.type==='CREDIT' && /^Recebimento \| Boleto/i.test(String(r.desc||'')) && !BOLETOS_REC_AUTO.has(r.id)) return null;
   const d = String(r.desc||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
   if(r.status_fixo || String(r.cat||'').indexOf('13')===0 || r.transf || r.previsto) return null; // saldo inicial, transferências, previstos
-  return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.valor || Math.abs(+r.amt-g.valor)<0.005) && (!g.data || r.date===g.data) && (!g.conta || g.conta===r.conta) && !(g.conta===undefined && r.conta==='XP') && (!g.pix || d.indexOf('PIX')>=0) && (g.termos.length===0 || g.termos.some(x=>d.indexOf(x)>=0)) && !(g.exceto||[]).some(x=>d.indexOf(x)>=0) && (!g.so || g.so.some(x=>d.indexOf(x)>=0))) || null;
+  return REGRAS_AUTO.find(g=> r.type===g.tipo && (!g.valor || Math.abs(+r.amt-g.valor)<0.005) && (!g.data || r.date===g.data) && (!g.conta || g.conta===r.conta) && !(g.conta===undefined && r.conta==='XP' && r.type==='CREDIT') && (!g.pix || d.indexOf('PIX')>=0) && (g.termos.length===0 || g.termos.some(x=>d.indexOf(x)>=0)) && !(g.exceto||[]).some(x=>d.indexOf(x)>=0) && (!g.so || g.so.some(x=>d.indexOf(x)>=0))) || null;
 }
 
 // Pix enviados e devolvidos (se anulam): ficam IGNORADOS e fora do saldo/DRE
