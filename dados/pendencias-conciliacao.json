@@ -25,32 +25,6 @@
     "Ivonete"
    ]
   },
-  "pix_nao_entrou:-P6kmIAdAA_jKMlLJuge": {
-   "id": "pix_nao_entrou:-P6kmIAdAA_jKMlLJuge",
-   "tipo": "pix_nao_entrou",
-   "ficha": {
-    "cliente": "Wiara",
-    "pedido": null,
-    "valor": 139.9,
-    "pag": "Cartão",
-    "vendedor": "Soares",
-    "entregador": "(pedido não encontrado no MotoRun)",
-    "rota": "-"
-   },
-   "detalhe": "PIX de R$ 139,90 do comprovante (18/11 15:24) não entrou na Stone",
-   "valor": 139.9,
-   "imagem": null,
-   "dia": "2026-11-18",
-   "pedido_k": null,
-   "comp_id": "-P6kmIAdAA_jKMlLJuge",
-   "comp_dia": "2026-11-18",
-   "t_comp": 1795026240.0,
-   "foto_valor": 139.9,
-   "nomes": [
-    "Wiara",
-    "Wiara"
-   ]
-  },
   "cartao_nao_entrou:-P6klZP8-ndPCOLurUL6": {
    "id": "cartao_nao_entrou:-P6klZP8-ndPCOLurUL6",
    "tipo": "cartao_nao_entrou",
@@ -75,87 +49,6 @@
    "nomes": [
     "Helisson",
     "Helisson"
-   ]
-  },
-  "comprovante_repetido:-P6kP0EfbF8Hl-CEqRT_": {
-   "id": "comprovante_repetido:-P6kP0EfbF8Hl-CEqRT_",
-   "tipo": "comprovante_repetido",
-   "ficha": {
-    "cliente": "Dayane",
-    "pedido": null,
-    "valor": 10.0,
-    "pag": "PIX",
-    "vendedor": "Sonic",
-    "entregador": "(pedido não encontrado no MotoRun)",
-    "rota": "-"
-   },
-   "detalhe": "MESMO COMPROVANTE EM 2 LANÇAMENTOS: Dayanne (Renato, 18/11 12:14) e Dayane (Sonic, 18/11 17:45), R$ 10,00",
-   "valor": 10.0,
-   "imagem": null,
-   "dia": "2026-11-18",
-   "pedido_k": null,
-   "comp_id": "-P6kP0EfbF8Hl-CEqRT_",
-   "comp_dia": "2026-11-18",
-   "t_comp": 1795013580.0,
-   "foto_valor": 10.0,
-   "nomes": [
-    "Dayane",
-    "Dayanne Gomes Araújo",
-    "Dayane"
-   ]
-  },
-  "comprovante_repetido:-P6kd37UZa-yRDSREctN": {
-   "id": "comprovante_repetido:-P6kd37UZa-yRDSREctN",
-   "tipo": "comprovante_repetido",
-   "ficha": {
-    "cliente": "Fernanda",
-    "pedido": null,
-    "valor": 129.9,
-    "pag": "PIX",
-    "vendedor": "Soares",
-    "entregador": "(pedido não encontrado no MotoRun)",
-    "rota": "-"
-   },
-   "detalhe": "MESMO COMPROVANTE EM 2 LANÇAMENTOS: Letícia (Soares, 18/11 18:50) e Fernanda (Soares, 18/11 18:50), R$ 129,90",
-   "valor": 129.9,
-   "imagem": null,
-   "dia": "2026-11-18",
-   "pedido_k": null,
-   "comp_id": "-P6kd37UZa-yRDSREctN",
-   "comp_dia": "2026-11-18",
-   "t_comp": 1795033860.0,
-   "foto_valor": 129.9,
-   "nomes": [
-    "Fernanda",
-    "LETICIA FERNANDA FERREIRA SILVA",
-    "Fernanda"
-   ]
-  },
-  "comprovante_repetido:-P6khZD6e4N-p75w-XQg": {
-   "id": "comprovante_repetido:-P6khZD6e4N-p75w-XQg",
-   "tipo": "comprovante_repetido",
-   "ficha": {
-    "cliente": "Allyson",
-    "pedido": null,
-    "valor": 129.9,
-    "pag": "PIX",
-    "vendedor": "Soares",
-    "entregador": "(pedido não encontrado no MotoRun)",
-    "rota": "-"
-   },
-   "detalhe": "MESMO COMPROVANTE EM 2 LANÇAMENTOS: Alysson (Soares, 18/11 19:10) e Allyson (Soares, 18/11 19:10), R$ 129,90",
-   "valor": 129.9,
-   "imagem": null,
-   "dia": "2026-11-18",
-   "pedido_k": null,
-   "comp_id": "-P6khZD6e4N-p75w-XQg",
-   "comp_dia": "2026-11-18",
-   "t_comp": 1795034280.0,
-   "foto_valor": 129.9,
-   "nomes": [
-    "Allyson",
-    "Allyson Thales Pereira Silva",
-    "Allyson"
    ]
   }
  },
@@ -481,33 +374,6 @@
   "2026-11-18"
  ],
  "links_aguardando": {
-  "-P6jb4acnkjU6yV5ZucY": {
-   "id": "link_nao_entrou:-P6jb4acnkjU6yV5ZucY",
-   "tipo": "link_nao_entrou",
-   "ficha": {
-    "cliente": "Gabriella",
-    "pedido": null,
-    "valor": 109.9,
-    "pag": "PIX",
-    "vendedor": "Renato",
-    "entregador": "(pedido não encontrado no MotoRun)",
-    "rota": "-"
-   },
-   "detalhe": "Link de R$ 109,90 (18/11 13:49) não caiu na Stone",
-   "valor": 109.9,
-   "imagem": null,
-   "dia": "2026-11-18",
-   "pedido_k": null,
-   "comp_id": "-P6jb4acnkjU6yV5ZucY",
-   "comp_dia": "2026-11-18",
-   "t_comp": 1795020540.0,
-   "com_hora": true,
-   "prazo": 1795165200.0,
-   "foto_valor": 109.9,
-   "nomes": [
-    "Gabriella"
-   ]
-  },
   "-P6jaIalxsTAHBFK73bY": {
    "id": "link_nao_entrou:-P6jaIalxsTAHBFK73bY",
    "tipo": "link_nao_entrou",

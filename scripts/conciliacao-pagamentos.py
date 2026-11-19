@@ -462,9 +462,20 @@ def main():
                  f"Comprovante mostra R$ {brl(c['v'])}\nMas o pedido foi lançado R$ {brl(pv)} (verificar)",
                  v=round(abs(pv - c['v']), 2), imagem=c.get('imagem'), pedido_k=p['_k'])
 
+    # Felipe (19/11/2026): comprovante SEM pedido entregue correspondente ("Comprovantes sem pedido
+    # correspondente" no MotoRun) é desconsiderado — às vezes o comprovante é lançado e o pedido só é
+    # entregue no dia seguinte (aí ele casa no relatório desse dia, que olha os comprovantes de até 3 dias antes).
+    def sem_pedido(c):
+        return c.get('pedido') is None
+
+    def repetido_tem_pedido(c):  # comprovante repetido só vale se existe OUTRO pedido entregue que ele pagaria
+        nomes = (c['n'], c['caneta'], c['pagador'])
+        return any(nome_bate(p.get('nome'), *nomes) and abs(valor(p.get('valor')) - c['v']) < 0.01
+                   for p in alvo if not p.get('_comp'))
+
     aguardando = []
     for c in pix_comps:
-        if not (ini <= c['t'] < fim) or c['stone']:
+        if not (ini <= c['t'] < fim) or c['stone'] or sem_pedido(c):
             continue
         p = ped_k.get(c['pedido'])
         if (c['t_trans'] or c['t']) > ultimo - 1800:
@@ -476,7 +487,7 @@ def main():
 
     links_aguardando = {}
     for c in card_comps:
-        if not (ini <= c['t'] < fim) or c['stone']:
+        if not (ini <= c['t'] < fim) or c['stone'] or sem_pedido(c):
             continue
         ref, com_hora = link_ref(c)
         if ultimo < ref + (3 if com_hora else 6) * 3600:
@@ -488,7 +499,7 @@ def main():
              + f" ({datetime.fromtimestamp(ref, TZ).strftime('%d/%m %H:%M')}) não caiu na Stone", v=c['v'], imagem=c.get('imagem'), pedido_k=c['pedido'])
 
     for c in link_comps:
-        if not (ini <= c['t'] < fim) or c['stone']:
+        if not (ini <= c['t'] < fim) or c['stone'] or sem_pedido(c):
             continue
         p = ped_k.get(c['pedido'])
         ref, com_hora = link_ref(c)
@@ -507,6 +518,10 @@ def main():
 
     for g in graves:  # comprovante de outra data / mesmo comprovante em 2 lançamentos
         c = comp_k.get(g['id'].split(':', 1)[1])
+        if c and g['tipo'] == 'comprovante_repetido' and not repetido_tem_pedido(c):
+            continue
+        if c and g['tipo'] == 'comprovante_antigo' and sem_pedido(c):
+            continue
         p = ped_k.get(c['pedido']) if c else None
         addp(g['tipo'], g['id'].split(':', 1)[1], ficha(p, c) if c else {}, g['texto'], g['valor'], g.get('imagem'), c and c['pedido'])
 
