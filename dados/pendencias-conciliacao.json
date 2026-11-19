@@ -24,32 +24,6 @@
    "nomes": [
     "Ivonete"
    ]
-  },
-  "cartao_nao_entrou:-P6klZP8-ndPCOLurUL6": {
-   "id": "cartao_nao_entrou:-P6klZP8-ndPCOLurUL6",
-   "tipo": "cartao_nao_entrou",
-   "ficha": {
-    "cliente": "Helisson",
-    "pedido": 7847,
-    "valor": 129.9,
-    "pag": "Cartão 3x",
-    "vendedor": "Renato",
-    "entregador": "Nathan",
-    "rota": "Sul"
-   },
-   "detalhe": "Crédito de R$ 129,90 3x (18/11 18:31) não caiu na Stone",
-   "valor": 129.9,
-   "imagem": null,
-   "dia": "2026-11-18",
-   "pedido_k": "-P6jVZPlhfdu0yf-gcHp",
-   "comp_id": "-P6klZP8-ndPCOLurUL6",
-   "comp_dia": "2026-11-18",
-   "t_comp": 1795037460.0,
-   "foto_valor": 129.9,
-   "nomes": [
-    "Helisson",
-    "Helisson"
-   ]
   }
  },
  "resolvidas": [

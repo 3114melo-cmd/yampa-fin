@@ -411,6 +411,35 @@ def main():
 
     # ---- cupom de cartão/débito x Stone (Felipe, 19/11/2026: tem que conferir se o dinheiro caiu)
     card_comps = [c for c in comps if c['tipo'] in ('credito', 'debito') and not c.get('duplicado') and not c.get('repetido')]
+
+    # A Stone às vezes junta 2 vendas de cartão feitas no mesmo minuto num recebimento só
+    # (ex.: 18/11 18:31 Helisson 129,90 3x + Roosevelt 65,00 3x → 184,39 às 18:51). Primeiro casa esses pares
+    # pelo líquido esperado (tabela Mastercard de scripts/taxas_config.json), depois os cupons sozinhos.
+    try:
+        tab = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'taxas_config.json')))['tabela']['mastercard']
+    except Exception:
+        tab = {'debito': 0.0092, 'credito_avista': 0.0339, 'credito_2x': 0.046, 'credito_3x': 0.0539}
+
+    def liquido(c):
+        if c['tipo'] == 'debito':
+            tx = tab['debito']
+        else:
+            n = int(c.get('parcelas') or 1)
+            tx = tab['credito_avista'] if n <= 1 else tab['credito_2x'] if n == 2 else tab['credito_3x']
+        return c['v'] * (1 - tx)
+
+    com_hora_cc = [c for c in card_comps if link_ref(c)[1]]
+    for i, c in enumerate(com_hora_cc):
+        for c2 in com_hora_cc[i + 1:]:
+            if c['stone'] or c2['stone'] or abs(link_ref(c)[0] - link_ref(c2)[0]) > 300:
+                continue
+            ref, soma = max(link_ref(c)[0], link_ref(c2)[0]), liquido(c) + liquido(c2)
+            cand = [s for s in cartao if not s['usado'] and ref + 60 <= s['t'] <= ref + 3 * 3600 and abs(s['v'] - soma) <= 0.10]
+            if cand:
+                s_ = min(cand, key=lambda s: s['t'] - ref)
+                s_['usado'] = True
+                c['stone'] = c2['stone'] = s_
+
     for so_hora in (True, False):  # primeiro os cupons com hora (pareamento exato), depois os sem hora
         for c in sorted([c for c in card_comps if not c['stone'] and link_ref(c)[1] == so_hora], key=lambda c: link_ref(c)[0]):
             s_ = acha_cartao(cartao, c['v'], link_ref(c))
