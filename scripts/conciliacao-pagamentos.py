@@ -29,7 +29,11 @@ Regras:
    (aceita comprovante menor em pagamento dividido). Comprovante pode ser de até 3 dias antes.
  - PIX ↔ Stone: com a hora da foto, mesmo valor e até 10 min de diferença (não precisa de nome). Sem hora: mesmo valor,
    2 dias antes até 1h depois do lançamento, preferindo o pagador com o mesmo nome.
- - Cartão/débito/link: só confere se tem comprovante e se o valor bate com o pedido (sem conferência de "cartão do dia").
+ - Cartão/débito: só confere se tem comprovante e se o valor bate com o pedido (sem conferência de "cartão do dia").
+ - Link de pagamento Stone (Felipe, 19/11/2026): o link pago cai na Stone na MADRUGADA seguinte (~3h) como
+   "Antecipação | Crédito | Recebimento vendas", líquido (90–99,5% do valor). Achou → conferido. Não achou → fica
+   "aguardando" (guardado em links_aguardando no estado) e só vira pendência "link que não caiu na Stone" se não
+   aparecer até as 06:00 de 2 dias depois do pagamento (sem hora na foto: do lançamento).
  - Voucher cai depois (Alelo/Pluxee etc.): só confere se tem comprovante.
  - Pendências (manda WhatsApp, Felipe 04/11/2026): valor do comprovante diferente do pedido, entrega sem comprovante,
    PIX que não entrou, comprovante de outra data, mesmo comprovante em 2 lançamentos. Tudo batendo → não envia nada.
@@ -114,6 +118,7 @@ def carregar_estado():
         e = {}
     e.setdefault('abertas', {})
     e.setdefault('resolvidas', [])
+    e.setdefault('links_aguardando', {})
     return e
 
 
@@ -139,6 +144,29 @@ def resolver(argv):
     salvar_estado(e)
     print(json.dumps(dict(resolvidas=achou, ainda_abertas=[f"{v['ficha'].get('cliente')} #{v['ficha'].get('pedido')} ({v['tipo']}, desde {v['dia']})"
                                                             for v in e['abertas'].values()]), ensure_ascii=False, indent=1))
+
+
+def link_ref(c):
+    """(instante de referência, tem hora da transação?) de um comprovante de link."""
+    if c.get('t_trans') and c.get('hora_lida'):
+        return c['t_trans'], True
+    return c['t'], False
+
+
+def link_prazo(ref):
+    """06:00 (Natal) de 2 dias depois do pagamento."""
+    d = datetime.fromtimestamp(ref, TZ).replace(hour=6, minute=0, second=0, microsecond=0) + timedelta(days=2)
+    return d.timestamp()
+
+
+def acha_link(linkst, v, ref_hora, folga=0):
+    """Crédito "Antecipação | Crédito | Recebimento vendas" livre, 90–99,5% do valor, entre o pagamento e o prazo
+    (+folga dias). Sem hora na foto, aceita a partir de 3 dias antes do lançamento."""
+    ref, com_hora = ref_hora
+    t0 = ref if com_hora else ref - 3 * 86400
+    t1 = link_prazo(ref) + folga * 86400
+    cand = [s for s in linkst if not s['usado'] and t0 <= s['t'] <= t1 and 0.90 * v <= s['v'] <= 0.995 * v]
+    return min(cand, key=lambda s: abs(s['t'] - ref)) if cand else None
 
 
 def main():
@@ -275,7 +303,7 @@ def main():
     st = json.load(open(a.stone))
     if isinstance(st, dict):
         st = st.get('results', [])
-    pix, cartao = [], []
+    pix, cartao, linkst = [], [], []
     for r in st:
         if r.get('type') != 'CREDIT':
             continue
@@ -288,11 +316,12 @@ def main():
         if 'PIX' in norm(desc) or r.get('operationType') == 'PIX':
             pix.append(item)
         elif 'RECEBIMENTO' in norm(desc) and 'VENDA' in norm(desc):
-            cartao.append(item)
-    if not pix and not cartao:
+            # link de pagamento: "Antecipação | Crédito | Recebimento vendas" (madrugada seguinte)
+            (linkst if re.search(r'\|\s*CREDITO\s*\|', norm(desc)) else cartao).append(item)
+    if not pix and not cartao and not linkst:
         print(json.dumps({'erro': 'extrato da Stone vazio'}))
         sys.exit(2)
-    ultimo = max(x['t'] for x in pix + cartao)
+    ultimo = max(x['t'] for x in pix + cartao + linkst)
     extrato_completo = ultimo >= fim - 3 * 3600
 
     # ---- pedidos entregues
@@ -367,13 +396,24 @@ def main():
                 acha_pix(c, modo)
 
     # ---- cupom de cartão x Stone (quando há hora na foto)
-    for c in sorted([c for c in comps_dia if eh_cartao(c['tipo']) and c['t_trans'] and c.get('hora_lida') and not c.get('duplicado')],
+    for c in sorted([c for c in comps_dia if c['tipo'] in ('credito', 'debito') and c['t_trans'] and c.get('hora_lida') and not c.get('duplicado')],
                     key=lambda c: c['t_trans']):
         cand = [s for s in cartao if not s['usado'] and 300 <= s['t'] - c['t_trans'] <= 3600 and 0.90 * c['v'] <= s['v'] <= 0.995 * c['v']]
         if cand:
             s = min(cand, key=lambda s: s['t'] - c['t_trans'])
             s['usado'] = True
             c['stone'] = s
+
+    # ---- link de pagamento x Stone (Felipe, 19/11/2026)
+    link_comps = sorted([c for c in comps if c['tipo'] == 'link' and not c.get('duplicado') and not c.get('repetido')],
+                        key=lambda c: c['t_trans'] if c.get('hora_lida') else c['t'])
+    for c in link_comps:
+        s_ = acha_link(linkst, c['v'], link_ref(c))
+        if s_:
+            s_['usado'] = True
+            c['stone'] = s_
+    links_conferidos = [f"{c['caneta'] or c['n']} R$ {brl(c['v'])} → Stone {hm(c['stone']['t'])} R$ {brl(c['stone']['v'])}"
+                        for c in link_comps if ini <= c['t'] < fim and c['stone']]
 
     # ---- pendências no formato do relatório (Felipe, 04/11/2026). Sem conferência de "cartão do dia".
     MOTOS = {'1': 'Nathan', '2': 'Juninho', '3': 'Rodrigo', '4': 'Cooperativa'}
@@ -420,6 +460,25 @@ def main():
         addp('pix_nao_entrou', c['id'], ficha(p, c), f"PIX de R$ {brl(c['v'])} do comprovante ({hm(c['t_trans'] or c['t'])}) não entrou na Stone{quem}",
              v=c['v'], imagem=c.get('imagem'), pedido_k=c['pedido'])
 
+    links_aguardando = {}
+    for c in link_comps:
+        if not (ini <= c['t'] < fim) or c['stone']:
+            continue
+        p = ped_k.get(c['pedido'])
+        ref, com_hora = link_ref(c)
+        prazo = link_prazo(ref)
+        if ultimo >= prazo:
+            addp('link_nao_entrou', c['id'], ficha(p, c),
+                 f"Link de R$ {brl(c['v'])} ({datetime.fromtimestamp(ref, TZ).strftime('%d/%m %H:%M')}) não caiu na Stone"
+                 + (f" — pagador: {c['pagador'].title()}" if c['pagador'] else ''), v=c['v'], imagem=c.get('imagem'), pedido_k=c['pedido'])
+        else:
+            links_aguardando[c['id']] = dict(id=f"link_nao_entrou:{c['id']}", tipo='link_nao_entrou', ficha=ficha(p, c),
+                                             detalhe=f"Link de R$ {brl(c['v'])} ({datetime.fromtimestamp(ref, TZ).strftime('%d/%m %H:%M')}) não caiu na Stone"
+                                             + (f" — pagador: {c['pagador'].title()}" if c['pagador'] else ''),
+                                             valor=c['v'], imagem=None, dia=a.dia, pedido_k=c['pedido'], comp_id=c['id'], comp_dia=c['dia'],
+                                             t_comp=ref, com_hora=com_hora, prazo=prazo, foto_valor=c['v'],
+                                             nomes=[n for n in (c['n'], c['caneta'], c['pagador']) if n])
+
     for g in graves:  # comprovante de outra data / mesmo comprovante em 2 lançamentos
         c = comp_k.get(g['id'].split(':', 1)[1])
         p = ped_k.get(c['pedido']) if c else None
@@ -437,6 +496,19 @@ def main():
         if dd not in cache_comps:
             cache_comps[dd] = fb(f'comprovantes/{dd}.json') or {}
         return cache_comps[dd]
+
+    links_promovidos, links_ok_antes = [], []
+    for cid, x in list(estado['links_aguardando'].items()):
+        if x['dia'] >= a.dia:
+            continue
+        cc = comp_k.get(cid)
+        s_ = cc['stone'] if cc and cc.get('stone') else acha_link(linkst, x['valor'], (x['t_comp'], x.get('com_hora')))
+        if s_:
+            s_['usado'] = True
+            links_ok_antes.append(cid)
+        elif ultimo >= x['prazo']:
+            links_promovidos.append(cid)
+            estado['abertas'][x['id']] = {k: v for k, v in x.items() if k not in ('prazo', 'com_hora')}
 
     for pid, x in list(estado['abertas'].items()):
         if x['dia'] >= a.dia:
@@ -470,6 +542,12 @@ def main():
                     s_['usado'] = True
                     motivo = f"PIX localizado na Stone ({hm(s_['t'])})"
                     break
+        elif x['tipo'] == 'link_nao_entrou':
+            cc = comp_k.get(x.get('comp_id'))
+            s_ = cc['stone'] if cc and cc.get('stone') else acha_link(linkst, x['valor'], (x.get('t_comp') or 0, True), folga=7)
+            if s_:
+                s_['usado'] = True
+                motivo = f"link caiu na Stone ({hm(s_['t'])}, R$ {brl(s_['v'])})"
         elif x['tipo'] == 'valor_difere':
             if ped_atual and abs(valor(ped_atual.get('valor')) - x.get('foto_valor', -1)) < 0.01:
                 motivo = 'valor do pedido corrigido no MotoRun'
@@ -486,7 +564,9 @@ def main():
     res = dict(dia=a.dia, fotos_lidas=leitura_ok, extrato_stone_ate=hm(ultimo), extrato_completo=extrato_completo,
                pedidos_entregues=len(entregas), exigem_comprovante=len(alvo), conferidos=conferidos,
                comprovantes_do_dia=len(comps_dia), fotos_conferidas=len([c for c in comps_dia if c['lido']]),
-               pix_aguardando_stone=aguardando, pendencias=pend, tem_pendencia=bool(pend or antigas),
+               pix_aguardando_stone=aguardando, links_conferidos=links_conferidos,
+               links_aguardando_stone=[f"{x['ficha'].get('cliente')} R$ {brl(x['valor'])}" for x in links_aguardando.values()],
+               pendencias=pend, tem_pendencia=bool(pend or antigas),
                pendencias_anteriores=antigas, resolvidas_hoje=resolvidas_hoje,
                relatorio_texto=texto, ajustes_internos=[g['texto'] for g in ajustes])
 
@@ -505,6 +585,11 @@ def main():
                 t_comp=(c['t_trans'] or c['t']) if c else None, foto_valor=c['v'] if c else None,
                 nomes=[n for n in ((c or {}).get('n'), (c or {}).get('caneta'), (c or {}).get('pagador'), x['ficha'].get('cliente')) if n],
                 imagem=None)
+        for cid in links_ok_antes + links_promovidos:
+            estado['links_aguardando'].pop(cid, None)
+        for cid in [k for k, v in estado['links_aguardando'].items() if v['dia'] == a.dia]:
+            estado['links_aguardando'].pop(cid)
+        estado['links_aguardando'].update(links_aguardando)
         salvar_estado(estado)
         res['estado_salvo'] = ESTADO
 
@@ -525,6 +610,7 @@ def main():
 TITULOS = [('valor_difere', 'com valor que não bate', 'com valor diferente'),
            ('sem_comprovante', 'sem comprovante', 'sem comprovante'),
            ('pix_nao_entrou', 'com PIX que não entrou na Stone', 'com PIX que não entrou na Stone'),
+           ('link_nao_entrou', 'com link que não caiu na Stone', 'com link que não caiu na Stone'),
            ('comprovante_antigo', 'com comprovante de outra data', 'com comprovante de outra data'),
            ('comprovante_repetido', 'com comprovante repetido', 'com comprovante repetido')]
 
