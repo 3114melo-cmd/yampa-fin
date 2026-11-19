@@ -1,31 +1,5 @@
 {
- "abertas": {
-  "sem_comprovante:-P6kPl-veXQr_fH1CWTk": {
-   "id": "sem_comprovante:-P6kPl-veXQr_fH1CWTk",
-   "tipo": "sem_comprovante",
-   "ficha": {
-    "cliente": "Ivonete",
-    "pedido": 7883,
-    "valor": 45.0,
-    "pag": "Débito",
-    "vendedor": "Renato",
-    "entregador": "Rodrigo",
-    "rota": "Norte"
-   },
-   "detalhe": "",
-   "valor": 45.0,
-   "imagem": null,
-   "dia": "2026-11-18",
-   "pedido_k": "-P6kPl-veXQr_fH1CWTk",
-   "comp_id": null,
-   "comp_dia": null,
-   "t_comp": null,
-   "foto_valor": null,
-   "nomes": [
-    "Ivonete"
-   ]
-  }
- },
+ "abertas": {},
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -333,6 +307,33 @@
    ],
    "resolvido_em": "2026-11-19",
    "motivo": "Felipe conferiu em 19/11/2026: venda no Mercado Pago (R$ 139,54 líquido)"
+  },
+  {
+   "id": "sem_comprovante:-P6kPl-veXQr_fH1CWTk",
+   "tipo": "sem_comprovante",
+   "ficha": {
+    "cliente": "Ivonete",
+    "pedido": 7883,
+    "valor": 45.0,
+    "pag": "Débito",
+    "vendedor": "Renato",
+    "entregador": "Rodrigo",
+    "rota": "Norte"
+   },
+   "detalhe": "",
+   "valor": 45.0,
+   "imagem": null,
+   "dia": "2026-11-18",
+   "pedido_k": "-P6kPl-veXQr_fH1CWTk",
+   "comp_id": null,
+   "comp_dia": null,
+   "t_comp": null,
+   "foto_valor": null,
+   "nomes": [
+    "Ivonete"
+   ],
+   "resolvido_em": "2026-11-19",
+   "motivo": "baixa autorizada pelo Felipe em 19/11"
   }
  ],
  "enviados": [
