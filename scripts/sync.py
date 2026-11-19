@@ -187,6 +187,41 @@ dh_tot = round(sum(v for _, v in dh), 2)
 dh_info = {'mes': mes, 'total': dh_tot, 'meta': META_DH, 'falta': round(max(0, META_DH - dh_tot), 2),
            'novos': [n['amt'] for n in novas if n['type'] == 'DEBIT' and 'DH HOLDING' in n['desc'].upper()]}
 
+# ---------- saídas lançadas no MotoRun (aba "Saídas": Pix e débito, com descrição/comprovante/nota) ----------
+# Cada saída nova do banco é cruzada com o que a equipe lançou no MotoRun (mesmo dia ou dia seguinte, mesmo valor ±R$ 0,01).
+# O resultado vai em n['motorun'] = {desc, vendedor, forma, hora, comprovante, nota, id} para classificar pela descrição/foto.
+# Fotos: https://delivery-dhfit-4a399-default-rtdb.firebaseio.com/saidas_arq/<dia>/<id>.json (base64) e <id>_nota.json.
+_sd_cache = {}
+def saidas_motorun(d):
+    if d not in _sd_cache:
+        try:
+            out = subprocess.check_output(['curl', '-sS', '-m', '20', f'https://delivery-dhfit-4a399-default-rtdb.firebaseio.com/saidas/{d}.json']).decode()
+            j = json.loads(out or 'null') or {}
+            _sd_cache[d] = [dict(v, id=k, dia=d) for k, v in j.items() if isinstance(v, dict)]
+        except Exception:
+            _sd_cache[d] = []
+    return _sd_cache[d]
+_sd_usadas = set()
+def _prox_dia(d):
+    import datetime
+    return (datetime.date.fromisoformat(d) + datetime.timedelta(days=1)).isoformat()
+for n in novas:
+    if n['type'] != 'DEBIT' or n.get('troco_motorun'): continue
+    for dia in (n['date'], _prox_dia(n['date'])):
+        hit = next((x for x in saidas_motorun(dia) if x['id'] not in _sd_usadas and abs(float(x.get('valor') or 0) - n['amt']) <= 0.01), None)
+        if hit:
+            _sd_usadas.add(hit['id'])
+            n['motorun'] = {'id': hit['id'], 'dia': hit['dia'], 'desc': hit.get('desc', ''), 'vendedor': hit.get('vendedor', ''),
+                            'forma': hit.get('forma', ''), 'hora': hit.get('hora', ''),
+                            'comprovante': bool(hit.get('tipo')), 'nota': bool(hit.get('tipoNota'))}
+            break
+# saídas lançadas no MotoRun sem lançamento correspondente no banco (ainda não caiu / valor diferente)
+_sd_sem_banco = []
+for dia in sorted({n['date'] for n in novas if n['type'] == 'DEBIT'} | {HOJE}):
+    for x in saidas_motorun(dia):
+        if x['id'] not in _sd_usadas:
+            _sd_sem_banco.append({'id': x['id'], 'dia': dia, 'valor': x.get('valor'), 'forma': x.get('forma'), 'desc': x.get('desc', ''), 'vendedor': x.get('vendedor', '')})
+
 if not a.dry: open(PATH, 'w', encoding='utf8').write(s)
 res = {'hoje': HOJE, 'em': EM, 'novas': len(novas),
        'entradas': round(sum(n['amt'] for n in novas if n['type'] == 'CREDIT'), 2),
@@ -194,5 +229,6 @@ res = {'hoje': HOJE, 'em': EM, 'novas': len(novas),
        'tarifas_abatidas': round(sum(abat.values()), 2),
        'dh_holding': dh_info,
        'trocos_motorun': trocos_marcados,
+       'saidas_motorun_sem_banco': _sd_sem_banco,
        'saidas_novas': [n for n in novas if n['type'] == 'DEBIT' and not n.get('troco_motorun')]}
 print(json.dumps(res, ensure_ascii=False, indent=1))
