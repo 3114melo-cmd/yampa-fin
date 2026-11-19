@@ -29,7 +29,10 @@ Regras:
    (aceita comprovante menor em pagamento dividido). Comprovante pode ser de até 3 dias antes.
  - PIX ↔ Stone: com a hora da foto, mesmo valor e até 10 min de diferença (não precisa de nome). Sem hora: mesmo valor,
    2 dias antes até 1h depois do lançamento, preferindo o pagador com o mesmo nome.
- - Cartão/débito: só confere se tem comprovante e se o valor bate com o pedido (sem conferência de "cartão do dia").
+ - Cartão de crédito/débito (Felipe, 19/11/2026): além do comprovante, confere se o dinheiro caiu na Stone — o cupom
+   entra como "Antecipação | Recebimento vendas", líquido (90–99,5% do valor), de 2 min a 3 h depois da hora do cupom
+   (sem hora na foto: até 12 h antes / 6 h depois do lançamento). Não achou → pendência "cartão que não caiu na Stone"
+   (ex.: venda passada em outra maquininha), rechecada todo dia.
  - Link de pagamento Stone (Felipe, 19/11/2026): o link pago cai na Stone na MADRUGADA seguinte (~3h) como
    "Antecipação | Crédito | Recebimento vendas", líquido (90–99,5% do valor). Achou → conferido. Não achou → fica
    "aguardando" (guardado em links_aguardando no estado) e só vira pendência "link que não caiu na Stone" se não
@@ -169,6 +172,16 @@ def acha_link(linkst, v, ref_hora, folga=0):
     return min(cand, key=lambda s: abs(s['t'] - ref)) if cand else None
 
 
+def acha_cartao(cartao, v, ref_hora, folga=0):
+    """Recebimento de venda de cartão livre (90–99,5% do valor): 2 min a 3 h depois do cupom; sem hora, de 12 h antes
+    a 6 h depois do lançamento. folga = dias extras (recheque de pendência antiga)."""
+    ref, com_hora = ref_hora
+    t0, t1 = (ref + 120, ref + 3 * 3600) if com_hora else (ref - 12 * 3600, ref + 6 * 3600)
+    t1 += folga * 86400
+    cand = [s for s in cartao if not s['usado'] and t0 <= s['t'] <= t1 and 0.90 * v <= s['v'] <= 0.995 * v]
+    return min(cand, key=lambda s: abs(s['t'] - ref)) if cand else None
+
+
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == 'resolver':
         return resolver(sys.argv[2:])
@@ -249,6 +262,7 @@ def main():
                 continue
             c['caneta'] = L.get('nome_caneta') or ''
             c['pagador'] = L.get('pagador') or ''
+            c['parcelas'] = L.get('parcelas')
             c['idtx'] = re.sub(r'\s', '', str(L.get('id_transacao') or '')).upper()
             if L.get('tipo') and L['tipo'] != c['tipo']:
                 add(ajustes, 'tipo_diferente', f"{c['n']} R$ {brl(c['v'])} ({c['vend']}): lançado como {c['pag']}, mas a foto é {L['tipo'].upper()}"
@@ -395,14 +409,14 @@ def main():
             if not c['stone']:
                 acha_pix(c, modo)
 
-    # ---- cupom de cartão x Stone (quando há hora na foto)
-    for c in sorted([c for c in comps_dia if c['tipo'] in ('credito', 'debito') and c['t_trans'] and c.get('hora_lida') and not c.get('duplicado')],
-                    key=lambda c: c['t_trans']):
-        cand = [s for s in cartao if not s['usado'] and 300 <= s['t'] - c['t_trans'] <= 3600 and 0.90 * c['v'] <= s['v'] <= 0.995 * c['v']]
-        if cand:
-            s = min(cand, key=lambda s: s['t'] - c['t_trans'])
-            s['usado'] = True
-            c['stone'] = s
+    # ---- cupom de cartão/débito x Stone (Felipe, 19/11/2026: tem que conferir se o dinheiro caiu)
+    card_comps = [c for c in comps if c['tipo'] in ('credito', 'debito') and not c.get('duplicado') and not c.get('repetido')]
+    for so_hora in (True, False):  # primeiro os cupons com hora (pareamento exato), depois os sem hora
+        for c in sorted([c for c in card_comps if not c['stone'] and link_ref(c)[1] == so_hora], key=lambda c: link_ref(c)[0]):
+            s_ = acha_cartao(cartao, c['v'], link_ref(c))
+            if s_:
+                s_['usado'] = True
+                c['stone'] = s_
 
     # ---- link de pagamento x Stone (Felipe, 19/11/2026)
     link_comps = sorted([c for c in comps if c['tipo'] == 'link' and not c.get('duplicado') and not c.get('repetido')],
@@ -461,6 +475,18 @@ def main():
              v=c['v'], imagem=c.get('imagem'), pedido_k=c['pedido'])
 
     links_aguardando = {}
+    for c in card_comps:
+        if not (ini <= c['t'] < fim) or c['stone']:
+            continue
+        ref, com_hora = link_ref(c)
+        if ultimo < ref + (3 if com_hora else 6) * 3600:
+            aguardando.append(f"{c['caneta'] or c['n']} cartão R$ {brl(c['v'])} ({hm(c['t'])})")
+            continue
+        p = ped_k.get(c['pedido'])
+        addp('cartao_nao_entrou', c['id'], ficha(p, c),
+             f"{'Débito' if c['tipo'] == 'debito' else 'Crédito'} de R$ {brl(c['v'])}" + (f" {c.get('parcelas')}x" if c.get('parcelas') else '')
+             + f" ({datetime.fromtimestamp(ref, TZ).strftime('%d/%m %H:%M')}) não caiu na Stone", v=c['v'], imagem=c.get('imagem'), pedido_k=c['pedido'])
+
     for c in link_comps:
         if not (ini <= c['t'] < fim) or c['stone']:
             continue
@@ -542,6 +568,12 @@ def main():
                     s_['usado'] = True
                     motivo = f"PIX localizado na Stone ({hm(s_['t'])})"
                     break
+        elif x['tipo'] == 'cartao_nao_entrou':
+            cc = comp_k.get(x.get('comp_id'))
+            s_ = cc['stone'] if cc and cc.get('stone') else acha_cartao(cartao, x['valor'], (x.get('t_comp') or 0, False), folga=7)
+            if s_:
+                s_['usado'] = True
+                motivo = f"cartão caiu na Stone ({hm(s_['t'])}, R$ {brl(s_['v'])})"
         elif x['tipo'] == 'link_nao_entrou':
             cc = comp_k.get(x.get('comp_id'))
             s_ = cc['stone'] if cc and cc.get('stone') else acha_link(linkst, x['valor'], (x.get('t_comp') or 0, True), folga=7)
@@ -610,6 +642,7 @@ def main():
 TITULOS = [('valor_difere', 'com valor que não bate', 'com valor diferente'),
            ('sem_comprovante', 'sem comprovante', 'sem comprovante'),
            ('pix_nao_entrou', 'com PIX que não entrou na Stone', 'com PIX que não entrou na Stone'),
+           ('cartao_nao_entrou', 'com cartão que não caiu na Stone', 'com cartão/débito que não caiu na Stone'),
            ('link_nao_entrou', 'com link que não caiu na Stone', 'com link que não caiu na Stone'),
            ('comprovante_antigo', 'com comprovante de outra data', 'com comprovante de outra data'),
            ('comprovante_repetido', 'com comprovante repetido', 'com comprovante repetido')]
