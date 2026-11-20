@@ -1,5 +1,32 @@
 {
- "abertas": {},
+ "abertas": {
+  "link_nao_entrou:-P6jaIalxsTAHBFK73bY": {
+   "id": "link_nao_entrou:-P6jaIalxsTAHBFK73bY",
+   "tipo": "link_nao_entrou",
+   "ficha": {
+    "cliente": "Wagner",
+    "pedido": 7849,
+    "valor": 149.9,
+    "pag": "Link",
+    "vendedor": "Soldado",
+    "entregador": "Rodrigo",
+    "rota": "Sul"
+   },
+   "detalhe": "Link de R$ 149,90 (18/11 13:51) não caiu na Stone — pagador: Wagner R A Gomes",
+   "valor": 149.9,
+   "imagem": null,
+   "dia": "2026-11-18",
+   "pedido_k": "-P6jXLhd4HEg3w7td6Wv",
+   "comp_id": "-P6jaIalxsTAHBFK73bY",
+   "comp_dia": "2026-11-18",
+   "t_comp": 1795020660.0,
+   "foto_valor": 149.9,
+   "nomes": [
+    "Wagner",
+    "Wagner R A Gomes"
+   ]
+  }
+ },
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -346,35 +373,36 @@
   "2026-11-15",
   "2026-11-16",
   "2026-11-17",
-  "2026-11-18"
+  "2026-11-18",
+  "2026-11-19"
  ],
  "links_aguardando": {
-  "-P6jaIalxsTAHBFK73bY": {
-   "id": "link_nao_entrou:-P6jaIalxsTAHBFK73bY",
+  "-P6pJjkhaf46SoGM1PtN": {
+   "id": "link_nao_entrou:-P6pJjkhaf46SoGM1PtN",
    "tipo": "link_nao_entrou",
    "ficha": {
-    "cliente": "Wagner",
-    "pedido": 7849,
-    "valor": 149.9,
+    "cliente": "Jessy",
+    "pedido": 7917,
+    "valor": 155.0,
     "pag": "Link",
-    "vendedor": "Soldado",
-    "entregador": "Rodrigo",
-    "rota": "Sul"
+    "vendedor": "Renato",
+    "entregador": "Cooperativa",
+    "rota": "Norte"
    },
-   "detalhe": "Link de R$ 149,90 (18/11 13:51) não caiu na Stone — pagador: Wagner R A Gomes",
-   "valor": 149.9,
+   "detalhe": "Link de R$ 155,00 (19/11 15:50) não caiu na Stone — pagador: Jessica Teixeira",
+   "valor": 155.0,
    "imagem": null,
-   "dia": "2026-11-18",
-   "pedido_k": "-P6jXLhd4HEg3w7td6Wv",
-   "comp_id": "-P6jaIalxsTAHBFK73bY",
-   "comp_dia": "2026-11-18",
-   "t_comp": 1795020660.0,
+   "dia": "2026-11-19",
+   "pedido_k": "-P6o1Myin6AEhiIHCc7s",
+   "comp_id": "-P6pJjkhaf46SoGM1PtN",
+   "comp_dia": "2026-11-19",
+   "t_comp": 1795114200.0,
    "com_hora": true,
-   "prazo": 1795165200.0,
-   "foto_valor": 149.9,
+   "prazo": 1795251600.0,
+   "foto_valor": 155.0,
    "nomes": [
-    "Wagner",
-    "Wagner R A Gomes"
+    "Jessy",
+    "Jessica Teixeira"
    ]
   }
  }
