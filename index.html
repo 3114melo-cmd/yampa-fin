@@ -336,7 +336,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 20/11 · 16:27
+        Stone · 20/11 · 18:58
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -3880,7 +3880,14 @@ const RAW = [
   {id:'st_8683eb62',date:'2026-11-20',hora:'16:23',desc:'Transferência | Pix | MARIA EDUARDA ARAUJO DE LIMA',amt:90.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'MARIA EDUARDA ARAUJO DE LIMA',meio:'PIX'},
   {id:'st_78b6b4f0',date:'2026-11-20',hora:'16:26',desc:'Transferência | Pix | Tayna Rayane Batista de Souza',amt:23.0,type:'DEBIT',conta:'Stone',cat:'transf',cli:'Tayna Rayane Batista de Souza',meio:'PIX',status_fixo:'transferencia',transf:'Caixa (Dinheiro)',obs:'Troco em Pix (lançado no MotoRun: Troco tayna) — transferência para o caixa'},
   {id:'st_850f1a30',date:'2026-11-20',hora:'16:27',desc:'Antecipação | Recebimento vendas',amt:23.19,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_1c83c109',date:'2026-11-20',hora:'16:27',desc:'Antecipação | Recebimento vendas',amt:336.87,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
+  {id:'st_1c83c109',date:'2026-11-20',hora:'16:27',desc:'Antecipação | Recebimento vendas',amt:336.87,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  // SYNC 20/11/2026 19:21
+  {id:'st_7e3eac73',date:'2026-11-20',hora:'16:38',desc:'Antecipação | Recebimento vendas',amt:94.13,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_54a64d07',date:'2026-11-20',hora:'16:42',desc:'Antecipação | Recebimento vendas',amt:160.84,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_927d05cd',date:'2026-11-20',hora:'17:18',desc:'Transferência | Pix | POSTOS ALIANCA COMBUSTIVEIS SG LTDA',amt:28.18,type:'DEBIT',conta:'Stone',cat:'4.6.1',cli:'POSTOS ALIANCA COMBUSTIVEIS SG LTDA',meio:'PIX'},
+  {id:'st_9bd73ecb',date:'2026-11-20',hora:'17:27',desc:'Pix | Maquininha | 65.488.875 SYDNEY XAVIER SILVA',amt:64.68,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'65.488.875 SYDNEY XAVIER SILVA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,32 abatida'},
+  {id:'st_c1d5f436',date:'2026-11-20',hora:'17:41',desc:'Antecipação | Recebimento vendas',amt:47.21,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_4f0d1fe1',date:'2026-11-20',hora:'18:58',desc:'Antecipação | Recebimento vendas',amt:448.19,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
 ];
 
 // Estado
@@ -7005,7 +7012,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:627.68, em:'20/11/2026 16:32'}, XP:{valor:66.97, em:'20/11/2026 16:32'}};
+const SALDO_BANCO = {Stone:{valor:1414.55, em:'20/11/2026 19:21'}, XP:{valor:66.97, em:'20/11/2026 19:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
