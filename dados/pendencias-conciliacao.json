@@ -1,32 +1,5 @@
 {
- "abertas": {
-  "link_nao_entrou:-P6jaIalxsTAHBFK73bY": {
-   "id": "link_nao_entrou:-P6jaIalxsTAHBFK73bY",
-   "tipo": "link_nao_entrou",
-   "ficha": {
-    "cliente": "Wagner",
-    "pedido": 7849,
-    "valor": 149.9,
-    "pag": "Link",
-    "vendedor": "Soldado",
-    "entregador": "Rodrigo",
-    "rota": "Sul"
-   },
-   "detalhe": "Link de R$ 149,90 (18/11 13:51) não caiu na Stone — pagador: Wagner R A Gomes",
-   "valor": 149.9,
-   "imagem": null,
-   "dia": "2026-11-18",
-   "pedido_k": "-P6jXLhd4HEg3w7td6Wv",
-   "comp_id": "-P6jaIalxsTAHBFK73bY",
-   "comp_dia": "2026-11-18",
-   "t_comp": 1795020660.0,
-   "foto_valor": 149.9,
-   "nomes": [
-    "Wagner",
-    "Wagner R A Gomes"
-   ]
-  }
- },
+ "abertas": {},
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -361,6 +334,34 @@
    ],
    "resolvido_em": "2026-11-19",
    "motivo": "baixa autorizada pelo Felipe em 19/11"
+  },
+  {
+   "id": "link_nao_entrou:-P6jaIalxsTAHBFK73bY",
+   "tipo": "link_nao_entrou",
+   "ficha": {
+    "cliente": "Wagner",
+    "pedido": 7849,
+    "valor": 149.9,
+    "pag": "Link",
+    "vendedor": "Soldado",
+    "entregador": "Rodrigo",
+    "rota": "Sul"
+   },
+   "detalhe": "Link de R$ 149,90 (18/11 13:51) não caiu na Stone — pagador: Wagner R A Gomes",
+   "valor": 149.9,
+   "imagem": null,
+   "dia": "2026-11-18",
+   "pedido_k": "-P6jXLhd4HEg3w7td6Wv",
+   "comp_id": "-P6jaIalxsTAHBFK73bY",
+   "comp_dia": "2026-11-18",
+   "t_comp": 1795020660.0,
+   "foto_valor": 149.9,
+   "nomes": [
+    "Wagner",
+    "Wagner R A Gomes"
+   ],
+   "resolvido_em": "2026-11-20",
+   "motivo": "Baixa manual autorizada pelo Felipe em 20/11/2026"
   }
  ],
  "enviados": [
