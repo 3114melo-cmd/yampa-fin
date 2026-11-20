@@ -336,7 +336,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 19/11 · 18:55
+        Stone · 19/11 · 21:44
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -357,7 +357,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-19"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-20"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -3822,7 +3822,20 @@ const RAW = [
   {id:'xp_c7557f33',date:'2026-11-19',hora:'14:44',desc:'Pix recebido de Rafaella Waleska Souza Pereira',amt:6.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Rafaella Waleska Souza Pereira',meio:'PIX'},
   {id:'xp_48c898f0',date:'2026-11-19',hora:'14:47',desc:'Pix recebido de Maria Solidade Bezerra',amt:15.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Maria Solidade Bezerra',meio:'PIX'},
   {id:'xp_17eaf102',date:'2026-11-19',hora:'16:39',desc:'Pix recebido de Maria da Conceicao de Melo',amt:7.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Maria da Conceicao de Melo',meio:'PIX'},
-  {id:'xp_5dabb430',date:'2026-11-19',hora:'18:02',desc:'Pix recebido de Maria Willene Bilro da Silva Morais',amt:7.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Maria Willene Bilro da Silva Morais',meio:'PIX'}
+  {id:'xp_5dabb430',date:'2026-11-19',hora:'18:02',desc:'Pix recebido de Maria Willene Bilro da Silva Morais',amt:7.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Maria Willene Bilro da Silva Morais',meio:'PIX'},
+  // SYNC 20/11/2026 07:21
+  {id:'st_e1efdc50',date:'2026-11-19',hora:'19:22',desc:'Transferência | Pix | Alex Lorenco do Nascimento',amt:45.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'150.578.384-40',meio:'PIX'},
+  {id:'st_a4947ffc',date:'2026-11-19',hora:'19:26',desc:'Pix | Maquininha | FRANCISCO ADOLFO TEIXEIRA JUNIOR',amt:24.88,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Francisco A Teixeira Jr',meio:'PIX',obs:'Líquido: tarifa de R$ 0,12 abatida'},
+  {id:'st_acb0c18d',date:'2026-11-19',hora:'19:37',desc:'Transferência | Pix | Fernando Francisco de Lima',amt:25.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'102.978.224-54',meio:'PIX',transf:'Caixa (Dinheiro)',obs:'Troco em Pix (lançado no MotoRun) — transferência para o caixa'},
+  {id:'st_7f15839d',date:'2026-11-19',hora:'19:39',desc:'Antecipação | Recebimento vendas',amt:4.95,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_474086f0',date:'2026-11-19',hora:'19:50',desc:'Pix | Maquininha | NICOLAS THOMAS ARAUJO DE LIMA',amt:174.13,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'078.055.224-56',meio:'PIX',obs:'Líquido: tarifa de R$ 0,87 abatida'},
+  {id:'st_148202bd',date:'2026-11-19',hora:'20:04',desc:'Transferência | Pix | NATALLYA ROMEIKA DE GOIS RODRIGUES',amt:100.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'NATALLYA ROMEIKA G RODRIGUES',meio:'PIX'},
+  {id:'st_65b32ebc',date:'2026-11-19',hora:'20:13',desc:'Pix | Maquininha | 29.226.207 ANGELA MARIA DA CAMARA',amt:4.98,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'29.226.207 ANGELA MARIA DA CAMARA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,02 abatida'},
+  {id:'st_94828537',date:'2026-11-19',hora:'20:39',desc:'Transferência | Pix | Wanilma Janine da Silva Gomes',amt:190.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'053.283.894-76',meio:'PIX'},
+  {id:'st_0a11fc6f',date:'2026-11-19',hora:'20:40',desc:'Antecipação | Recebimento vendas',amt:108.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_687aa6fb',date:'2026-11-19',hora:'21:44',desc:'Pagamento | SUPLEY LAB ALIM SUPL NUT LTDA',amt:3591.45,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto'},
+  {id:'xp_d8055e77',date:'2026-11-19',hora:'19:36',desc:'Pix recebido de Maria Erivania Silva de Sales',amt:15.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Maria Erivania Silva de Sales',meio:'PIX'},
+  {id:'xp_979e864b',date:'2026-11-19',hora:'21:12',desc:'Pix enviado para Renato Cesar Aguiar de Sousa',amt:200.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'Renato Cesar Aguiar de Sousa',meio:'PIX'}
 ];
 
 // Estado
@@ -3931,6 +3944,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pv_369b20d3': ['2026-11-19','st_687aa6fb','Boleto Supley Lab (Probiótica) NF 1.062.387 parc. 1/7 pago 19/11'],
   'df_claude_202611': ['2026-11-17','st_8028c7fa','Recarga do cartão Nubank R$ 110 (Pix 17/11) para a mensalidade do Claude'],
   'pv_9efe5f62': ['2026-11-18','st_a826caed','Underlabz parc. 1/5 paga 18/11 (R$ 3.795,94)'],
   'pv_3257a8ee': ['2026-11-18','st_c5f8db18','Underlabz parc. 1/5 (complemento) paga 18/11'],
@@ -4807,7 +4821,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-19';
+  const hoje = '2026-11-20';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -5388,7 +5402,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-19';
+const HOJE_SISTEMA = '2026-11-20';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -6034,7 +6048,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-19';
+  const hoje = '2026-11-20';
 
   let txData;
   if(cfMes){
@@ -6944,7 +6958,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:4038.52, em:'19/11/2026 19:21'}, XP:{valor:251.97, em:'19/11/2026 19:21'}};
+const SALDO_BANCO = {Stone:{valor:874.81, em:'20/11/2026 07:21'}, XP:{valor:66.97, em:'20/11/2026 07:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
