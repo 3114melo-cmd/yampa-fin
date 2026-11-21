@@ -562,10 +562,22 @@ def main():
              f"{'Débito' if c['tipo'] == 'debito' else 'Crédito'} de R$ {brl(c['v'])}" + (f" {c.get('parcelas')}x" if c.get('parcelas') else '')
              + f" ({datetime.fromtimestamp(ref, TZ).strftime('%d/%m %H:%M')}) não caiu na Stone", v=c['v'], imagem=c.get('imagem'), pedido_k=c['pedido'])
 
+    # Felipe (21/11/2026): link de pagamento com FOTO do comprovante batendo o VALOR e a DATA do pedido = conferido,
+    # sem esperar o crédito na Stone (link em 3x sem antecipação só cai em parcelas de 30 dias).
+    def link_foto_ok(c, p):
+        if not p or not c.get('lido') or not c.get('t_trans') or abs(c['v'] - valor(p.get('valor'))) >= 0.01:
+            return False
+        d_foto = datetime.fromtimestamp(c['t_trans'], TZ).date()
+        d_ped = {datetime.fromtimestamp(x / 1000, TZ).date() for x in (p.get('ts'), p.get('tsEntregue')) if x}
+        return d_foto in d_ped
+
     for c in link_comps:
         if not (ini <= c['t'] < fim) or c['stone'] or sem_pedido(c):
             continue
         p = ped_k.get(c['pedido'])
+        if link_foto_ok(c, p):
+            links_conferidos.append(f"{c['caneta'] or c['n']} R$ {brl(c['v'])} → comprovante bate valor e data do pedido")
+            continue
         ref, com_hora = link_ref(c)
         prazo = link_prazo(ref)
         if ultimo >= prazo:

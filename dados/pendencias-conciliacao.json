@@ -1,32 +1,5 @@
 {
- "abertas": {
-  "link_nao_entrou:-P6pJjkhaf46SoGM1PtN": {
-   "id": "link_nao_entrou:-P6pJjkhaf46SoGM1PtN",
-   "tipo": "link_nao_entrou",
-   "ficha": {
-    "cliente": "Jessy",
-    "pedido": 7917,
-    "valor": 155.0,
-    "pag": "Link",
-    "vendedor": "Renato",
-    "entregador": "Cooperativa",
-    "rota": "Norte"
-   },
-   "detalhe": "Link de R$ 155,00 (19/11 15:50) não caiu na Stone — pagador: Jessica Teixeira",
-   "valor": 155.0,
-   "imagem": null,
-   "dia": "2026-11-19",
-   "pedido_k": "-P6o1Myin6AEhiIHCc7s",
-   "comp_id": "-P6pJjkhaf46SoGM1PtN",
-   "comp_dia": "2026-11-19",
-   "t_comp": 1795114200.0,
-   "foto_valor": 155.0,
-   "nomes": [
-    "Jessy",
-    "Jessica Teixeira"
-   ]
-  }
- },
+ "abertas": {},
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -389,6 +362,34 @@
    ],
    "resolvido_em": "2026-11-20",
    "motivo": "Baixa manual autorizada pelo Felipe em 20/11/2026"
+  },
+  {
+   "id": "link_nao_entrou:-P6pJjkhaf46SoGM1PtN",
+   "tipo": "link_nao_entrou",
+   "ficha": {
+    "cliente": "Jessy",
+    "pedido": 7917,
+    "valor": 155.0,
+    "pag": "Link",
+    "vendedor": "Renato",
+    "entregador": "Cooperativa",
+    "rota": "Norte"
+   },
+   "detalhe": "Link de R$ 155,00 (19/11 15:50) não caiu na Stone — pagador: Jessica Teixeira",
+   "valor": 155.0,
+   "imagem": null,
+   "dia": "2026-11-19",
+   "pedido_k": "-P6o1Myin6AEhiIHCc7s",
+   "comp_id": "-P6pJjkhaf46SoGM1PtN",
+   "comp_dia": "2026-11-19",
+   "t_comp": 1795114200.0,
+   "foto_valor": 155.0,
+   "nomes": [
+    "Jessy",
+    "Jessica Teixeira"
+   ],
+   "resolvido_em": "2026-11-21",
+   "motivo": "Link Stone R$ 155,00 aprovado em 19/11 15:50 (3x, cartão 4257, pedido OR_QAMPNVWCRDU0APX9) — Felipe confirmou pago em 21/11/2026"
   }
  ],
  "enviados": [
