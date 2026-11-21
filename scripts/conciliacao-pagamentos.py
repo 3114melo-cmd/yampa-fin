@@ -211,7 +211,7 @@ def main():
             comps.append(dict(id=k, dia=dd, t=r['ts'] / 1000, v=valor(r.get('valor')), n=r.get('nome', ''),
                               pag=r.get('pag', ''), tipo=tipo_de(r.get('pag')), vend=r.get('vendedor', ''),
                               obs=r.get('obs', ''), pedido=None, stone=None, lido=False, caneta='', pagador='',
-                              t_trans=None, idtx=''))
+                              t_trans=None, idtx='', extras=[i for i in range(2, 6) if r.get(f'tipo{i}')]))
     comps.sort(key=lambda c: c['t'])
     comps_dia = [c for c in comps if ini <= c['t'] < fim]
 
@@ -220,6 +220,10 @@ def main():
         for c in comps_dia:
             arq = fb(f'comprovantes_arq/{c["dia"]}/{c["id"]}.json')
             achados = re.findall(r'data:([\w/+.-]+);base64,([A-Za-z0-9+/=]+)', json.dumps(arq))
+            # fotos extras (2º, 3º… comprovante do mesmo pedido) ficam em <id>_2, <id>_3…
+            for i in c.get('extras') or []:
+                arq_i = fb(f'comprovantes_arq/{c["dia"]}/{c["id"]}_{i}.json')
+                achados += re.findall(r'data:([\w/+.-]+);base64,([A-Za-z0-9+/=]+)', json.dumps(arq_i))
             imgs = []
             for j, (mt, b) in enumerate(achados):
                 ext = {'image/jpeg': 'jpg', 'image/png': 'png', 'application/pdf': 'pdf', 'image/webp': 'webp'}.get(mt, 'bin')
@@ -228,7 +232,9 @@ def main():
                 imgs.append(fn)
             ficha.append(dict(id=c['id'], lancado=dict(nome=c['n'], valor=c['v'], pag=c['pag'], vendedor=c['vend'], hora=hm(c['t'])),
                               imagens=imgs, leitura=dict(tipo=None, valor=None, data=None, hora=None, pagador='', nome_caneta='',
-                                                        parcelas=None, id_transacao='', legivel=None)))
+                                                        parcelas=None, id_transacao='', legivel=None),
+                              # 2ª, 3ª… foto com OUTRO pagamento do mesmo pedido: uma leitura (mesmos campos) por foto extra, na ordem de "imagens"
+                              partes=[]))
         fn = os.path.join(a.out, 'leitura.json')
         json.dump(ficha, open(fn, 'w'), ensure_ascii=False, indent=1)
         print(json.dumps(dict(ficha=fn, comprovantes=len(ficha), imagens=sum(len(f['imagens']) for f in ficha),
@@ -248,6 +254,24 @@ def main():
     if a.leitura:
         leitura_ok = True
         lmap = {f['id']: f for f in json.load(open(a.leitura))}
+        filhos = []
+        for c in comps_dia:
+            # pedido pago com mais de um comprovante (2ª, 3ª foto): cada foto extra vira uma "parte" conferida na Stone
+            for i, P in enumerate((lmap.get(c['id']) or {}).get('partes') or [], 2):
+                if P.get('valor') is None or P.get('tipo') == 'outro':
+                    continue
+                h = dict(c, id=f"{c['id']}#{i}", parte_de=c['id'], v=valor(P['valor']), tipo=P.get('tipo') or c['tipo'],
+                         lido=True, caneta=P.get('nome_caneta') or '', pagador=P.get('pagador') or '', parcelas=P.get('parcelas'),
+                         idtx=re.sub(r'\s', '', str(P.get('id_transacao') or '')).upper(), t_trans=None, stone=None, extras=[])
+                if P.get('data'):
+                    try:
+                        h['t_trans'] = datetime.strptime(f"{P['data']} {P.get('hora') or '12:00'}", '%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()
+                        h['hora_lida'] = bool(P.get('hora'))
+                    except ValueError:
+                        pass
+                f0 = lmap[c['id']]
+                h['imagem'] = (f0.get('imagens') or [None] * i)[i - 1] if len(f0.get('imagens') or []) >= i else None
+                filhos.append(h)
         for c in comps_dia:
             f = lmap.get(c['id'])
             L = (f or {}).get('leitura') or {}
@@ -268,10 +292,15 @@ def main():
                 add(ajustes, 'tipo_diferente', f"{c['n']} R$ {brl(c['v'])} ({c['vend']}): lançado como {c['pag']}, mas a foto é {L['tipo'].upper()}"
                     + (f" {L['parcelas']}x" if L.get('parcelas') else '') + ' — corrigir no MotoRun', c['id'], extra={'imagem': c['imagem']})
                 c['tipo'] = L['tipo']
-            if L.get('valor') is not None and abs(valor(L['valor']) - c['v']) >= 0.01:
-                add(ajustes, 'valor_diferente', f"{c['n']}: lançado R$ {brl(c['v'])}, mas a foto mostra R$ {brl(valor(L['valor']))} ({c['vend']}) — corrigir no MotoRun",
-                    c['id'], extra={'imagem': c['imagem']})
+            partes = [h for h in filhos if h['parte_de'] == c['id']]
+            if L.get('valor') is not None:
+                tot = round(valor(L['valor']) + sum(h['v'] for h in partes), 2)
+                if abs(tot - c['v']) >= 0.01:
+                    add(ajustes, 'valor_diferente', f"{c['n']}: lançado R$ {brl(c['v'])}, mas " + (f"as {len(partes) + 1} fotos somam" if partes else "a foto mostra")
+                        + f" R$ {brl(tot)} ({c['vend']}) — corrigir no MotoRun", c['id'], extra={'imagem': c['imagem']})
                 c['v'] = valor(L['valor'])
+                if partes:
+                    c['v_total'] = tot
             if L.get('data'):
                 try:
                     hh = L.get('hora') or '12:00'
@@ -283,6 +312,8 @@ def main():
                     add(graves, 'comprovante_antigo', f"COMPROVANTE DE OUTRA DATA: {c['n']} R$ {brl(c['v'])} lançado em {hm(c['t'])} por {c['vend']}, "
                         f"mas a transação na foto é de {datetime.fromtimestamp(c['t_trans'], TZ).strftime('%d/%m/%Y')}", c['id'], c['v'],
                         {'imagem': c['imagem']})
+        comps += filhos
+        comps_dia += filhos
         # mesmo ID de transação em dois comprovantes → mesmo pagamento usado 2 vezes
         vistos = {}
         for c in comps_dia:
@@ -360,7 +391,8 @@ def main():
     alvo = sorted([p for p in entregas if precisa_comp(p)], key=lambda p: p.get('ts') or 0)
 
     # ---- pedido x comprovante (nome à caneta > nome lançado > pagador da foto)
-    livres = [c for c in comps if not c.get('duplicado') and not c.get('repetido')]
+    livres = [c for c in comps if not c.get('duplicado') and not c.get('repetido') and not c.get('parte_de')]
+    vt = lambda c: c.get('v_total', c['v'])
     for rodada in ('caneta', 'qualquer', 'valor_difere'):
         for p in alvo:
             if p.get('_comp'):
@@ -376,12 +408,15 @@ def main():
                 cand = [c for c in livres if c['pedido'] is None and bate(c) and tsp - 600 <= c['t'] < fim]
             else:
                 cand = [c for c in livres if c['pedido'] is None and bate(c)
-                        and (abs(c['v'] - pv) < 0.01 or (split and c['v'] <= pv + 0.01))]
+                        and (abs(vt(c) - pv) < 0.01 or (split and vt(c) <= pv + 0.01))]
                 cand = [c for c in cand if c['t'] >= tsp - 600] or [c for c in cand if c['t'] >= tsp - 3 * 86400]
             if cand:
                 c = min(cand, key=lambda c: abs(c['t'] - (p.get('tsEntregue') or 0) / 1000))
                 c['pedido'] = p['_k']
                 p['_comp'] = c
+    for h in comps:
+        if h.get('parte_de'):
+            h['pedido'] = next((c['pedido'] for c in comps if c['id'] == h['parte_de']), None)
 
     # ---- PIX x Stone
     def acha_pix(c, modo):
@@ -486,10 +521,10 @@ def main():
         split = '+' in (p.get('pag') or '') or p.get('pagSplit')
         if not c:
             addp('sem_comprovante', p['_k'], ficha(p), v=pv, pedido_k=p['_k'])
-        elif not split and abs(c['v'] - pv) >= 0.01:
+        elif not split and abs(vt(c) - pv) >= 0.01:
             addp('valor_difere', p['_k'], ficha(p, c),
-                 f"Comprovante mostra R$ {brl(c['v'])}\nMas o pedido foi lançado R$ {brl(pv)} (verificar)",
-                 v=round(abs(pv - c['v']), 2), imagem=c.get('imagem'), pedido_k=p['_k'])
+                 f"Comprovante mostra R$ {brl(vt(c))}\nMas o pedido foi lançado R$ {brl(pv)} (verificar)",
+                 v=round(abs(pv - vt(c)), 2), imagem=c.get('imagem'), pedido_k=p['_k'])
 
     # Felipe (19/11/2026): comprovante SEM pedido entregue correspondente ("Comprovantes sem pedido
     # correspondente" no MotoRun) é desconsiderado — às vezes o comprovante é lançado e o pedido só é

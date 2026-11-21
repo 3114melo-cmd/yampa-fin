@@ -25,34 +25,6 @@
     "Jessy",
     "Jessica Teixeira"
    ]
-  },
-  "valor_difere:-P6swISMxqdKLZgaNkSJ": {
-   "id": "valor_difere:-P6swISMxqdKLZgaNkSJ",
-   "tipo": "valor_difere",
-   "ficha": {
-    "cliente": "Suely",
-    "pedido": 8002,
-    "valor": 90.0,
-    "pag": "PIX Pago ✅",
-    "vendedor": "Soldado",
-    "entregador": "Juninho",
-    "rota": "Norte"
-   },
-   "detalhe": "Comprovante mostra R$ 45,00\nMas o pedido foi lançado R$ 90,00 (verificar)",
-   "valor": 45.0,
-   "imagem": null,
-   "dia": "2026-11-20",
-   "pedido_k": "-P6swISMxqdKLZgaNkSJ",
-   "comp_id": "-P6tOuGaEOmycJtSs18q",
-   "comp_dia": "2026-11-20",
-   "t_comp": 1795183020.0,
-   "foto_valor": 45.0,
-   "nomes": [
-    "Suely",
-    "SUELY",
-    "MARIA SUELI OVIDIO",
-    "Suely"
-   ]
   }
  },
  "resolvidas": [
