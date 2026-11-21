@@ -181,7 +181,7 @@ for n in novas:
 META_DH = 20000.0
 mes = HOJE[:7]
 dh = []
-for m in re.finditer(r"\{id:'(st_[0-9a-f]{8})',date:'" + mes + r"-\d\d'[^\n]*?amt:([\d.]+),type:'DEBIT',conta:'Stone'[^\n]*", s):
+for m in re.finditer(r"\{id:'(st_[0-9a-f]{8}(?:_[a-z0-9]+)?)',date:'" + mes + r"-\d\d'[^\n]*?amt:([\d.]+),type:'DEBIT',conta:'Stone'[^\n]*", s):
     if 'DH HOLDING' in m.group(0).upper(): dh.append((m.group(1), float(m.group(2))))
 dh_tot = round(sum(v for _, v in dh), 2)
 dh_info = {'mes': mes, 'total': dh_tot, 'meta': META_DH, 'falta': round(max(0, META_DH - dh_tot), 2),
