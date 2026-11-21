@@ -336,7 +336,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 20/11 · 18:58
+        Stone · 20/11 · 19:35
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -357,7 +357,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-20"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-21"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -3887,7 +3887,10 @@ const RAW = [
   {id:'st_927d05cd',date:'2026-11-20',hora:'17:18',desc:'Transferência | Pix | POSTOS ALIANCA COMBUSTIVEIS SG LTDA',amt:28.18,type:'DEBIT',conta:'Stone',cat:'4.6.1',cli:'POSTOS ALIANCA COMBUSTIVEIS SG LTDA',meio:'PIX'},
   {id:'st_9bd73ecb',date:'2026-11-20',hora:'17:27',desc:'Pix | Maquininha | 65.488.875 SYDNEY XAVIER SILVA',amt:64.68,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'65.488.875 SYDNEY XAVIER SILVA',meio:'PIX',obs:'Líquido: tarifa de R$ 0,32 abatida'},
   {id:'st_c1d5f436',date:'2026-11-20',hora:'17:41',desc:'Antecipação | Recebimento vendas',amt:47.21,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_4f0d1fe1',date:'2026-11-20',hora:'18:58',desc:'Antecipação | Recebimento vendas',amt:448.19,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
+  {id:'st_4f0d1fe1',date:'2026-11-20',hora:'18:58',desc:'Antecipação | Recebimento vendas',amt:448.19,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  // SYNC 21/11/2026 07:21
+  {id:'st_a96295d7',date:'2026-11-20',hora:'19:35',desc:'Antecipação | Recebimento vendas',amt:416.28,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'xp_239e5ae7',date:'2026-11-20',hora:'21:08',desc:'Pix enviado para Ifood.Com Agencia de Restaurantes Online S.',amt:18.78,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.',meio:'PIX'}
 ];
 
 // Estado
@@ -4875,7 +4878,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-20';
+  const hoje = '2026-11-21';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -5456,7 +5459,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-20';
+const HOJE_SISTEMA = '2026-11-21';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -6102,7 +6105,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-20';
+  const hoje = '2026-11-21';
 
   let txData;
   if(cfMes){
@@ -7012,7 +7015,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1414.55, em:'20/11/2026 19:21'}, XP:{valor:66.97, em:'20/11/2026 19:21'}};
+const SALDO_BANCO = {Stone:{valor:1830.83, em:'21/11/2026 07:21'}, XP:{valor:48.19, em:'21/11/2026 07:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
