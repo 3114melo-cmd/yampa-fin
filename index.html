@@ -336,7 +336,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 21/11 · 20:01
+        Stone · 22/11 · 16:19
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -3937,7 +3937,12 @@ const RAW = [
   // SYNC 22/11/2026 07:21
   {id:'st_dcaa111d',date:'2026-11-21',hora:'19:15',desc:'Pagamento | LWSA S A',amt:245.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'LWSA S/A',meio:'Boleto',comp:'2026-11',status_fixo:'conciliado'},
   {id:'st_a5a29a62',date:'2026-11-21',hora:'20:01',desc:'Transferência | Pix | COMPANHIA ENERGETICA DO RIO GRANDE DO NORTE COSERN',amt:315.86,type:'DEBIT',conta:'Stone',cat:'5.2.3',cli:'COMPANHIA ENERGETICA DO RIO GRANDE DO NORTE COSERN',meio:'PIX',comp:'2026-11',status_fixo:'conciliado'},
-  {id:'xp_3fbae138',date:'2026-11-21',hora:'19:22',desc:'Pix enviado para Ifood.Com Agencia de Restaurantes Online S.',amt:40.97,type:'DEBIT',conta:'XP',cat:'5.3.2',cli:'IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.',meio:'PIX',comp:'2026-11',status_fixo:'conciliado',obs:'Pró-labore (iFood) — conciliado pelo Felipe'}
+  {id:'xp_3fbae138',date:'2026-11-21',hora:'19:22',desc:'Pix enviado para Ifood.Com Agencia de Restaurantes Online S.',amt:40.97,type:'DEBIT',conta:'XP',cat:'5.3.2',cli:'IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.',meio:'PIX',comp:'2026-11',status_fixo:'conciliado',obs:'Pró-labore (iFood) — conciliado pelo Felipe'},
+  // SYNC 22/11/2026 16:21
+  {id:'st_33c64dd7',date:'2026-11-22',hora:'08:01',desc:'Transferência | Pix | Maria da Conceicao Siqueira Viana',amt:20.44,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Maria da Conceicao Siqueira Viana',meio:'PIX'},
+  {id:'st_17a7624e',date:'2026-11-22',hora:'08:21',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:500.0,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
+  {id:'st_ecab0a1c',date:'2026-11-22',hora:'13:14',desc:'Transferência | Pix | Bruna Xavier Moises',amt:160.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Bruna Xavier Moises',meio:'PIX'},
+  {id:'st_0f00547c',date:'2026-11-22',hora:'16:19',desc:'Transferência | Pix | Uilson Cantalice Ferreira',amt:85.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Uilson Cantalice Ferreira',meio:'PIX'}
 ];
 
 // Estado
@@ -7066,7 +7071,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1110.13, em:'22/11/2026 07:21'}, XP:{valor:7.22, em:'22/11/2026 07:21'}};
+const SALDO_BANCO = {Stone:{valor:664.69, em:'22/11/2026 16:21'}, XP:{valor:7.22, em:'22/11/2026 16:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
