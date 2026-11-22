@@ -336,7 +336,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 21/11 · 17:58
+        Stone · 21/11 · 20:01
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -357,7 +357,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-21"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-22"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -3933,7 +3933,11 @@ const RAW = [
   {id:'st_d7ab1d27',date:'2026-11-21',hora:'17:19',desc:'Antecipação | Recebimento vendas',amt:95.3,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'st_7789e0e7',date:'2026-11-21',hora:'17:40',desc:'Pix | Maquininha | Allan Morais Fernandes',amt:19.9,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Allan Morais Fernandes',meio:'PIX',obs:'Líquido: tarifa de R$ 0,10 abatida'},
   {id:'st_6c2e3dd1',date:'2026-11-21',hora:'17:58',desc:'Antecipação | Recebimento vendas',amt:168.86,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
-  {id:'st_9e6954ff',date:'2026-11-21',hora:'17:58',desc:'Antecipação | Recebimento vendas',amt:56.29,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
+  {id:'st_9e6954ff',date:'2026-11-21',hora:'17:58',desc:'Antecipação | Recebimento vendas',amt:56.29,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  // SYNC 22/11/2026 07:21
+  {id:'st_dcaa111d',date:'2026-11-21',hora:'19:15',desc:'Pagamento | LWSA S A',amt:245.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'LWSA S/A',meio:'Boleto',comp:'2026-11',status_fixo:'conciliado'},
+  {id:'st_a5a29a62',date:'2026-11-21',hora:'20:01',desc:'Transferência | Pix | COMPANHIA ENERGETICA DO RIO GRANDE DO NORTE COSERN',amt:315.86,type:'DEBIT',conta:'Stone',cat:'5.2.3',cli:'COMPANHIA ENERGETICA DO RIO GRANDE DO NORTE COSERN',meio:'PIX',comp:'2026-11',status_fixo:'conciliado'},
+  {id:'xp_3fbae138',date:'2026-11-21',hora:'19:22',desc:'Pix enviado para Ifood.Com Agencia de Restaurantes Online S.',amt:40.97,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'IFOOD.COM AGENCIA DE RESTAURANTES ONLINE S.A.',meio:'PIX'}
 ];
 
 // Estado
@@ -4043,6 +4047,8 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'df_2fdf4acc': ['2026-11-21','st_dcaa111d','Boleto Bling (LWSA) R$ 245,00 pago 21/11'],
+  'df_233bf717': ['2026-11-21','st_a5a29a62','Cosern energia ref. 11/2026 parc. 1/3 paga por Pix QR 21/11'],
   'pv_369b20d3': ['2026-11-19','st_687aa6fb','Boleto Supley Lab (Probiótica) NF 1.062.387 parc. 1/7 pago 19/11'],
   'df_claude_202611': ['2026-11-17','st_8028c7fa','Recarga do cartão Nubank R$ 110 (Pix 17/11) para a mensalidade do Claude'],
   'pv_9efe5f62': ['2026-11-18','st_a826caed','Underlabz parc. 1/5 paga 18/11 (R$ 3.795,94)'],
@@ -4923,7 +4929,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-21';
+  const hoje = '2026-11-22';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -5504,7 +5510,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-21';
+const HOJE_SISTEMA = '2026-11-22';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -6150,7 +6156,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-21';
+  const hoje = '2026-11-22';
 
   let txData;
   if(cfMes){
@@ -7060,7 +7066,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:1425.99, em:'21/11/2026 19:21'}, XP:{valor:48.19, em:'21/11/2026 19:21'}};
+const SALDO_BANCO = {Stone:{valor:1110.13, em:'22/11/2026 07:21'}, XP:{valor:7.22, em:'22/11/2026 07:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
