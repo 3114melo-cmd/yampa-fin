@@ -336,7 +336,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 22/11 · 16:19
+        Stone · 22/11 · 17:47
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -3942,7 +3942,9 @@ const RAW = [
   {id:'st_33c64dd7',date:'2026-11-22',hora:'08:01',desc:'Transferência | Pix | Maria da Conceicao Siqueira Viana',amt:20.44,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Maria da Conceicao Siqueira Viana',meio:'PIX'},
   {id:'st_17a7624e',date:'2026-11-22',hora:'08:21',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:500.0,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
   {id:'st_ecab0a1c',date:'2026-11-22',hora:'13:14',desc:'Transferência | Pix | Bruna Xavier Moises',amt:160.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Bruna Xavier Moises',meio:'PIX'},
-  {id:'st_0f00547c',date:'2026-11-22',hora:'16:19',desc:'Transferência | Pix | Uilson Cantalice Ferreira',amt:85.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Uilson Cantalice Ferreira',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Pró-labore (Pix QR Code, Nubank)'}
+  {id:'st_0f00547c',date:'2026-11-22',hora:'16:19',desc:'Transferência | Pix | Uilson Cantalice Ferreira',amt:85.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Uilson Cantalice Ferreira',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Pró-labore (Pix QR Code, Nubank)'},
+  // SYNC 22/11/2026 19:21
+  {id:'st_0871a313',date:'2026-11-22',hora:'17:47',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:300.0,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'}
 ];
 
 // Estado
@@ -7071,7 +7073,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:664.69, em:'22/11/2026 16:21'}, XP:{valor:7.22, em:'22/11/2026 16:21'}};
+const SALDO_BANCO = {Stone:{valor:364.69, em:'22/11/2026 19:21'}, XP:{valor:7.22, em:'22/11/2026 19:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
