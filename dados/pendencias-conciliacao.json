@@ -1,5 +1,33 @@
 {
- "abertas": {},
+ "abertas": {
+  "cartao_nao_entrou:-P6yTXBkt4wvqzWzQj9v": {
+   "id": "cartao_nao_entrou:-P6yTXBkt4wvqzWzQj9v",
+   "tipo": "cartao_nao_entrou",
+   "ficha": {
+    "cliente": "Ceza",
+    "pedido": 8043,
+    "valor": 100.0,
+    "pag": "Cartão 3x",
+    "vendedor": "Renato",
+    "entregador": "Rodrigo",
+    "rota": "Sul"
+   },
+   "detalhe": "Crédito de R$ 100,00 3x (21/11 10:17) não caiu na Stone",
+   "valor": 100.0,
+   "imagem": null,
+   "dia": "2026-11-21",
+   "pedido_k": "-P6y1MCexqRx_pwzB8SY",
+   "comp_id": "-P6yTXBkt4wvqzWzQj9v",
+   "comp_dia": "2026-11-21",
+   "t_comp": 1795267020.0,
+   "foto_valor": 100.0,
+   "nomes": [
+    "Ceza",
+    "CEZA",
+    "Ceza"
+   ]
+  }
+ },
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -404,7 +432,8 @@
   "2026-11-17",
   "2026-11-18",
   "2026-11-19",
-  "2026-11-20"
+  "2026-11-20",
+  "2026-11-21"
  ],
  "links_aguardando": {}
 }
