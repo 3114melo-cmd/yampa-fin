@@ -336,7 +336,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 22/11 · 17:47
+        Stone · 23/11 · 03:31
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -357,7 +357,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-22"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-23"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -3944,7 +3944,10 @@ const RAW = [
   {id:'st_ecab0a1c',date:'2026-11-22',hora:'13:14',desc:'Transferência | Pix | Bruna Xavier Moises',amt:160.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'Bruna Xavier Moises',meio:'PIX'},
   {id:'st_0f00547c',date:'2026-11-22',hora:'16:19',desc:'Transferência | Pix | Uilson Cantalice Ferreira',amt:85.0,type:'DEBIT',conta:'Stone',cat:'5.3.2',cli:'Uilson Cantalice Ferreira',meio:'PIX',status_fixo:'conciliado',comp:'2026-11',obs:'Pró-labore (Pix QR Code, Nubank)'},
   // SYNC 22/11/2026 19:21
-  {id:'st_0871a313',date:'2026-11-22',hora:'17:47',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:300.0,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'}
+  {id:'st_0871a313',date:'2026-11-22',hora:'17:47',desc:'Transferência | Pix | FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',amt:300.0,type:'DEBIT',conta:'Stone',cat:'5.8.1',cli:'FACEBOOK SERVICOS ONLINE DO BRASIL LTDA.',meio:'PIX'},
+  // SYNC 23/11/2026 07:21
+  {id:'st_4f552405',date:'2026-11-22',hora:'23:11',desc:'Transferência | Pix | Joao Maria Moura De Melo Elias',amt:75.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'108.416.134-60',meio:'PIX'},
+  {id:'st_3fba9c6b',date:'2026-11-23',hora:'03:31',desc:'Antecipação | Crédito | Recebimento vendas',amt:145.87,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
 ];
 
 // Estado
@@ -4936,7 +4939,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-22';
+  const hoje = '2026-11-23';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -5517,7 +5520,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-22';
+const HOJE_SISTEMA = '2026-11-23';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -6163,7 +6166,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-22';
+  const hoje = '2026-11-23';
 
   let txData;
   if(cfMes){
@@ -7073,7 +7076,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:364.69, em:'22/11/2026 19:21'}, XP:{valor:7.22, em:'22/11/2026 19:21'}};
+const SALDO_BANCO = {Stone:{valor:435.56, em:'23/11/2026 07:21'}, XP:{valor:7.22, em:'23/11/2026 07:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
