@@ -179,7 +179,21 @@ def acha_cartao(cartao, v, ref_hora, folga=0):
     t0, t1 = (ref + 120, ref + 3 * 3600) if com_hora else (ref - 12 * 3600, ref + 6 * 3600)
     t1 += folga * 86400
     cand = [s for s in cartao if not s['usado'] and t0 <= s['t'] <= t1 and 0.90 * v <= s['v'] <= 0.995 * v]
-    return min(cand, key=lambda s: abs(s['t'] - ref)) if cand else None
+    if cand:
+        return min(cand, key=lambda s: abs(s['t'] - ref))
+    # Felipe (24/11/2026): crédito parcelado (4x ou mais) a Stone antecipa em 2 linhas no MESMO horário
+    # (1ª parcela + demais), ex.: Érika 295,00 4x → 69,18 + 207,55 às 19:12. Soma as linhas do mesmo segundo.
+    livres = [s for s in cartao if not s['usado'] and t0 <= s['t'] <= t1]
+    grupos = []
+    for i, a_ in enumerate(livres):
+        for b_ in livres[i + 1:]:
+            if a_['t'] == b_['t'] and 0.85 * v <= a_['v'] + b_['v'] <= 0.995 * v:
+                grupos.append((a_, b_))
+    if not grupos:
+        return None
+    a_, b_ = min(grupos, key=lambda g: abs(g[0]['t'] - ref))
+    a_['usado'] = b_['usado'] = True
+    return dict(a_, v=round(a_['v'] + b_['v'], 2), partes=[a_, b_])
 
 
 def main():
@@ -460,7 +474,9 @@ def main():
             tx = tab['debito']
         else:
             n = int(c.get('parcelas') or 1)
-            tx = tab['credito_avista'] if n <= 1 else tab['credito_2x'] if n == 2 else tab['credito_3x']
+            # 4x ou mais: a tabela só vai até 3x; soma ~0,79 p.p. por parcela extra (Érika 295,00 4x → 6,19%)
+            tx = tab['credito_avista'] if n <= 1 else tab['credito_2x'] if n == 2 else tab['credito_3x'] if n == 3 \
+                else tab['credito_3x'] + (n - 3) * (tab['credito_3x'] - tab['credito_2x'])
         return c['v'] * (1 - tx)
 
     com_hora_cc = [c for c in card_comps if link_ref(c)[1]]
