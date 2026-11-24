@@ -1,33 +1,5 @@
 {
- "abertas": {
-  "cartao_nao_entrou:-P79UwSNHFropuSHOqnF": {
-   "id": "cartao_nao_entrou:-P79UwSNHFropuSHOqnF",
-   "tipo": "cartao_nao_entrou",
-   "ficha": {
-    "cliente": "Érika",
-    "pedido": 8108,
-    "valor": 295.0,
-    "pag": "Cartão 4x",
-    "vendedor": "Renato",
-    "entregador": "Nathan",
-    "rota": "Sul"
-   },
-   "detalhe": "Crédito de R$ 295,00 4x (23/11 18:54) não caiu na Stone",
-   "valor": 295.0,
-   "imagem": null,
-   "dia": "2026-11-23",
-   "pedido_k": "-P78bN9M3Q4nFGBxkKlw",
-   "comp_id": "-P79UwSNHFropuSHOqnF",
-   "comp_dia": "2026-11-23",
-   "t_comp": 1795470840.0,
-   "foto_valor": 295.0,
-   "nomes": [
-    "Erika",
-    "Erika",
-    "Érika"
-   ]
-  }
- },
+ "abertas": {},
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -447,6 +419,35 @@
    ],
    "resolvido_em": "2026-11-22",
    "motivo": "Comprovante da Ceza conferido pelo Felipe: crédito 3x R$ 100,00 em 21/11 10:17 (Mastercard 9383, AUT R20454). Crédito na Stone provavelmente dentro da antecipação de R$ 208,99 das 10:34 (não isolado)"
+  },
+  {
+   "id": "cartao_nao_entrou:-P79UwSNHFropuSHOqnF",
+   "tipo": "cartao_nao_entrou",
+   "ficha": {
+    "cliente": "Érika",
+    "pedido": 8108,
+    "valor": 295.0,
+    "pag": "Cartão 4x",
+    "vendedor": "Renato",
+    "entregador": "Nathan",
+    "rota": "Sul"
+   },
+   "detalhe": "Crédito de R$ 295,00 4x (23/11 18:54) não caiu na Stone",
+   "valor": 295.0,
+   "imagem": null,
+   "dia": "2026-11-23",
+   "pedido_k": "-P78bN9M3Q4nFGBxkKlw",
+   "comp_id": "-P79UwSNHFropuSHOqnF",
+   "comp_dia": "2026-11-23",
+   "t_comp": 1795470840.0,
+   "foto_valor": 295.0,
+   "nomes": [
+    "Erika",
+    "Erika",
+    "Érika"
+   ],
+   "resolvido_em": "2026-11-24",
+   "motivo": "Stone 23/11 19:12: Antecipação R$ 69,18 (1ª parcela) + R$ 207,55 (parcelas 2–4) = R$ 276,73 líquido do crédito 4x de R$ 295,00"
   }
  ],
  "enviados": [
