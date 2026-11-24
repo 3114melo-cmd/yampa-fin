@@ -336,7 +336,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 23/11 · 19:15
+        Stone · 23/11 · 19:51
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -357,7 +357,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-23"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-24"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -2118,7 +2118,7 @@ const RAW = [
   {id:'st_2879c39f',date:'2026-10-27',hora:'19:46',desc:'Antecipação | Recebimento vendas',amt:132.45,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
   {id:'xp_49174c9b',date:'2026-10-28',hora:'10:01',desc:'Pix recebido de Viviani Gonçalves da Silva',amt:7.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Viviani Gonçalves da Silva',meio:'PIX'},
   // PREVISÃO mensalidade App Converta (Vindi/Yapay) — 6 meses,
-  {id:'pvc_converta_202611',date:'2026-11-17',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 1/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'Cartão Nubank',previsto:true,comp:'2026-11',obs:'Mensalidade prevista (Vindi/Yapay) · cobrado na fatura Nubank (dia 17)'},
+  {id:'pvc_converta_202611',date:'2026-11-17',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 1/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'Cartão Nubank',previsto:true,comp:'2026-11',obs:'Mensalidade prevista (Vindi/Yapay) · cobrado na fatura Nubank (dia 17)',status_fixo:'previsto'},
   {id:'pvc_converta_202612',date:'2026-12-17',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 2/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'Cartão Nubank',previsto:true,comp:'2026-12',obs:'Mensalidade prevista (Vindi/Yapay) · cobrado na fatura Nubank (dia 17)'},
   {id:'pvc_converta_202701',date:'2027-01-17',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 3/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'Cartão Nubank',previsto:true,comp:'2027-01',obs:'Mensalidade prevista (Vindi/Yapay) · cobrado na fatura Nubank (dia 17)'},
   {id:'pvc_converta_202702',date:'2027-02-17',hora:'--:--',desc:'Mensalidade aplicativo Converta - PARCELA 4/6',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'Cartão Nubank',previsto:true,comp:'2027-02',obs:'Mensalidade prevista (Vindi/Yapay) · cobrado na fatura Nubank (dia 17)'},
@@ -4024,7 +4024,31 @@ const RAW = [
   {id:'xp_0f8bcbab',date:'2026-11-23',hora:'14:53',desc:'Pix recebido de Fabiana de Souza Cardoso',amt:9.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'105.152.854-20',meio:'PIX'},
   {id:'xp_344251b7',date:'2026-11-23',hora:'16:09',desc:'Pix recebido de Adja Loisa Santos Bezerra',amt:8.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Adja Loisa Santos Bezerra',meio:'PIX'},
   {id:'xp_95e2c5cd',date:'2026-11-23',hora:'16:32',desc:'Pix recebido de Thais Ara Hanna Moreno de Albuquerque',amt:14.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'115.287.004-14',meio:'PIX'},
-  {id:'xp_b15df014',date:'2026-11-23',hora:'19:10',desc:'Pix enviado para Renato Cesar Aguiar de Sousa',amt:29.7,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'111.939.604-28',meio:'PIX'}
+  {id:'xp_b15df014',date:'2026-11-23',hora:'19:10',desc:'Pix enviado para Renato Cesar Aguiar de Sousa',amt:29.7,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'111.939.604-28',meio:'PIX'},
+  // CONCILIAÇÕES FEITAS NO APP (manuais)
+  {id:'m1795481199120',date:'2027-01-28',hora:'21:46',desc:'FITOWAY - NF 4484 - PARCELA 1/6',amt:1757.15,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795481263133',date:'2027-02-07',hora:'21:47',desc:'FITOWAY - NF 4484 - PARCELA 2/6',amt:1757.15,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795481284045',date:'2027-02-17',hora:'21:48',desc:'FITOWAY - NF 4484 - PARCELA 3/6',amt:1757.15,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795481294886',date:'2027-02-27',hora:'21:48',desc:'FITOWAY - NF 4484 - PARCELA 4/6',amt:1757.15,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795481305889',date:'2027-03-09',hora:'21:48',desc:'FITOWAY - NF 4484 - PARCELA 5/6',amt:1757.15,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-03'},
+  {id:'m1795481316753',date:'2027-03-19',hora:'21:48',desc:'FITOWAY - NF 4484 - PARCELA 6/6',amt:1755.05,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-03'},
+  {id:'m1795481326108',date:'2026-12-19',hora:'21:48',desc:'FITOWAY - NF 4486 - PARCELA 1/4',amt:903.73,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2026-12'},
+  {id:'m1795481339264',date:'2026-12-29',hora:'21:48',desc:'FITOWAY - NF 4486 - PARCELA 2/4',amt:903.73,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2026-12'},
+  {id:'m1795481359651',date:'2027-01-08',hora:'21:49',desc:'FITOWAY - NF 4486 - PARCELA 3/4',amt:903.73,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795481380340',date:'2027-01-18',hora:'21:49',desc:'FITOWAY - NF 4486 - PARCELA 4/4',amt:903.74,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795481397081',date:'2026-12-27',hora:'21:49',desc:'SUPLEY - NF 1065953 - PARCELA 1/9',amt:188.67,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY',meio:'Boleto',status_fixo:'previsto',comp:'2026-12'},
+  {id:'m1795481410666',date:'2027-01-06',hora:'21:50',desc:'SUPLEY - NF 1065953 - PARCELA 2/9',amt:188.67,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795481420410',date:'2027-01-16',hora:'21:50',desc:'SUPLEY - NF 1065953 - PARCELA 3/9',amt:188.67,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795481430991',date:'2027-01-26',hora:'21:50',desc:'SUPLEY - NF 1065953 - PARCELA 4/9',amt:188.67,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795481441937',date:'2027-02-05',hora:'21:50',desc:'SUPLEY - NF 1065953 - PARCELA 5/9',amt:188.67,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795481465510',date:'2027-02-15',hora:'21:51',desc:'SUPLEY - NF 1065953 - PARCELA 6/9',amt:188.67,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795481484532',date:'2027-02-25',hora:'21:51',desc:'SUPLEY - NF 1065953 - PARCELA 7/9',amt:188.67,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795481507501',date:'2027-03-07',hora:'21:51',desc:'SUPLEY - NF 1065953 - PARCELA 8/9',amt:188.67,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY',meio:'Boleto',status_fixo:'previsto',comp:'2027-03'},
+  {id:'m1795481526519',date:'2027-03-12',hora:'21:52',desc:'SUPLEY - NF 1065953 - PARCELA 9/9',amt:188.87,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY',meio:'Boleto',status_fixo:'previsto',comp:'2027-03'},
+  {id:'m1795485316168',date:'2026-11-19',hora:'22:55',desc:'Mensalidade aplicativo Converta - BOLETO VENC. 19/11 EM ABERTO (cobrança Converta)',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'Boleto',status_fixo:'previsto',comp:'2026-11'},
+  // SYNC 24/11/2026 07:21
+  {id:'st_62487372',date:'2026-11-23',hora:'19:25',desc:'Transferência | Pix | JONATHAN MATHEUS DE FRANCA SILVA',amt:30.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'130.209.994-99',meio:'PIX'},
+  {id:'st_dc3ad3ec',date:'2026-11-23',hora:'19:51',desc:'Antecipação | Recebimento vendas',amt:128.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
 ];
 
 // Estado
@@ -5016,7 +5040,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-23';
+  const hoje = '2026-11-24';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -5597,7 +5621,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-23';
+const HOJE_SISTEMA = '2026-11-24';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -6243,7 +6267,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-23';
+  const hoje = '2026-11-24';
 
   let txData;
   if(cfMes){
@@ -7153,7 +7177,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:538.43, em:'23/11/2026 19:21'}, XP:{valor:10.02, em:'23/11/2026 19:21'}};
+const SALDO_BANCO = {Stone:{valor:637.23, em:'24/11/2026 07:21'}, XP:{valor:10.02, em:'24/11/2026 07:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
