@@ -1,5 +1,33 @@
 {
- "abertas": {},
+ "abertas": {
+  "cartao_nao_entrou:-P79UwSNHFropuSHOqnF": {
+   "id": "cartao_nao_entrou:-P79UwSNHFropuSHOqnF",
+   "tipo": "cartao_nao_entrou",
+   "ficha": {
+    "cliente": "Érika",
+    "pedido": 8108,
+    "valor": 295.0,
+    "pag": "Cartão 4x",
+    "vendedor": "Renato",
+    "entregador": "Nathan",
+    "rota": "Sul"
+   },
+   "detalhe": "Crédito de R$ 295,00 4x (23/11 18:54) não caiu na Stone",
+   "valor": 295.0,
+   "imagem": null,
+   "dia": "2026-11-23",
+   "pedido_k": "-P78bN9M3Q4nFGBxkKlw",
+   "comp_id": "-P79UwSNHFropuSHOqnF",
+   "comp_dia": "2026-11-23",
+   "t_comp": 1795470840.0,
+   "foto_valor": 295.0,
+   "nomes": [
+    "Erika",
+    "Erika",
+    "Érika"
+   ]
+  }
+ },
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -434,7 +462,8 @@
   "2026-11-18",
   "2026-11-19",
   "2026-11-20",
-  "2026-11-21"
+  "2026-11-21",
+  "2026-11-23"
  ],
  "links_aguardando": {}
 }
