@@ -17,6 +17,7 @@ setTimeout(() => {
     return JSON.stringify({
       stone:{app:+sal('Stone').toFixed(2), banco:SALDO_BANCO.Stone.valor, dif:+(sal('Stone')-SALDO_BANCO.Stone.valor).toFixed(2)},
       xp:{app:+sal('XP').toFixed(2), banco:SALDO_BANCO.XP.valor, dif:+(sal('XP')-SALDO_BANCO.XP.valor).toFixed(2)},
+      reserva:{app:+sal('Reserva de Emergência').toFixed(2), banco:SALDO_BANCO['Reserva de Emergência'].valor, dif:+(sal('Reserva de Emergência')-SALDO_BANCO['Reserva de Emergência'].valor).toFixed(2)},
       pendentes: pend.map(t=>({id:t.id,conta:t.conta,date:t.date,hora:t.hora,type:t.type,amt:t.amt,cat:t.cat,desc:t.desc,cli:t.cli}))
     });})()`));
   R.telasComErro = [];

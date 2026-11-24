@@ -17,8 +17,8 @@ Uso:
 import argparse, datetime as dt, json, os, re, sys
 
 ap = argparse.ArgumentParser()
-ap.add_argument('--stone'); ap.add_argument('--xp')
-ap.add_argument('--saldo-stone', type=float); ap.add_argument('--saldo-xp', type=float)
+ap.add_argument('--stone'); ap.add_argument('--xp'); ap.add_argument('--pagbank')
+ap.add_argument('--saldo-stone', type=float); ap.add_argument('--saldo-xp', type=float); ap.add_argument('--saldo-reserva', type=float)
 ap.add_argument('--em'); ap.add_argument('--hoje'); ap.add_argument('--dry', action='store_true')
 a = ap.parse_args()
 
@@ -29,7 +29,7 @@ agora = dt.datetime.now(dt.timezone.utc).replace(tzinfo=None) - dt.timedelta(hou
 HOJE = a.hoje or agora.strftime('%Y-%m-%d')
 EM = a.em or agora.strftime('%d/%m/%Y %H:%M')
 
-existentes = set(re.findall(r"id:'((?:st|xp)_[0-9a-f]{8})'", s))
+existentes = set(re.findall(r"id:'((?:st|xp|pb)_[0-9a-f]{8})'", s))
 
 def carregar(p):
     if not p: return []
@@ -151,6 +151,21 @@ for r in sorted([r for r in carregar(a.xp) if 'xp_' + r['id'][:8] not in existen
     linhas.append(f"  {{id:'{i}',date:'{d}',hora:'{h}',desc:'{esc(desc)}',amt:{amt},type:'{ty}',conta:'XP',cat:'{c}',cli:'{esc(cli)}',meio:'PIX'}}")
     novas.append({'id': i, 'conta': 'XP', 'date': d, 'hora': h, 'type': ty, 'amt': amt, 'cat': c, 'desc': desc, 'cli': str(cli)})
 
+# ---------- PagBank / Reserva de Emergência (vendas de dose, sem NF) ----------
+for r in sorted([r for r in carregar(a.pagbank) if 'pb_' + r['id'][:8] not in existentes], key=lambda r: r['date']):
+    desc = str(r.get('description', '')); ty = tipo(r)
+    amt = round(abs(float(r['amount'])), 2)
+    d, h, _ = local(r['date'])
+    meio = 'PIX' if 'PIX' in desc.upper() else 'Cartão'
+    i = 'pb_' + r['id'][:8]
+    if ty == 'CREDIT':
+        c, cli = '3.1.8', 'Venda (dose, sem NF)'
+        linhas.append(f"  {{id:'{i}',date:'{d}',hora:'{h}',desc:'{esc(desc)}',amt:{amt},type:'CREDIT',conta:'Reserva de Emergência',cat:'{c}',cli:'{cli}',meio:'{meio}'}}")
+    else:
+        c, cli = 'pendente', str(nome_pd(r, 'receiver') or '')  # saída: fica pendente p/ o Felipe classificar
+        linhas.append(f"  {{id:'{i}',date:'{d}',hora:'{h}',desc:'{esc(desc)}',amt:{amt},type:'DEBIT',conta:'Reserva de Emergência',cli:'{esc(cli)}',meio:'{meio}'}}")
+    novas.append({'id': i, 'conta': 'Reserva de Emergência', 'date': d, 'hora': h, 'type': ty, 'amt': amt, 'cat': c, 'desc': desc, 'cli': cli})
+
 # ---------- grava ----------
 if linhas:
     i = s.index('\n];', s.index('const RAW = ['))
@@ -164,6 +179,8 @@ s = re.sub(r"const hoje = '20\d\d-[\d-]+';", f"const hoje = '{HOJE}';", s)
 s = re.sub(r"const HOJE_SISTEMA = '[\d-]+';", f"const HOJE_SISTEMA = '{HOJE}';", s)
 if a.saldo_stone is not None:
     s = re.sub(r"Stone:\{valor:[\d.\-]+, em:'[^']*'\}", f"Stone:{{valor:{a.saldo_stone}, em:'{EM}'}}", s)
+if a.saldo_reserva is not None:
+    s = re.sub(r"'Reserva de Emergência':\{valor:[\d.\-]+, em:'[^']*'\}", f"'Reserva de Emergência':{{valor:{a.saldo_reserva}, em:'{EM}'}}", s)
 if a.saldo_xp is not None:
     s = re.sub(r"XP:\{valor:[\d.\-]+, em:'[^']*'\}", f"XP:{{valor:{a.saldo_xp}, em:'{EM}'}}", s)
 

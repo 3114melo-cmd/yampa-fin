@@ -280,6 +280,11 @@ body,.main,.sb{height:100dvh}
     <span class="sc-txt">XP (Strong)</span>
     <span class="sc-saldo" id="sb-saldo-xp">R$ 0,00</span>
   </div>
+  <div class="sc-live" style="margin-top:3px;background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.22)" title="PagBank · conta 19749066-7 · vendas de dose sem nota fiscal">
+    <div class="sc-dot" style="background:#f59e0b"></div>
+    <span class="sc-txt">Reserva de Emergência</span>
+    <span class="sc-saldo" id="sb-saldo-res">R$ 0,00</span>
+  </div>
   <nav class="snav">
     <div class="ng">Controle</div>
     <button class="ni act" id="ni-dash" onclick="go('dash',this)">
@@ -4048,7 +4053,21 @@ const RAW = [
   {id:'m1795485316168',date:'2026-11-19',hora:'22:55',desc:'Mensalidade aplicativo Converta - BOLETO VENC. 19/11 EM ABERTO (cobrança Converta)',amt:299.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'APLICATIVO CONVERTA (Vindi/Yapay)',meio:'Boleto',status_fixo:'previsto',comp:'2026-11'},
   // SYNC 24/11/2026 07:21
   {id:'st_62487372',date:'2026-11-23',hora:'19:25',desc:'Transferência | Pix | JONATHAN MATHEUS DE FRANCA SILVA',amt:30.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'130.209.994-99',meio:'PIX'},
-  {id:'st_dc3ad3ec',date:'2026-11-23',hora:'19:51',desc:'Antecipação | Recebimento vendas',amt:128.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'}
+  {id:'st_dc3ad3ec',date:'2026-11-23',hora:'19:51',desc:'Antecipação | Recebimento vendas',amt:128.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  // CONCILIAÇÕES FEITAS NO APP (manuais)
+  {id:'m1795554310417',date:'2027-01-03',hora:'18:05',desc:'RAINHA - NF 8414 - PARCELA 1/10',amt:2807.21,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795554346582',date:'2027-01-13',hora:'18:05',desc:'RAINHA - NF 8414 - PARCELA 2/10',amt:2807.2,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795554375665',date:'2027-01-23',hora:'18:06',desc:'RAINHA - NF 8414 - PARCELA 3/10',amt:2807.2,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795554395705',date:'2027-02-02',hora:'18:06',desc:'RAINHA - NF 8414 - PARCELA 4/10',amt:2807.2,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795554417828',date:'2027-02-12',hora:'18:06',desc:'RAINHA - NF 8414 - PARCELA 5/10',amt:2807.2,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795554444441',date:'2027-02-22',hora:'18:07',desc:'RAINHA - NF 8414 - PARCELA 6/10',amt:2807.2,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795554461955',date:'2027-03-04',hora:'18:07',desc:'RAINHA - NF 8414 - PARCELA 7/10',amt:2807.2,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-03'},
+  {id:'m1795554494427',date:'2027-03-14',hora:'18:08',desc:'RAINHA - NF 8414 - PARCELA 8/10',amt:2807.2,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-03'},
+  {id:'m1795554517372',date:'2027-03-24',hora:'18:08',desc:'RAINHA - NF 8414 - PARCELA 9/10',amt:2807.2,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-03'},
+  {id:'m1795554534451',date:'2027-04-03',hora:'18:08',desc:'RAINHA - NF 8414 - PARCELA 10/10',amt:2807.2,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'RAINHA',meio:'Boleto',status_fixo:'previsto',comp:'2027-04'},
+  // SYNC 24/11/2026 12:10 (PagBank / Reserva de Emergência)
+  {id:'pb_1644a587',date:'2026-11-24',hora:'12:03',desc:'Vendas - Disponivel DEBITO VISA',amt:0.98,type:'CREDIT',conta:'Reserva de Emergência',cat:'3.1.8',cli:'Venda (dose, sem NF)',meio:'Cartão'},
+  {id:'pb_7b528ed5',date:'2026-11-24',hora:'12:06',desc:'Vendas - Disponivel PIX',amt:0.99,type:'CREDIT',conta:'Reserva de Emergência',cat:'3.1.8',cli:'Venda (dose, sem NF)',meio:'PIX'}
 ];
 
 // Estado
@@ -4136,6 +4155,7 @@ const REGRAS_AUTO = [
   {nome:'M M Combustíveis Planalto → Gasolina', tipo:'DEBIT', pix:false, termos:['M M COMERCIAL DE COMBUSTIVEIS PLANALTO'], cat:'4.6.1'},
   {nome:'Combustíveis → Gasolina', tipo:'DEBIT', pix:false, termos:['COMBUSTIVE'], cat:'4.6.1'},
   {nome:'Posto no débito → Gasolina (regra do Felipe 21/11)', tipo:'DEBIT', pix:false, termos:['POSTO'], so:['DEBITO'], cat:'4.6.1'},
+  {nome:'Reserva de Emergência: toda entrada → Receita de Vendas (dose, sem nota fiscal)', tipo:'CREDIT', pix:false, termos:[], conta:'Reserva de Emergência', cat:'3.1.8'},
   {nome:'XP: toda entrada → STRONG (taxas de entrega)', tipo:'CREDIT', pix:false, termos:[], conta:'XP', cat:'7.1.7'},
   {nome:'Toda entrada → Receita de Vendas', tipo:'CREDIT', pix:false, termos:[], exceto:['DEVOLUCAO'], cat:'3.1.8'},
 ];
@@ -4390,6 +4410,9 @@ function updateSaldoBadges(){
   const sx = TX.filter(t=>t.conta==='XP'&&(t.status==='conciliado'||t.status==='transferencia'));
   const elX = document.getElementById('sb-saldo-xp');
   if(elX){ elX.textContent = fmtS(calcS(sx)); elX.style.color = calcS(sx)<-0.004?'#f87171':''; }
+  const sr = TX.filter(t=>t.conta==='Reserva de Emergência'&&(t.status==='conciliado'||t.status==='transferencia'));
+  const elR = document.getElementById('sb-saldo-res');
+  if(elR){ elR.textContent = fmtS(calcS(sr)); elR.style.color = calcS(sr)<-0.004?'#f87171':''; }
 }
 
 function updateBadge(){
@@ -4467,6 +4490,7 @@ function renderDash(){
     {nome:'Stone',           icon:'💳', info:infoStone, cor:'#00a868', conta:'Stone'},
     {nome:'Caixa (Dinheiro)',icon:'💵', info:infoCaixa, cor:'#16a34a', conta:'Caixa (Dinheiro)'},
     {nome:'XP (Strong)',     icon:'🟣', info:getSaldo('XP'), cor:'#6366f1', conta:'XP'},
+    {nome:'Reserva de Emergência', icon:'🛟', info:getSaldo('Reserva de Emergência'), cor:'#f59e0b', conta:'Reserva de Emergência'},
   ];
   const saldoTotal = contas.reduce((s,c)=>s+c.info.atual,0);
   const saldoPrevisto = saldoTotal - aPagarHoje + aReceberHoje;
@@ -4877,7 +4901,7 @@ function listaPorData(list){
 }
 
 function renderTransfPanel(t){
-  const contas = ['Stone','Caixa (Dinheiro)','XP'].filter(c=>c!==(t.conta||'Stone'));
+  const contas = ['Stone','Caixa (Dinheiro)','XP','Reserva de Emergência'].filter(c=>c!==(t.conta||'Stone'));
   const id = t.id;
   const sentido = t.type==='CREDIT'?'origem (saída)':'destino (entrada)';
 
@@ -5067,7 +5091,7 @@ function abrirFiltroConta(ev){
   const pop = document.createElement('div');
   pop.id = 'filtro-popover';
   var vwF=window.innerWidth, vhF=window.innerHeight; var leftF=Math.min(rect.left, vwF-200); leftF=Math.max(8,leftF); var topF=rect.bottom+4; if(topF+300>vhF) topF=Math.max(8,rect.top-300-4); pop.style.cssText = 'position:fixed;top:'+topF+'px;left:'+leftF+'px;background:var(--sur);border:1px solid var(--bor2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:8px;z-index:9999;min-width:180px;max-height:'+(vhF-20)+'px;overflow-y:auto';
-  const contas = ['todas','Stone','Caixa (Dinheiro)','XP'];
+  const contas = ['todas','Stone','Caixa (Dinheiro)','XP','Reserva de Emergência'];
   pop.innerHTML = contas.map(c=>'<div class="cp-item" onclick="window._jourConta=\''+c+'\';fecharPopover();render()">'+(c==='todas'?'📋 Todas as contas':'🏦 '+c)+'</div>').join('');
   document.body.appendChild(pop);
   setTimeout(()=>document.addEventListener('click', fecharPopoverOutside), 10);
@@ -5644,6 +5668,7 @@ function getCentroCustoGlobal(t){
   if(t.conta==='Stone') return 'STONE';
   if(t.conta==='Caixa (Dinheiro)') return 'CAIXA';
   if(t.conta==='XP') return 'XP';
+  if(t.conta==='Reserva de Emergência') return 'RESERVA';
   return t.conta||'—';
 }
 
@@ -6041,7 +6066,7 @@ function filtrarMultiSelList(termo, inputEl){
   labels.forEach(function(lb){ lb.style.display = normalizarBusca(lb.textContent).indexOf(t)>=0?'flex':'none'; });
 }
 
-function valoresContas(){ return ['Stone','Caixa (Dinheiro)','XP']; }
+function valoresContas(){ return ['Stone','Caixa (Dinheiro)','XP','Reserva de Emergência']; }
 function valoresClientes(){ var s=new Set(); TX.forEach(function(t){ s.add(t.cli||'sem nome'); }); return [...s].sort(); }
 function valoresMeios(){ var s=new Set(); TX.forEach(function(t){ s.add(t.meio||'sem meio'); }); return [...s].sort(); }
 function valoresCentroCusto(){ var s=new Set(); TX.forEach(function(t){ s.add(getCentroCustoGlobal(t)); }); return [...s].sort(); }
@@ -6351,6 +6376,7 @@ function renderJour(){
     {n:'Stone', conta:'Stone', icon:'💳', saldo:saldoConta('Stone')},
     {n:'Caixa (Dinheiro)', conta:'Caixa (Dinheiro)', icon:'💵', saldo:saldoConta('Caixa (Dinheiro)')},
     {n:'XP (Strong)', conta:'XP', icon:'🟣', saldo:saldoConta('XP')},
+    {n:'Reserva de Emergência', conta:'Reserva de Emergência', icon:'🛟', saldo:saldoConta('Reserva de Emergência')},
   ];
 
   // Sequência (parcelas)
@@ -6385,7 +6411,7 @@ function renderJour(){
     return dd+'/'+m+'/'+y;
   }
 
-  const contasUnicas = [...new Set(['Stone','Caixa (Dinheiro)','XP', ...TX.map(t=>t.conta).filter(Boolean)])];
+  const contasUnicas = [...new Set(['Stone','Caixa (Dinheiro)','XP','Reserva de Emergência', ...TX.map(t=>t.conta).filter(Boolean)])];
 
   window._jourRowsAtuais = rows;
   const qtdFiltrosAtivos = contarFiltrosAtivos();
@@ -7177,7 +7203,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:637.23, em:'24/11/2026 07:21'}, XP:{valor:10.02, em:'24/11/2026 07:21'}};
+const SALDO_BANCO = {Stone:{valor:637.23, em:'24/11/2026 07:21'}, XP:{valor:10.02, em:'24/11/2026 07:21'}, 'Reserva de Emergência':{valor:1.97, em:'24/11/2026 12:06'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
