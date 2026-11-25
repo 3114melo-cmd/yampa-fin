@@ -341,7 +341,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 24/11 · 19:14
+        Stone · 24/11 · 21:37
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -362,7 +362,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-24"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-25"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -4153,7 +4153,19 @@ const RAW = [
   {id:'xp_a2f3b7f0',date:'2026-11-24',hora:'17:18',desc:'Pix enviado para Iracema Gomes de Amorim Cavalcanti',amt:20.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'Iracema Gomes de Amorim Cavalcanti',meio:'PIX'},
   {id:'xp_6faaf315',date:'2026-11-24',hora:'17:22',desc:'Pix enviado para Iracema Gomes de Amorim Cavalcanti',amt:3.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'Iracema Gomes de Amorim Cavalcanti',meio:'PIX'},
   {id:'xp_3dfaa73b',date:'2026-11-24',hora:'17:48',desc:'Pix recebido de Kaliane Estevam da Silva',amt:12.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Kaliane Estevam da Silva',meio:'PIX'},
-  {id:'cx_20261124_prolabore38750',date:'2026-11-24',hora:'21:35',desc:'Pró-labore - espécie',amt:387.5,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.2',cli:'Pró-labore',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11'}
+  {id:'cx_20261124_prolabore38750',date:'2026-11-24',hora:'21:35',desc:'Pró-labore - espécie',amt:387.5,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.2',cli:'Pró-labore',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11'},
+  // SYNC 25/11/2026 07:22
+  {id:'st_9197c64c',date:'2026-11-24',hora:'19:44',desc:'Pix | Maquininha | Raphael Deyvison Dos Santos',amt:92.54,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'017.800.134-18',meio:'PIX',obs:'Líquido: tarifa de R$ 0,46 abatida'},
+  {id:'st_9ba17bc7',date:'2026-11-24',hora:'19:53',desc:'Transferência | Pix | Kaline Garcia de Lima',amt:100.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'700.393.384-52',meio:'PIX'},
+  {id:'st_b5f726ed',date:'2026-11-24',hora:'19:57',desc:'Antecipação | Recebimento vendas',amt:128.8,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_bccde8b6',date:'2026-11-24',hora:'21:02',desc:'Pix | Maquininha | ANA SUELY NOGUEIRA DOS SANTOS',amt:44.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'778.513.404-97',meio:'PIX',obs:'Líquido: tarifa de R$ 0,22 abatida'},
+  {id:'st_57495e96',date:'2026-11-24',hora:'21:07',desc:'Transferência | Pix | Joao Maria Moura De Melo Elias',amt:75.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'108.416.134-60',meio:'PIX'},
+  {id:'st_56ea7cd2',date:'2026-11-24',hora:'21:12',desc:'Pagamento | SERIDO EMBALAGENS LTDA',amt:950,type:'DEBIT',conta:'Stone',cat:'4.3.1',cli:'SERIDO EMBALAGENS LTDA',meio:'Boleto',status_fixo:'conciliado',comp:'2026-11',obs:'Boleto Serido Embalagens venc. 08/10 - valor original'},
+  {id:'st_56ea7cd2_2',date:'2026-11-24',hora:'21:12',desc:'Pagamento | SERIDO EMBALAGENS LTDA (multa + juros)',amt:50.49,type:'DEBIT',conta:'Stone',cat:'4.2.4',cli:'SERIDO EMBALAGENS LTDA',meio:'Boleto',status_fixo:'conciliado',comp:'2026-11',obs:'multa + juros – boleto Serido Embalagens venc. 08/10'},
+  {id:'st_8baf0844',date:'2026-11-24',hora:'21:37',desc:'Pagamento | SERIDO EMBALAGENS LTDA',amt:950,type:'DEBIT',conta:'Stone',cat:'4.3.1',cli:'SERIDO EMBALAGENS LTDA',meio:'Boleto',status_fixo:'conciliado',comp:'2026-11',obs:'Boleto Serido Embalagens venc. 15/10 - valor original'},
+  {id:'st_8baf0844_2',date:'2026-11-24',hora:'21:37',desc:'Pagamento | SERIDO EMBALAGENS LTDA (multa + juros)',amt:45.8,type:'DEBIT',conta:'Stone',cat:'4.2.4',cli:'SERIDO EMBALAGENS LTDA',meio:'Boleto',status_fixo:'conciliado',comp:'2026-11',obs:'multa + juros – boleto Serido Embalagens venc. 15/10'},
+  {id:'xp_3ec78c3c',date:'2026-11-24',hora:'23:43',desc:'Pix recebido de Strongest Brazil Ltda',amt:70.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'STRONGEST BRAZIL LTDA',meio:'PIX'},
+  {id:'xp_7b2c425c',date:'2026-11-25',hora:'02:14',desc:'Pix recebido de Italo Igo da Silva Domingos',amt:100.0,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'016.505.844-74',meio:'PIX'}
 ];
 
 // Estado
@@ -5150,7 +5162,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-24';
+  const hoje = '2026-11-25';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -5731,7 +5743,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-24';
+const HOJE_SISTEMA = '2026-11-25';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -6378,7 +6390,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-24';
+  const hoje = '2026-11-25';
 
   let txData;
   if(cfMes){
@@ -7289,7 +7301,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:3589.78, em:'24/11/2026 19:21'}, XP:{valor:65.52, em:'24/11/2026 19:21'}, 'Reserva de Emergência':{valor:1.97, em:'24/11/2026 19:21'}};
+const SALDO_BANCO = {Stone:{valor:1884.61, em:'25/11/2026 07:22'}, XP:{valor:235.52, em:'25/11/2026 07:22'}, 'Reserva de Emergência':{valor:1.97, em:'25/11/2026 07:22'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
