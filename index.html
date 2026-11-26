@@ -341,7 +341,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 26/11 · 19:14
+        Stone · 26/11 · 19:56
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -4356,7 +4356,17 @@ const RAW = [
   {id:'pvrefis_202706_08',date:'2027-06-30',hora:'--:--',desc:'REFIS ICMS (SEFAZ/RN) - PARCELA 8/10',amt:1368.01,type:'DEBIT',conta:'Stone',cat:'4.1.4',cli:'SECRETARIA DE ESTADO DA TRIBUTACAO RN',meio:'Boleto',previsto:true,comp:'2025-12',obs:'REFIS ICMS - GRI SEFAZ/RN, parcelamento nº 000126548 (receita 2530) · parcela de entrada R$ 1.368,01 (venc. 30/11/2026); demais parcelas provisionadas com o mesmo valor, ajustar quando sair a guia · competência 2025 (regra do Felipe 26/11/2026)'},
   {id:'pvrefis_202707_09',date:'2027-07-30',hora:'--:--',desc:'REFIS ICMS (SEFAZ/RN) - PARCELA 9/10',amt:1368.01,type:'DEBIT',conta:'Stone',cat:'4.1.4',cli:'SECRETARIA DE ESTADO DA TRIBUTACAO RN',meio:'Boleto',previsto:true,comp:'2025-12',obs:'REFIS ICMS - GRI SEFAZ/RN, parcelamento nº 000126548 (receita 2530) · parcela de entrada R$ 1.368,01 (venc. 30/11/2026); demais parcelas provisionadas com o mesmo valor, ajustar quando sair a guia · competência 2025 (regra do Felipe 26/11/2026)'},
   {id:'pvrefis_202708_10',date:'2027-08-30',hora:'--:--',desc:'REFIS ICMS (SEFAZ/RN) - PARCELA 10/10',amt:1368.01,type:'DEBIT',conta:'Stone',cat:'4.1.4',cli:'SECRETARIA DE ESTADO DA TRIBUTACAO RN',meio:'Boleto',previsto:true,comp:'2025-12',obs:'REFIS ICMS - GRI SEFAZ/RN, parcelamento nº 000126548 (receita 2530) · parcela de entrada R$ 1.368,01 (venc. 30/11/2026); demais parcelas provisionadas com o mesmo valor, ajustar quando sair a guia · competência 2025 (regra do Felipe 26/11/2026)'},
-  {id:'cx_20261126_13_rodrigo',date:'2026-11-26',hora:'19:57',desc:'13º salário RODRIGO (espécie)',amt:1045.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.7',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'13º salário pago em dinheiro'}
+  {id:'cx_20261126_13_rodrigo',date:'2026-11-26',hora:'19:57',desc:'13º salário RODRIGO (espécie)',amt:1045.0,type:'DEBIT',conta:'Caixa (Dinheiro)',cat:'5.3.7',cli:'Rodrigo',meio:'Dinheiro',status_fixo:'conciliado',comp:'2026-11',obs:'13º salário pago em dinheiro'},
+  // CONCILIAÇÕES FEITAS NO APP (manuais)
+  {id:'m1795734629784',date:'2026-12-26',hora:'20:10',desc:'FITOWAY - NF 4858 - PARCELA 1/4',amt:2121.25,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2026-12'},
+  {id:'m1795734671304',date:'2027-01-10',hora:'20:11',desc:'FITOWAY - NF 4858 - PARCELA 2/4',amt:2121.25,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795734696850',date:'2027-01-25',hora:'20:11',desc:'FITOWAY - NF 4858 - PARCELA 3/4',amt:2121.25,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-01'},
+  {id:'m1795734727259',date:'2027-02-09',hora:'20:12',desc:'FITOWAY - NF 4858 - PARCELA 4/4',amt:2121.25,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'FITOWAY',meio:'Boleto',status_fixo:'previsto',comp:'2027-02'},
+  {id:'m1795734755892',date:'2026-11-25',hora:'20:12',desc:'ICMS antecipado - NF 1065953, 4485 - SUPLEY/FITOWAY (guia GRI 2.513,07 venc 25/11; 4484/4486/4487 no lanc. FTW 2.132,56)',amt:380.51,type:'DEBIT',conta:'Stone',cat:'4.1.4',cli:'SEFAZ-RN',meio:'Boleto',status_fixo:'previsto',comp:'2026-11'},
+  // SYNC 26/11/2026 20:28
+  {id:'st_3b3cd203',date:'2026-11-26',hora:'19:41',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:1464.81,type:'DEBIT',conta:'Stone',cat:'4.1.1',cli:'DH HOLDING IMOBILIARIA LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Imposto mensal da DH Holding - competência outubro/2026'},
+  {id:'st_7398ce38',date:'2026-11-26',hora:'19:49',desc:'Transferência | Pix | Flavio Alves de Assis Junior',amt:400.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Flavio Alves de Assis Junior',meio:'PIX'},
+  {id:'st_2375decc',date:'2026-11-26',hora:'19:56',desc:'Pagamento | SUPLEY LAB ALIM SUPL NUT LTDA',amt:3591.45,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto'}
 ];
 
 // Estado
@@ -4467,6 +4477,7 @@ const PROTESTO_DIAS = {
   'BODYACTION': 5,   // NF 6449/5 venc. 25/10 → último dia no banco 30/10
 };
 const BAIXAS_PREV = {
+  'pv_e0f4503a': ['2026-11-26','st_2375decc','Boleto Probiótica NF 1.062.387 parc. 2/7 pago 26/11 (antecipado)'],
   'pv_c88f15ea': ['2026-11-25','st_66dff9ed','Boleto Max Titanium parc. 2/9 pago 25/11'],
   'pv_d0ef34c3': ['2026-11-25','st_5555d9d5','Boleto Dr Peanut parc. 3/6 pago 25/11'],
   'pv_191e9fe4': ['2026-11-23','st_49bda734','Boleto Max Titanium parc. 9/10 pago 23/11 com juros'],
@@ -7496,7 +7507,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:5809.97, em:'26/11/2026 19:21'}, XP:{valor:287.52, em:'26/11/2026 19:21'}, 'Reserva de Emergência':{valor:71.7, em:'26/11/2026 19:21'}};
+const SALDO_BANCO = {Stone:{valor:353.71, em:'26/11/2026 20:28'}, XP:{valor:287.52, em:'26/11/2026 19:21'}, 'Reserva de Emergência':{valor:71.7, em:'26/11/2026 19:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
