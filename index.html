@@ -341,7 +341,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 25/11 · 19:17
+        Stone · 26/11 · 03:18
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -362,7 +362,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-25"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-26"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -4263,7 +4263,14 @@ const RAW = [
   {id:'xp_ce542806',date:'2026-11-25',hora:'15:05',desc:'Pix recebido de A.R Conveniencia',amt:7.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'A R DE B DUARTE DISTRIBUIDORA DE BEBIDAS LTDA',meio:'PIX'},
   {id:'xp_f5848cee',date:'2026-11-25',hora:'15:15',desc:'Pix devolvido para Mariane Stefany Ferreira Borges',amt:5.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'704.555.884-81',meio:'PIX'},
   {id:'xp_03732670',date:'2026-11-25',hora:'15:20',desc:'Pix recebido de Andreia Angela da Conceicao',amt:7.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Andreia Angela Da Conceicao',meio:'PIX'},
-  {id:'xp_f206d805',date:'2026-11-25',hora:'17:49',desc:'Pix recebido de Jacqueline Alves da Silva',amt:7.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'JACQUELINE ALVES DA SILVA',meio:'PIX'}
+  {id:'xp_f206d805',date:'2026-11-25',hora:'17:49',desc:'Pix recebido de Jacqueline Alves da Silva',amt:7.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'JACQUELINE ALVES DA SILVA',meio:'PIX'},
+  // SYNC 26/11/2026 07:21
+  {id:'st_bb855aaa',date:'2026-11-25',hora:'19:22',desc:'Antecipação | Recebimento vendas',amt:140.65,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_aa274aec',date:'2026-11-25',hora:'19:22',desc:'Antecipação | Recebimento vendas',amt:46.88,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_fca3da43',date:'2026-11-25',hora:'19:28',desc:'Transferência | Pix | Amanda Kelly Carneiro',amt:96.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'018.203.714-25',meio:'PIX'},
+  {id:'st_1a7a006f',date:'2026-11-25',hora:'19:28',desc:'Transferência | Pix | Maria Clara Cosme Santiago',amt:55.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'700.365.334-67',meio:'PIX'},
+  {id:'st_77abee8e',date:'2026-11-26',hora:'03:18',desc:'Antecipação | Crédito | Recebimento vendas',amt:273.83,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'pb_76159eda',date:'2026-11-25',hora:'13:37',desc:'Vendas - Disponivel DEBITO MASTERCARD',amt:4.88,type:'CREDIT',conta:'Reserva de Emergência',cat:'3.1.8',cli:'Venda (dose, sem NF)',meio:'Cartão'}
 ];
 
 // Estado
@@ -5264,7 +5271,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-25';
+  const hoje = '2026-11-26';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -5845,7 +5852,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-25';
+const HOJE_SISTEMA = '2026-11-26';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -6492,7 +6499,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-25';
+  const hoje = '2026-11-26';
 
   let txData;
   if(cfMes){
@@ -7403,7 +7410,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:547.08, em:'25/11/2026 19:22'}, XP:{valor:287.52, em:'25/11/2026 19:22'}, 'Reserva de Emergência':{valor:1.97, em:'25/11/2026 19:22'}};
+const SALDO_BANCO = {Stone:{valor:1159.44, em:'26/11/2026 07:21'}, XP:{valor:287.52, em:'26/11/2026 07:21'}, 'Reserva de Emergência':{valor:6.85, em:'26/11/2026 07:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
