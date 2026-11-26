@@ -26,32 +26,6 @@
     "SIMONARA",
     "Simonara"
    ]
-  },
-  "cartao_nao_entrou:-P7JufWvNsSOoqlgLobh": {
-   "id": "cartao_nao_entrou:-P7JufWvNsSOoqlgLobh",
-   "tipo": "cartao_nao_entrou",
-   "ficha": {
-    "cliente": "Charmusa",
-    "pedido": 8302,
-    "valor": 199.9,
-    "pag": "Cartão 4x",
-    "vendedor": "Renato",
-    "entregador": "Rodrigo",
-    "rota": "Norte"
-   },
-   "detalhe": "Crédito de R$ 199,90 4x (25/11 19:06) não caiu na Stone",
-   "valor": 199.9,
-   "imagem": null,
-   "dia": "2026-11-25",
-   "pedido_k": "-P7JOxEBewf2qpMPw7Cb",
-   "comp_id": "-P7JufWvNsSOoqlgLobh",
-   "comp_dia": "2026-11-25",
-   "t_comp": 1795644360.0,
-   "foto_valor": 199.9,
-   "nomes": [
-    "Charmosa",
-    "Charmusa"
-   ]
   }
  },
  "resolvidas": [

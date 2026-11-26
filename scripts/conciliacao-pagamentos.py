@@ -182,12 +182,13 @@ def acha_cartao(cartao, v, ref_hora, folga=0):
     if cand:
         return min(cand, key=lambda s: abs(s['t'] - ref))
     # Felipe (24/11/2026): crédito parcelado (4x ou mais) a Stone antecipa em 2 linhas no MESMO horário
-    # (1ª parcela + demais), ex.: Érika 295,00 4x → 69,18 + 207,55 às 19:12. Soma as linhas do mesmo segundo.
+    # (1ª parcela + demais), ex.: Érika 295,00 4x → 69,18 + 207,55 às 19:12. Soma as linhas do mesmo horário
+    # (até 2 s de diferença: Charmusa 25/11 199,90 4x → 140,65 às 19:22:20 + 46,88 às 19:22:21).
     livres = [s for s in cartao if not s['usado'] and t0 <= s['t'] <= t1]
     grupos = []
     for i, a_ in enumerate(livres):
         for b_ in livres[i + 1:]:
-            if a_['t'] == b_['t'] and 0.85 * v <= a_['v'] + b_['v'] <= 0.995 * v:
+            if abs(a_['t'] - b_['t']) <= 2 and 0.85 * v <= a_['v'] + b_['v'] <= 0.995 * v:
                 grupos.append((a_, b_))
     if not grupos:
         return None
