@@ -1,5 +1,59 @@
 {
- "abertas": {},
+ "abertas": {
+  "cartao_nao_entrou:-P7Ja0p28UA_EaNxl-6x": {
+   "id": "cartao_nao_entrou:-P7Ja0p28UA_EaNxl-6x",
+   "tipo": "cartao_nao_entrou",
+   "ficha": {
+    "cliente": "Simonara",
+    "pedido": 8279,
+    "valor": 75.0,
+    "pag": "Cartão 3x",
+    "vendedor": "Renato",
+    "entregador": "Nathan",
+    "rota": "Sul"
+   },
+   "detalhe": "Crédito de R$ 75,00 3x (25/11 16:52) não caiu na Stone",
+   "valor": 75.0,
+   "imagem": null,
+   "dia": "2026-11-25",
+   "pedido_k": "-P7IuyWxxfTZ2Ar98cNw",
+   "comp_id": "-P7Ja0p28UA_EaNxl-6x",
+   "comp_dia": "2026-11-25",
+   "t_comp": 1795636320.0,
+   "foto_valor": 75.0,
+   "nomes": [
+    "Simonara",
+    "SIMONARA",
+    "Simonara"
+   ]
+  },
+  "cartao_nao_entrou:-P7JufWvNsSOoqlgLobh": {
+   "id": "cartao_nao_entrou:-P7JufWvNsSOoqlgLobh",
+   "tipo": "cartao_nao_entrou",
+   "ficha": {
+    "cliente": "Charmusa",
+    "pedido": 8302,
+    "valor": 199.9,
+    "pag": "Cartão 4x",
+    "vendedor": "Renato",
+    "entregador": "Rodrigo",
+    "rota": "Norte"
+   },
+   "detalhe": "Crédito de R$ 199,90 4x (25/11 19:06) não caiu na Stone",
+   "valor": 199.9,
+   "imagem": null,
+   "dia": "2026-11-25",
+   "pedido_k": "-P7JOxEBewf2qpMPw7Cb",
+   "comp_id": "-P7JufWvNsSOoqlgLobh",
+   "comp_dia": "2026-11-25",
+   "t_comp": 1795644360.0,
+   "foto_valor": 199.9,
+   "nomes": [
+    "Charmosa",
+    "Charmusa"
+   ]
+  }
+ },
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -465,7 +519,8 @@
   "2026-11-20",
   "2026-11-21",
   "2026-11-23",
-  "2026-11-24"
+  "2026-11-24",
+  "2026-11-25"
  ],
  "links_aguardando": {}
 }
