@@ -362,7 +362,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-26"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-27"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -4366,7 +4366,9 @@ const RAW = [
   // SYNC 26/11/2026 20:28
   {id:'st_3b3cd203',date:'2026-11-26',hora:'19:41',desc:'Transferência | Pix | DH HOLDING IMOBILIARIA LTDA',amt:1464.81,type:'DEBIT',conta:'Stone',cat:'4.1.1',cli:'DH HOLDING IMOBILIARIA LTDA',meio:'PIX',status_fixo:'conciliado',comp:'2026-10',obs:'Imposto mensal da DH Holding - competência outubro/2026'},
   {id:'st_7398ce38',date:'2026-11-26',hora:'19:49',desc:'Transferência | Pix | Flavio Alves de Assis Junior',amt:400.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'Flavio Alves de Assis Junior',meio:'PIX'},
-  {id:'st_2375decc',date:'2026-11-26',hora:'19:56',desc:'Pagamento | SUPLEY LAB ALIM SUPL NUT LTDA',amt:3591.45,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto'}
+  {id:'st_2375decc',date:'2026-11-26',hora:'19:56',desc:'Pagamento | SUPLEY LAB ALIM SUPL NUT LTDA',amt:3591.45,type:'DEBIT',conta:'Stone',cat:'4.2.1',cli:'SUPLEY LABORATORIO DE ALIMENTOS E SUPLEMENTOS NUTRICIONAIS LTDA',meio:'Boleto'},
+  // SYNC 27/11/2026 07:22
+  {id:'pb_e65c18c6',date:'2026-11-26',hora:'18:45',desc:'Pix recebido - DHFIT NUTRICAO ESPORTIVA',amt:69.3,type:'CREDIT',conta:'Reserva de Emergência',cat:'3.1.8',cli:'Venda (dose, sem NF)',meio:'PIX'}
 ];
 
 // Estado
@@ -5368,7 +5370,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-26';
+  const hoje = '2026-11-27';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -5949,7 +5951,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-26';
+const HOJE_SISTEMA = '2026-11-27';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -6596,7 +6598,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-26';
+  const hoje = '2026-11-27';
 
   let txData;
   if(cfMes){
@@ -7507,7 +7509,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:353.71, em:'26/11/2026 20:28'}, XP:{valor:287.52, em:'26/11/2026 19:21'}, 'Reserva de Emergência':{valor:71.7, em:'26/11/2026 19:21'}};
+const SALDO_BANCO = {Stone:{valor:353.71, em:'27/11/2026 07:22'}, XP:{valor:287.52, em:'27/11/2026 07:22'}, 'Reserva de Emergência':{valor:141.0, em:'27/11/2026 07:22'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
