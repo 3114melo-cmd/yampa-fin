@@ -1,31 +1,5 @@
 {
- "abertas": {
-  "sem_comprovante:-P7OMZ_ax8hcysgwFeGj": {
-   "id": "sem_comprovante:-P7OMZ_ax8hcysgwFeGj",
-   "tipo": "sem_comprovante",
-   "ficha": {
-    "cliente": "Ângelo",
-    "pedido": 8367,
-    "valor": 85.0,
-    "pag": "PIX Pago ✅",
-    "vendedor": "Renato",
-    "entregador": "Nathan",
-    "rota": "Norte"
-   },
-   "detalhe": "",
-   "valor": 85.0,
-   "imagem": null,
-   "dia": "2026-11-26",
-   "pedido_k": "-P7OMZ_ax8hcysgwFeGj",
-   "comp_id": null,
-   "comp_dia": null,
-   "t_comp": null,
-   "foto_valor": null,
-   "nomes": [
-    "Ângelo"
-   ]
-  }
- },
+ "abertas": {},
  "resolvidas": [
   {
    "id": "sem_comprovante:-P5q27SNRmrg8mKAFXZU",
@@ -503,6 +477,33 @@
    ],
    "resolvido_em": "2026-11-26",
    "motivo": "cartão caiu na Stone (25/11 15:12, R$ 70,96)"
+  },
+  {
+   "id": "sem_comprovante:-P7OMZ_ax8hcysgwFeGj",
+   "tipo": "sem_comprovante",
+   "ficha": {
+    "cliente": "Ângelo",
+    "pedido": 8367,
+    "valor": 85.0,
+    "pag": "PIX Pago ✅",
+    "vendedor": "Renato",
+    "entregador": "Nathan",
+    "rota": "Norte"
+   },
+   "detalhe": "",
+   "valor": 85.0,
+   "imagem": null,
+   "dia": "2026-11-26",
+   "pedido_k": "-P7OMZ_ax8hcysgwFeGj",
+   "comp_id": null,
+   "comp_dia": null,
+   "t_comp": null,
+   "foto_valor": null,
+   "nomes": [
+    "Ângelo"
+   ],
+   "resolvido_em": "2026-11-27",
+   "motivo": "Felipe enviou o comprovante: PIX R$ 85,00 de Jessica Maria Silva em 26/11 16:45, caiu na Stone 26/11 16:45:47"
   }
  ],
  "enviados": [
