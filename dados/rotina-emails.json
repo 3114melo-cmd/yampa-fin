@@ -1,0 +1,7 @@
+{"pedidos":[
+{"fornecedor":"SUPLEY","nf":"1065953","faturado_em":"2026-11-12","valor":1698.23,"boletos":["9 parcelas lançadas"],"icms":{"status":"provisionado","primeiro_pedido_em":"2026-11-23","ultimo_envio_em":"2026-11-26","guia_valor":2513.07,"guia_vencimento":"2026-11-25"}},
+{"fornecedor":"FITOWAY","nf":"4484/4485/4486/4487","faturado_em":"2026-11-19","valor":14521.72,"boletos":["4484 6x","4486 4x"],"icms":{"status":"provisionado","primeiro_pedido_em":"2026-11-23","ultimo_envio_em":"2026-11-26","guia_valor":2513.07,"guia_vencimento":"2026-11-25"}},
+{"fornecedor":"FITOWAY","nf":"4858","faturado_em":"2026-11-26","valor":8485.00,"boletos":["4 parcelas lançadas"],"icms":{"status":"pedido_enviado","primeiro_pedido_em":"2026-11-26","ultimo_envio_em":"2026-11-26","guia_valor":null,"guia_vencimento":null}},
+{"fornecedor":"FITOWAY","nf":"4862","faturado_em":"2026-11-26","valor":503.16,"boletos":[],"obs":"bonificação CFOP 6910, sem boleto","icms":{"status":"pedido_enviado","primeiro_pedido_em":"2026-11-26","ultimo_envio_em":"2026-11-26","guia_valor":null,"guia_vencimento":null}},
+{"fornecedor":"RAINHA","nf":"8414/8415","faturado_em":"2026-11-24","valor":28106.9,"boletos":["8414 10x lançadas"],"icms":{"status":"pedido_enviado","primeiro_pedido_em":"2026-11-24","ultimo_envio_em":"2026-11-26","guia_valor":null,"guia_vencimento":null}}
+],"cobrancas_ignoradas":[],"cobrancas_perguntadas":["1a217b6dee02340b"]}
