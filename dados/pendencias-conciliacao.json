@@ -1,30 +1,28 @@
 {
  "abertas": {
-  "cartao_nao_entrou:-P7Ja0p28UA_EaNxl-6x": {
-   "id": "cartao_nao_entrou:-P7Ja0p28UA_EaNxl-6x",
-   "tipo": "cartao_nao_entrou",
+  "sem_comprovante:-P7OMZ_ax8hcysgwFeGj": {
+   "id": "sem_comprovante:-P7OMZ_ax8hcysgwFeGj",
+   "tipo": "sem_comprovante",
    "ficha": {
-    "cliente": "Simonara",
-    "pedido": 8279,
-    "valor": 75.0,
-    "pag": "Cartão 3x",
+    "cliente": "Ângelo",
+    "pedido": 8367,
+    "valor": 85.0,
+    "pag": "PIX Pago ✅",
     "vendedor": "Renato",
     "entregador": "Nathan",
-    "rota": "Sul"
+    "rota": "Norte"
    },
-   "detalhe": "Crédito de R$ 75,00 3x (25/11 16:52) não caiu na Stone",
-   "valor": 75.0,
+   "detalhe": "",
+   "valor": 85.0,
    "imagem": null,
-   "dia": "2026-11-25",
-   "pedido_k": "-P7IuyWxxfTZ2Ar98cNw",
-   "comp_id": "-P7Ja0p28UA_EaNxl-6x",
-   "comp_dia": "2026-11-25",
-   "t_comp": 1795636320.0,
-   "foto_valor": 75.0,
+   "dia": "2026-11-26",
+   "pedido_k": "-P7OMZ_ax8hcysgwFeGj",
+   "comp_id": null,
+   "comp_dia": null,
+   "t_comp": null,
+   "foto_valor": null,
    "nomes": [
-    "Simonara",
-    "SIMONARA",
-    "Simonara"
+    "Ângelo"
    ]
   }
  },
@@ -476,6 +474,35 @@
    ],
    "resolvido_em": "2026-11-24",
    "motivo": "Stone 23/11 19:12: Antecipação R$ 69,18 (1ª parcela) + R$ 207,55 (parcelas 2–4) = R$ 276,73 líquido do crédito 4x de R$ 295,00"
+  },
+  {
+   "id": "cartao_nao_entrou:-P7Ja0p28UA_EaNxl-6x",
+   "tipo": "cartao_nao_entrou",
+   "ficha": {
+    "cliente": "Simonara",
+    "pedido": 8279,
+    "valor": 75.0,
+    "pag": "Cartão 3x",
+    "vendedor": "Renato",
+    "entregador": "Nathan",
+    "rota": "Sul"
+   },
+   "detalhe": "Crédito de R$ 75,00 3x (25/11 16:52) não caiu na Stone",
+   "valor": 75.0,
+   "imagem": null,
+   "dia": "2026-11-25",
+   "pedido_k": "-P7IuyWxxfTZ2Ar98cNw",
+   "comp_id": "-P7Ja0p28UA_EaNxl-6x",
+   "comp_dia": "2026-11-25",
+   "t_comp": 1795636320.0,
+   "foto_valor": 75.0,
+   "nomes": [
+    "Simonara",
+    "SIMONARA",
+    "Simonara"
+   ],
+   "resolvido_em": "2026-11-26",
+   "motivo": "cartão caiu na Stone (25/11 15:12, R$ 70,96)"
   }
  ],
  "enviados": [
@@ -494,7 +521,8 @@
   "2026-11-21",
   "2026-11-23",
   "2026-11-24",
-  "2026-11-25"
+  "2026-11-25",
+  "2026-11-26"
  ],
  "links_aguardando": {}
 }
