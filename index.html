@@ -341,7 +341,7 @@ body,.main,.sb{height:100dvh}
     <div class="tbr">
       <div class="sync-badge" id="sync-badge">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block"></span>
-        Stone · 27/11 · 19:16
+        Stone · 27/11 · 20:01
       </div>
       <button class="btn pri" onclick="syncSicredi()" id="sync-btn">↻ Sincronizar</button>
       <button class="btn" style="color:var(--red);border-color:var(--red);font-size:11px" onclick="resetConciliacao()" title="Limpa todas conciliacoes salvas no navegador">🗑 Resetar</button>
@@ -362,7 +362,7 @@ body,.main,.sb{height:100dvh}
         <div class="tipo-b" onclick="selTipo(this,'transf')"><div class="tipo-ic">🔄</div><div class="tipo-lb">Transferência</div></div>
       </div>
       <div class="fr fr2">
-        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-27"></div>
+        <div class="fg"><label>Data</label><input type="date" id="m-data" value="2026-11-28"></div>
         <div class="fg"><label>Valor (R$)</label><input type="number" id="m-valor" placeholder="0,00" step="0.01" min="0"></div>
       </div>
       <div class="fr fr2" id="m-conta-row">
@@ -4441,7 +4441,14 @@ const RAW = [
   {id:'xp_9f67e503',date:'2026-11-27',hora:'11:54',desc:'Pix recebido de Sara Félix da Silva Viana',amt:9.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'Sara Félix da Silva Viana',meio:'PIX'},
   {id:'xp_b009b8d7',date:'2026-11-27',hora:'13:26',desc:'Pix recebido de Lidiesa Vieira de Brito Souza',amt:9.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'082.313.644-20',meio:'PIX'},
   {id:'xp_5e8ee2bc',date:'2026-11-27',hora:'15:27',desc:'Pix enviado para Rafael da Costa Araujo',amt:300.0,type:'DEBIT',conta:'XP',cat:'5.2.99',cli:'46.816.663 RAFAEL DA COSTA ARAUJO',meio:'PIX'},
-  {id:'xp_33460a40',date:'2026-11-27',hora:'15:51',desc:'Pix recebido de Ana Paula Rocha de Oliveira',amt:7.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'072.067.404-21',meio:'PIX'}
+  {id:'xp_33460a40',date:'2026-11-27',hora:'15:51',desc:'Pix recebido de Ana Paula Rocha de Oliveira',amt:7.5,type:'CREDIT',conta:'XP',cat:'7.1.7',cli:'072.067.404-21',meio:'PIX'},
+  // SYNC 28/11/2026 07:21
+  {id:'st_7b433694',date:'2026-11-27',hora:'19:21',desc:'Pix | Maquininha | João Henrique Silva Ferreira',amt:199.0,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'017.200.984-76',meio:'PIX',obs:'Líquido: tarifa de R$ 1,00 abatida'},
+  {id:'st_e835ae32',date:'2026-11-27',hora:'19:38',desc:'Pix | Maquininha | GISLANY MONICA DA MATA OLIVEIRA',amt:44.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'104.572.734-29',meio:'PIX',obs:'Líquido: tarifa de R$ 0,22 abatida'},
+  {id:'st_0f7410b2',date:'2026-11-27',hora:'19:47',desc:'Antecipação | Recebimento vendas',amt:17.49,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'STONE',meio:'Antecipação'},
+  {id:'st_f0aa049c',date:'2026-11-27',hora:'19:50',desc:'Transferência | Pix | RAFAEL DA COSTA ARAUJO',amt:155.0,type:'DEBIT',conta:'Stone',cat:'5.2.99',cli:'46.816.663 RAFAEL DA COSTA ARAUJO',meio:'PIX'},
+  {id:'st_f427eab0',date:'2026-11-27',hora:'19:59',desc:'Pix | Maquininha | Maria Miriam dos Santos',amt:44.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'123.314.854-02',meio:'PIX',obs:'Líquido: tarifa de R$ 0,22 abatida'},
+  {id:'st_3a9d8fd7',date:'2026-11-27',hora:'20:01',desc:'Pix | Maquininha | GYSCARD BERNADO SILVA',amt:44.78,type:'CREDIT',conta:'Stone',cat:'3.1.8',cli:'033.965.564-02',meio:'PIX',obs:'Líquido: tarifa de R$ 0,22 abatida'}
 ];
 
 // Estado
@@ -5443,7 +5450,7 @@ let _catPickerTxId = null;
 
 function abrirFiltroData(ev){
   ev.stopPropagation();
-  const hoje = '2026-11-27';
+  const hoje = '2026-11-28';
   const existente = document.getElementById('filtro-popover');
   if(existente) existente.remove();
   const rect = ev.target.getBoundingClientRect();
@@ -6024,7 +6031,7 @@ function aplicarFiltroColuna(campo){
 // ════════════════════════════════
 // STATUS GLOBAL + ORIGEM + CENTRO CUSTO (helpers globais)
 // ════════════════════════════════
-const HOJE_SISTEMA = '2026-11-27';
+const HOJE_SISTEMA = '2026-11-28';
 
 function getStatusTx(t){
   if(t.status==='conciliado') return 'realizado';
@@ -6671,7 +6678,7 @@ function renderJour(){
   const cfMes = window._cfFiltroMes;
   const cfCats = window._cfFiltroCats;
   const cfTipo = window._cfFiltroTipo;
-  const hoje = '2026-11-27';
+  const hoje = '2026-11-28';
 
   let txData;
   if(cfMes){
@@ -7582,7 +7589,7 @@ function exportarDRE(){
 // ════════════════════════════════
 // CONFERÊNCIA DE SALDO (sistema x banco)
 // ════════════════════════════════
-const SALDO_BANCO = {Stone:{valor:878.17, em:'27/11/2026 19:21'}, XP:{valor:14.02, em:'27/11/2026 19:21'}, 'Reserva de Emergência':{valor:141.0, em:'27/11/2026 19:21'}};
+const SALDO_BANCO = {Stone:{valor:1074.0, em:'28/11/2026 07:21'}, XP:{valor:14.02, em:'28/11/2026 07:21'}, 'Reserva de Emergência':{valor:141.0, em:'28/11/2026 07:21'}};
 function _sgn(t){ return t.type==='CREDIT' ? t.amt : -t.amt; }
 function _conta(t){ return (t.status==='conciliado'||t.status==='transferencia') ? _sgn(t) : 0; }
 function diagnosticoSaldo(){
